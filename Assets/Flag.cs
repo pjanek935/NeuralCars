@@ -7,7 +7,21 @@ public class Flag : MonoBehaviour
     public delegate void OnFlagEventHandler (Flag flag);
     public event OnFlagEventHandler OnFlagMoved;
 
+    [SerializeField] float width = 2f;
     [SerializeField] new Camera camera;
+
+    public float Width
+    {
+        get
+        {
+            return width;
+        }
+        
+        set
+        {
+            width = value;
+        }
+    }
 
     public bool Selected
     {

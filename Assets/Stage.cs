@@ -6,7 +6,8 @@ public class Line
 {
     public Vector3 Start = Vector3.zero;
     public Vector3 End = Vector3.zero;
-    public float width = 0.5f;
+    public float StartdWidth = 0.5f;
+    public float EndWidth = 0.5f;
 
     public Line (Vector3 start, Vector3 end)
     {
@@ -49,8 +50,38 @@ public class Line
         Vector3 P = Start + t * d;
         return Vector3.Distance (P, p);
     }
+
+    // Returns 1 if the lines intersect, otherwise 0. In addition, if the lines 
+    // intersect the intersection point may be stored in the floats i_x and i_y.
+    public static bool GetLineSegmentIntersectionPoint (Vector3 p0, Vector3 p1,
+        Vector3 p2, Vector3 p3, out Vector3 intersectionPoint)
+    {
+        bool result = false;
+        intersectionPoint = new Vector3 ();
+
+        Vector3 s1, s2;
+        s1.x = p1.x - p0.x;
+        s1.z = p1.z - p0.z;
+        s2.x = p3.x - p2.x;
+        s2.z = p3.z - p2.z;
+
+        float s, t;
+
+        s = (-s1.z * (p0.x - p2.x) + s1.x * (p0.z - p2.z)) / (-s2.x * s1.z + s1.x * s2.z);
+        t = (s2.x * (p0.z - p2.z) - s2.z * (p0.x - p2.x)) / (-s2.x * s1.z + s1.x * s2.z);
+
+        if (s >= 0 && s <= 1 && t >= 0 && t <= 1)
+        { // Collision detected
+            intersectionPoint.x = p0.x + (t * s1.x);
+            intersectionPoint.z = p0.z + (t * s1.z);
+
+            result = true;
+        }
+
+        return result;
+    }
 }
-//[ExecuteInEditMode]
+
 public class Stage : MonoBehaviour
 {
     [SerializeField] new Camera camera;
@@ -59,7 +90,6 @@ public class Stage : MonoBehaviour
     List<Line> lines = new List<Line> ();
     List<Vector3> pointsRight = new List<Vector3> ();
     List<Vector3> pointsLeft = new List<Vector3> ();
-    [SerializeField]  float width = 2f;
     const float epsilon = 0.01f;
     [SerializeField] GameObject wallPrefab;
 
@@ -107,11 +137,13 @@ public class Stage : MonoBehaviour
     void createLineSegmentsFromFlags ()
     {
         lines.Clear ();
-        Vector3 [] pos = stageEditor.GetFlagsPositions ();
+        List<Flag> flags = stageEditor.Flags;
 
-        for (int i = 0; i < pos.Length - 1; i ++)
+        for (int i = 0; i < flags.Count - 1; i ++)
         {
-            Line l = new Line (pos [i], pos [i+1]);
+            Line l = new Line (flags [i].transform.position, flags [i+1].transform.position);
+            l.StartdWidth = flags [i].Width;
+            l.EndWidth = flags [i + 1].Width;
             lines.Add (l);
         }
 
@@ -121,78 +153,111 @@ public class Stage : MonoBehaviour
 
     void init ()
     {
-        //lines.Clear ();
         pointsRight.Clear ();
         pointsLeft.Clear ();
 
-        //lines.Add (new Line (Vector3.zero, new Vector3 (5, 0, 5)));
-        //lines.Add (new Line (new Vector3 (5, 0, 5), new Vector3 (-4, 0, 5)));
-        //lines.Add (new Line (new Vector3 (-4, 0, 5), new Vector3 (-4, 0, 6)));
-        //lines.Add (new Line (new Vector3 (-4, 0, 6), new Vector3 (-2, 0, 8)));
-
-        for (int i = 0; i < lines.Count; i++)
+        for (int i = 0; i < lines.Count; i ++)
         {
             Vector3 direction = lines [i].End - lines [i].Start;
-            int length = (int) direction.magnitude;
             direction.Normalize ();
-            direction *= 0.5f;
-            length = (int) (length / 0.5f);
-            Vector3 start = lines [i].Start;
-            Vector3 perpenRight = lines [i].PerpendicularCounterClockwise ();
-            Vector3 perpenLeft = lines [i].PerpendicularClockwise ();
-            perpenRight.Normalize ();
-            perpenRight *= width;
-            perpenLeft.Normalize ();
-            perpenLeft *= width;
 
-            for (int j = 0; j < length + 1; j++)
-            {
-                pointsRight.Add (start + perpenRight);
-                pointsLeft.Add (start + perpenLeft);
+            Vector3 perpenRightDirection = lines [i].PerpendicularCounterClockwise ();
+            Vector3 perpenLeftDirection = lines [i].PerpendicularClockwise ();
+            perpenRightDirection.Normalize ();
+            perpenLeftDirection.Normalize ();
 
-                start += direction;
-            }
+            pointsRight.Add (lines [i].Start + perpenRightDirection * lines [i].StartdWidth);
+            pointsLeft.Add (lines [i].Start + perpenLeftDirection * lines [i].StartdWidth);
+
+            pointsRight.Add (lines [i].End + perpenRightDirection * lines [i].EndWidth);
+            pointsLeft.Add (lines [i].End + perpenLeftDirection * lines [i].EndWidth);
         }
 
-        for (int i = 0; i < lines.Count; i++)
+        List<Vector3> tmp = new List<Vector3> ();
+
+        if (pointsRight.Count >= 4)
         {
-            for (int j = pointsRight.Count - 1; j >= 0; j--)
+            for (int i = 0; i < pointsRight.Count - 3; i += 2)
             {
-                float dist = lines [i].DistToLineSegment (pointsRight [j]);
+                Vector3 p0 = pointsRight [i];
+                Vector3 p1 = pointsRight [i + 1];
+                Vector3 p2 = pointsRight [i + 2];
+                Vector3 p3 = pointsRight [i + 3];
 
-                if (dist + epsilon < width)
+                Vector3 result = Vector3.zero;
+
+                if (Line.GetLineSegmentIntersectionPoint (p0, p1, p2, p3, out result))
                 {
-                    pointsRight.RemoveAt (j);
+                    tmp.Add (p0);
+                    tmp.Add (result);
+
+                    pointsRight [i + 1] = result;
+                    pointsRight [i + 2] = result;
+                }
+                else
+                {
+                    tmp.Add (p0);
+                    tmp.Add (p1);
                 }
             }
 
-            for (int j = pointsLeft.Count - 1; j >= 0; j--)
-            {
-                float dist = lines [i].DistToLineSegment (pointsLeft [j]);
-
-                if (dist + epsilon < width)
-                {
-                    pointsLeft.RemoveAt (j);
-                }
-            }
+            tmp.Add (pointsRight [pointsRight.Count - 2]);
+            tmp.Add (pointsRight [pointsRight.Count - 1]);
         }
+
+        pointsRight.Clear ();
+        tmp.ForEach (p => pointsRight.Add (p));
+        tmp.Clear ();
+
+        if (pointsLeft.Count >= 4)
+        {
+            for (int i = 0; i < pointsLeft.Count - 3; i += 2)
+            {
+                Vector3 p0 = pointsLeft [i];
+                Vector3 p1 = pointsLeft [i + 1];
+                Vector3 p2 = pointsLeft [i + 2];
+                Vector3 p3 = pointsLeft [i + 3];
+
+                Vector3 result = Vector3.zero;
+
+                if (Line.GetLineSegmentIntersectionPoint (p0, p1, p2, p3, out result))
+                {
+                    tmp.Add (p0);
+                    tmp.Add (result);
+
+                    pointsLeft [i + 1] = result;
+                    pointsLeft [i + 2] = result;
+                }
+                else
+                {
+                    tmp.Add (p0);
+                    tmp.Add (p1);
+                }
+            }
+
+            tmp.Add (pointsLeft [pointsLeft.Count - 2]);
+            tmp.Add (pointsLeft [pointsLeft.Count - 1]);
+        }
+
+        pointsLeft.Clear ();
+        tmp.ForEach (p => pointsLeft.Add (p));
     }
 
     void render ()
     {
         for (int i = 0; i < lines.Count; i++)
         {
-            Debug.DrawLine (lines [i].Start, lines [i].End, Color.red, 1f);
+            Debug.DrawLine (lines [i].Start, lines [i].End, Color.red, 0.01f);
         }
 
-        for (int i = 0; i < pointsRight.Count; i++)
+        for (int i = 0; i < pointsRight.Count - 1; i++)
         {
-            Debug.DrawLine (pointsRight [i], pointsRight [i] + new Vector3 (0.05f, 0f, 0.05f), Color.blue, 1f);
+            Debug.DrawLine (pointsRight [i], pointsRight [i + 1], Color.blue, 0.01f);
         }
 
-        for (int i = 0; i < pointsLeft.Count; i++)
+        for (int i = 0; i < pointsLeft.Count - 1; i++)
         {
-            Debug.DrawLine (pointsLeft [i], pointsLeft [i] + new Vector3 (0.05f, 0f, 0.05f), Color.yellow, 1f);
+            Debug.DrawLine (pointsLeft [i], pointsLeft [i + 1], Color.yellow, 0.01f);
         }
     }
 

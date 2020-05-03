@@ -13,6 +13,14 @@ public class StageEditor : MonoBehaviour
 
     List<Flag> flags = new List<Flag> ();
 
+    public List <Flag> Flags
+    {
+        get
+        {
+            return flags;
+        }
+    }
+
     public Vector3 [] GetFlagsPositions ()
     {
         Vector3 [] pos = new Vector3 [flags.Count];
