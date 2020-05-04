@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 [RequireComponent (typeof (Camera))]
 public class CameraController : MonoBehaviour
@@ -12,6 +13,7 @@ public class CameraController : MonoBehaviour
 
     [SerializeField] float moveSpeed = 1f;
     [SerializeField] float scrollSpeed = 1f;
+    [SerializeField] EventSystem eventSystem;
 
     Vector3 prevPointerPos = Vector3.zero;
     Vector3 prevRayHitPos = Vector3.zero;
@@ -20,6 +22,19 @@ public class CameraController : MonoBehaviour
     {
         get;
         private set;
+    }
+
+    public bool IsPointerOverGUI ()
+    {
+        bool result = false;
+
+        if (eventSystem != null)
+        {
+            result = eventSystem.IsPointerOverGameObject ();
+        }
+
+        return result;
+        
     }
 
     private void Update ()

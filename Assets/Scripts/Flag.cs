@@ -9,6 +9,7 @@ public class Flag : MonoBehaviour
 
     [SerializeField] float width = 2f;
     [SerializeField] new Camera camera;
+    [SerializeField] CameraController cameraController;
 
     public float Width
     {
@@ -36,7 +37,11 @@ public class Flag : MonoBehaviour
 
     private void OnMouseDown ()
     {
-        Selected = true;
+        if (cameraController != null && ! cameraController.IsPointerOverGUI ())
+        {
+            Selected = true;
+            OnFlagMoved?.Invoke (this);
+        }
     }
 
     private void OnMouseUp ()

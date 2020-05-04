@@ -8,16 +8,78 @@ public class StageEditor : MonoBehaviour
     public event OnStageEditorEventHandler OnFlagsRefreshed;
 
     [SerializeField] new Camera camera;
+    [SerializeField] CameraController cameraController;
+    [SerializeField] FlagEditor flagEditor;
     [SerializeField] LineRenderer lineRenderer;
     [SerializeField] GameObject flagPrefab;
 
     List<Flag> flags = new List<Flag> ();
+    
+    public Flag CurrentSelectedFlag
+    {
+        get;
+        private set;
+    }
 
     public List <Flag> Flags
     {
         get
         {
             return flags;
+        }
+    }
+
+    private void Awake ()
+    {
+        if (flagEditor != null)
+        {
+            flagEditor.OnDeleteClicked += flagEditorOnDeleteClicked;
+            flagEditor.OnWidthDownClicked += flagEditorOnWidthDownClicked;
+            flagEditor.OnWidthUpClicked += flagEditorOnWidthUpClicked;
+        }
+    }
+
+    void flagEditorOnDeleteClicked ()
+    {
+        if (CurrentSelectedFlag != null)
+        {
+            Flags.Remove (CurrentSelectedFlag);
+            Destroy (CurrentSelectedFlag.gameObject);
+            onFlagMoved (null);
+        }
+    }
+
+    void flagEditorOnWidthDownClicked ()
+    {
+        if (CurrentSelectedFlag != null)
+        {
+            float newWidth = CurrentSelectedFlag.Width - 0.5f;
+
+            if (newWidth < 0.5f)
+            {
+                newWidth = 0.5f;
+            }
+
+            CurrentSelectedFlag.Width = newWidth;
+
+            onFlagMoved (CurrentSelectedFlag);
+        }
+    }
+
+    void flagEditorOnWidthUpClicked ()
+    {
+        if (CurrentSelectedFlag != null)
+        {
+            float newWidth = CurrentSelectedFlag.Width + 0.5f;
+
+            if (newWidth > 5f)
+            {
+                newWidth = 5f;
+            }
+
+            CurrentSelectedFlag.Width = newWidth;
+
+            onFlagMoved (CurrentSelectedFlag);
         }
     }
 
@@ -41,10 +103,23 @@ public class StageEditor : MonoBehaviour
 
         if (Physics.Raycast (raycast, out hit, 1000, layerMask))
         {
-            Vector3 pos = hit.point;
-            pos.y = 0;
-            createNewFlag (pos);
-            refreshLineRenderer ();
+            if (cameraController != null && ! cameraController.IsPointerOverGUI ())
+            {
+                Vector3 pos = hit.point;
+                pos.y = 0;
+                createNewFlag (pos);
+                refreshLineRenderer ();
+            }
+        }
+    }
+
+    void setNewCurrentFlag (Flag flag)
+    {
+        CurrentSelectedFlag = flag;
+
+        if (flagEditor != null)
+        {
+            flagEditor.Setup (flag);
         }
     }
 
@@ -118,12 +193,14 @@ public class StageEditor : MonoBehaviour
             }
             
             flag.OnFlagMoved += onFlagMoved;
+            setNewCurrentFlag (flag);
             OnFlagsRefreshed?.Invoke ();
         }
     }
 
     void onFlagMoved (Flag flag)
     {
+        setNewCurrentFlag (flag);
         refreshLineRenderer ();
         OnFlagsRefreshed?.Invoke ();
     }
