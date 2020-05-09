@@ -12,7 +12,8 @@ public class FlagEditor : MonoBehaviour
     public event OnFlagEditorButtonClickedEventHandler OnDeleteClicked;
 
     const float flagHeight = 4f; //flag object size in world space, used to calculate fag editor height based on camera position
-    const float showAndHideTime = 0.3f;
+    const float showAndHideTime = 0.2f;
+    const float hiddenComponentYPos = 30f;
 
     [SerializeField] new Camera camera;
     [SerializeField] Button widthDownButton;
@@ -20,6 +21,9 @@ public class FlagEditor : MonoBehaviour
     [SerializeField] Text wdithText;
     [SerializeField] CanvasGroup canvasGroup;
     [SerializeField] Button deleteButton;
+
+    [SerializeField] GameObject deletButonContainer;
+    [SerializeField] GameObject widthControllerContainer;
 
     Transform transformToFollow;
 
@@ -98,10 +102,34 @@ public class FlagEditor : MonoBehaviour
         }
     }
 
+    void setAnchoredYPos (GameObject gameObject, float value)
+    {
+        if (gameObject != null)
+        {
+            RectTransform rectTransform = gameObject.GetComponent<RectTransform> ();
+
+            if (rectTransform != null)
+            {
+                rectTransform.anchoredPosition = new Vector2 (rectTransform.anchoredPosition.x, value);
+            }
+        }
+    }
+
     void hide (UnityAction onComplete = null)
     {
         IsHiding = true;
         IsVisible = false;
+
+        LeanTween.value (deletButonContainer, 0, hiddenComponentYPos, showAndHideTime).setOnUpdate ((float val) =>
+        {
+            setAnchoredYPos (deletButonContainer, val);
+        }).setEase (LeanTweenType.easeInBack);
+
+        LeanTween.value (widthControllerContainer, 0, -hiddenComponentYPos, showAndHideTime).setOnUpdate ((float val) =>
+        {
+            setAnchoredYPos (widthControllerContainer, val);
+        }).setEase (LeanTweenType.easeInBack);
+
         LeanTween.alphaCanvas (canvasGroup, 0f, showAndHideTime).setOnComplete (() =>
         {
             canvasGroup.blocksRaycasts = false;
@@ -117,6 +145,31 @@ public class FlagEditor : MonoBehaviour
         IsVisible = true;
         canvasGroup.blocksRaycasts = true;
         canvasGroup.interactable = true;
+        float currentDeleteButtonContainerAnchoredYPos = hiddenComponentYPos;
+        float currentWidthControllerAchoredYPos = -hiddenComponentYPos;
+
+        if (deletButonContainer != null)
+        {
+            RectTransform rectTransform = deletButonContainer.GetComponent<RectTransform> ();
+            currentDeleteButtonContainerAnchoredYPos = rectTransform.anchoredPosition.y;
+        }
+
+        if (widthControllerContainer != null)
+        {
+            RectTransform rectTransform = widthControllerContainer.GetComponent<RectTransform> ();
+            currentWidthControllerAchoredYPos = rectTransform.anchoredPosition.y;
+        }
+
+        LeanTween.value (deletButonContainer, currentDeleteButtonContainerAnchoredYPos, 0, showAndHideTime).setOnUpdate ((float val) =>
+        {
+            setAnchoredYPos (deletButonContainer, val);
+        }).setEase (LeanTweenType.easeOutBack);
+
+        LeanTween.value (widthControllerContainer, currentWidthControllerAchoredYPos, 0, showAndHideTime).setOnUpdate ((float val) =>
+        {
+            setAnchoredYPos (widthControllerContainer, val);
+        }).setEase (LeanTweenType.easeOutBack);
+
         LeanTween.alphaCanvas (canvasGroup, 1f, showAndHideTime).setOnComplete (() =>
         {
             IsShowing = false;

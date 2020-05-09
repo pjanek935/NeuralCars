@@ -87,6 +87,9 @@ public class Stage : MonoBehaviour
     [SerializeField] new Camera camera;
     [SerializeField] StageEditor stageEditor;
 
+    [Range (0, 2.5f)]
+    [SerializeField] float bezierDistanceFactor = 0.25f;
+
     List<Line> lines = new List<Line> ();
     List<Vector3> pointsRight = new List<Vector3> ();
     List<Vector3> pointsLeft = new List<Vector3> ();
@@ -95,6 +98,8 @@ public class Stage : MonoBehaviour
 
     List<GameObject> wallsRight = new List<GameObject> ();
     List<GameObject> wallsLeft = new List<GameObject> ();
+
+    List<Vector3> curvedPoints = new List<Vector3> ();
 
     Vector3 point = Vector3.zero;
     int index = 0;
@@ -207,6 +212,7 @@ public class Stage : MonoBehaviour
 
         pointsRight.Clear ();
         tmp.ForEach (p => pointsRight.Add (p));
+        pointsRight = interpolate (pointsRight);
         tmp.Clear ();
 
         if (pointsLeft.Count >= 4)
@@ -241,6 +247,126 @@ public class Stage : MonoBehaviour
 
         pointsLeft.Clear ();
         tmp.ForEach (p => pointsLeft.Add (p));
+        pointsLeft = interpolate (pointsLeft);
+
+        if (pointsRight.Count >= 4)
+        {
+            curvedPoints = interpolate (pointsRight);
+            //curvedPoints = interpolate (curvedPoints);
+        }
+    }
+
+    List <Vector3> interpolate (List <Vector3> points)
+    {
+        List<Vector3> result = new List<Vector3> ();
+
+        if (points != null && points.Count >= 4)
+        {
+            Vector3 prevDirection = points [1] - points [0]; ;
+            prevDirection.Normalize ();
+            result.Add (points [0]);
+
+            for (int i = 1; i < points.Count - 2; i ++)
+            {
+                Vector3 p0 = points [i - 1];
+                Vector3 p1 = points [i];
+                Vector3 p2 = points [i + 1];
+                Vector3 p3 = points [i + 2];
+
+                Vector3 direction = p2 - p1;
+                direction.Normalize ();
+                Vector3 nextDirection = p3 - p2;
+                nextDirection.Normalize ();
+
+                float a1 = Mathf.Abs (Vector3.Angle (prevDirection, direction));
+                float a2 = Mathf.Abs (Vector3.Angle (direction, nextDirection));
+                float d1 = Vector3.Dot (prevDirection, direction);
+                float d2 = Vector3.Dot (prevDirection, nextDirection);
+                float dist = Vector3.Distance (p1, p2);
+
+                if (Mathf.Abs (d1 - 1f) >= epsilon && Mathf.Abs (d2 - 1f) >= epsilon)
+                {
+                    result.Add (points [i]);
+
+                    if (dist >= 0.2 && dist <= 10f)
+                    {
+                        Vector3 b_p0 = p1;
+                        Vector3 b_p1 = p1 + prevDirection * bezierDistanceFactor * (1f - d2) * dist * 0.2f;
+                        Vector3 b_p2 = p2 - nextDirection * bezierDistanceFactor * (1f - d2)*dist * 0.2f;
+                        Vector3 b_p3 = p2;
+
+                        for (float j = 0.1f; j < 1f; j += 0.1f)
+                        {
+                            Vector3 newPoint = Curver.cubeBezier3 (b_p0, b_p1, b_p2, b_p3, j);
+                            result.Add (newPoint);
+                        }
+                    }
+                    
+
+                    result.Add (points [i + 1]);
+                    i++;
+                    prevDirection = nextDirection;
+                }
+                else
+                {
+                    result.Add (points [i]);
+                }
+
+                //float d = Vector3.Dot (direction, prevDirection);
+
+                //if (Mathf.Abs (d - 1f) < epsilon)
+                //{
+                //    result.Add (points [i]);
+                //}
+                //else
+                //{
+                //    result.Add (points [i]);
+                //    float dist = Vector3.Distance (points [i], points [i + 1]);
+
+                //    if (/*dist < 1f || dist > 15f*/false)
+                //    {
+                //        result.Add (points [i]);
+                //    }
+                //    else
+                //    {
+                //        Debug.Log ("Angle: " + Mathf.Abs (Vector3.Angle (prevDirection, direction)));
+                //        Debug.Log ("Distance: " + dist);
+                //        Debug.Log ("");
+
+                //        Vector3 p0 = points [i];
+                //        Vector3 p1 = p0 + prevDirection * d * bezierDistanceFactor;
+                //        Vector3 p3 = points [i + 1];
+                //        Vector3 p2 = p3;
+
+                //        for (float j = 0.1f; j < 1f; j += 0.1f)
+                //        {
+                //            Vector3 newPoint = Curver.cubeBezier3 (p0, p1, p2, p3, j);
+                //            result.Add (newPoint);
+                //        }
+
+                //        result.Add (points [i + 1]);
+                //        i++;
+                //    }
+
+                //    prevDirection = direction;
+                //}
+            }
+
+            for (int i = points.Count -2 ; i < points.Count; i++)
+            {
+                result.Add (points [i]);
+            }
+
+        }
+        else if (points != null)
+        {
+            for (int i = 0; i < points.Count; i ++)
+            {
+                result.Add (points [i]);
+            }
+        }
+
+        return result;
     }
 
     void render ()
@@ -258,6 +384,11 @@ public class Stage : MonoBehaviour
         for (int i = 0; i < pointsLeft.Count - 1; i++)
         {
             Debug.DrawLine (pointsLeft [i], pointsLeft [i + 1], Color.yellow, 0.01f);
+        }
+
+        for (int i = 0; i < curvedPoints.Count - 1; i++)
+        {
+            Debug.DrawLine (curvedPoints [i] + new Vector3 (0, 5, 0), curvedPoints [i + 1] + new Vector3 (0, 5, 0), Color.green, 0.01f);
         }
     }
 
