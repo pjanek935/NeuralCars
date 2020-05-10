@@ -11,10 +11,6 @@ public class FlagEditor : MonoBehaviour
     public event OnFlagEditorButtonClickedEventHandler OnWidthUpClicked;
     public event OnFlagEditorButtonClickedEventHandler OnDeleteClicked;
 
-    const float flagHeight = 4f; //flag object size in world space, used to calculate fag editor height based on camera position
-    const float showAndHideTime = 0.2f;
-    const float hiddenComponentYPos = 30f;
-
     [SerializeField] new Camera camera;
     [SerializeField] Button widthDownButton;
     [SerializeField] Button widthUpButton;
@@ -67,9 +63,10 @@ public class FlagEditor : MonoBehaviour
     {
         if (transformToFollow != null && camera != null && ! IsHiding)
         {
+            float halfFlagHeight = StageConsts.FlagHeight / 2f;
             Vector3 center = camera.WorldToScreenPoint (transformToFollow.position);
-            Vector3 upper = camera.WorldToScreenPoint (transformToFollow.position + new Vector3 (0, 0, flagHeight / 2f));
-            Vector3 lower = camera.WorldToScreenPoint (transformToFollow.position - new Vector3 (0, 0, flagHeight / 2f));
+            Vector3 upper = camera.WorldToScreenPoint (transformToFollow.position + new Vector3 (0, 0, halfFlagHeight));
+            Vector3 lower = camera.WorldToScreenPoint (transformToFollow.position - new Vector3 (0, 0, halfFlagHeight));
             float height = Mathf.Abs (upper.y - lower.y);
             RectTransform rectTransform = (RectTransform) transform;
             rectTransform.sizeDelta = new Vector2 (rectTransform.sizeDelta.x, height);
@@ -120,17 +117,17 @@ public class FlagEditor : MonoBehaviour
         IsHiding = true;
         IsVisible = false;
 
-        LeanTween.value (deletButonContainer, 0, hiddenComponentYPos, showAndHideTime).setOnUpdate ((float val) =>
+        LeanTween.value (deletButonContainer, 0, StageConsts.HiddenComponentYPos, StageConsts.ShowAndHideTime).setOnUpdate ((float val) =>
         {
             setAnchoredYPos (deletButonContainer, val);
         }).setEase (LeanTweenType.easeInBack);
 
-        LeanTween.value (widthControllerContainer, 0, -hiddenComponentYPos, showAndHideTime).setOnUpdate ((float val) =>
+        LeanTween.value (widthControllerContainer, 0, -StageConsts.HiddenComponentYPos, StageConsts.ShowAndHideTime).setOnUpdate ((float val) =>
         {
             setAnchoredYPos (widthControllerContainer, val);
         }).setEase (LeanTweenType.easeInBack);
 
-        LeanTween.alphaCanvas (canvasGroup, 0f, showAndHideTime).setOnComplete (() =>
+        LeanTween.alphaCanvas (canvasGroup, 0f, StageConsts.ShowAndHideTime).setOnComplete (() =>
         {
             canvasGroup.blocksRaycasts = false;
             canvasGroup.interactable = false;
@@ -145,8 +142,8 @@ public class FlagEditor : MonoBehaviour
         IsVisible = true;
         canvasGroup.blocksRaycasts = true;
         canvasGroup.interactable = true;
-        float currentDeleteButtonContainerAnchoredYPos = hiddenComponentYPos;
-        float currentWidthControllerAchoredYPos = -hiddenComponentYPos;
+        float currentDeleteButtonContainerAnchoredYPos = StageConsts.HiddenComponentYPos;
+        float currentWidthControllerAchoredYPos = -StageConsts.HiddenComponentYPos;
 
         if (deletButonContainer != null)
         {
@@ -160,17 +157,17 @@ public class FlagEditor : MonoBehaviour
             currentWidthControllerAchoredYPos = rectTransform.anchoredPosition.y;
         }
 
-        LeanTween.value (deletButonContainer, currentDeleteButtonContainerAnchoredYPos, 0, showAndHideTime).setOnUpdate ((float val) =>
+        LeanTween.value (deletButonContainer, currentDeleteButtonContainerAnchoredYPos, 0, StageConsts.ShowAndHideTime).setOnUpdate ((float val) =>
         {
             setAnchoredYPos (deletButonContainer, val);
         }).setEase (LeanTweenType.easeOutBack);
 
-        LeanTween.value (widthControllerContainer, currentWidthControllerAchoredYPos, 0, showAndHideTime).setOnUpdate ((float val) =>
+        LeanTween.value (widthControllerContainer, currentWidthControllerAchoredYPos, 0, StageConsts.ShowAndHideTime).setOnUpdate ((float val) =>
         {
             setAnchoredYPos (widthControllerContainer, val);
         }).setEase (LeanTweenType.easeOutBack);
 
-        LeanTween.alphaCanvas (canvasGroup, 1f, showAndHideTime).setOnComplete (() =>
+        LeanTween.alphaCanvas (canvasGroup, 1f, StageConsts.ShowAndHideTime).setOnComplete (() =>
         {
             IsShowing = false;
             onComplete?.Invoke ();
@@ -184,7 +181,7 @@ public class FlagEditor : MonoBehaviour
             wdithText.text = width.ToString ();
         }
 
-        if (width >= 5f)
+        if (width >= StageConsts.MaxNodeWidth)
         {
             widthUpButton.interactable = false;
         }
@@ -193,7 +190,7 @@ public class FlagEditor : MonoBehaviour
             widthUpButton.interactable = true;
         }
 
-        if (width <= 0.5f)
+        if (width <= StageConsts.MinNodeWidth)
         {
             widthDownButton.interactable = false;
         }

@@ -45,4 +45,28 @@ public static class StageUtilities
 
         return result;
     }
+
+    public static float DistToVector (Vector3 vectorPointA, Vector3 vectorPointB, Vector3 p)
+    {
+        Vector3 d = (vectorPointB - vectorPointA) / Vector3.Distance (vectorPointB, vectorPointA);
+        Vector3 v = p - vectorPointA;
+        float t = Vector3.Dot (v, d);
+        Vector3 P = vectorPointA + t * d;
+        return Vector3.Distance (P, p);
+    }
+
+    public static Vector3 FindClosestPointOnLineSegment (Vector3 lineStart, Vector3 lineEnd, Vector3 point)
+    {
+        Vector3 line = lineEnd - lineStart;
+        Vector3 dir = point - lineStart;
+        float d = Vector3.Dot (line, dir) / line.sqrMagnitude;
+        d = Mathf.Clamp01 (d);
+        return Vector3.Lerp (lineStart, lineEnd, d);
+    }
+
+    public static float DistToLineSegment (Vector3 lineStart, Vector3 lineEnd, Vector3 point)
+    {
+        Vector3 closestPoint = FindClosestPointOnLineSegment (lineStart, lineEnd, point);
+        return Vector3.Distance (point, closestPoint);
+    }
 }

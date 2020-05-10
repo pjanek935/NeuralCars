@@ -27,20 +27,30 @@ public class StageModel
     public StageModel ()
     {
         Nodes = new List<StageNode> ();
+        PointsLeft = new List<Vector3> ();
+        PointsRight = new List<Vector3> ();
     }
 
-    void refreshPointsRightAndLeft ()
+    public void SetNodes (List <StageNode> nodes, float bezierCurveFactor)
+    {
+        if (nodes != null)
+        {
+            this.Nodes = nodes;
+            refreshPointsRightAndLeft (bezierCurveFactor);
+        }
+    }
+
+    void refreshPointsRightAndLeft (float bezierCurveFactor)
     {
         PointsRight.Clear ();
         PointsLeft.Clear ();
         List<Vector3> pointsRightTmp = new List<Vector3> ();
         List<Vector3> pointsLeftTmp = new List<Vector3> ();
-        List<Vector3> pointsHelpList = new List<Vector3> ();
         Vector3 direction;
         Vector3 perpenRightDirection;
         Vector3 perpenLeftDirection;
 
-        for (int i = 0; i < Nodes.Count - 1; i += 2)
+        for (int i = 0; i < Nodes.Count - 1; i += 1)
         {
             direction = Nodes [i].Position - Nodes [i + 1].Position;
             direction.Normalize ();
@@ -59,6 +69,12 @@ public class StageModel
 
         pointsRightTmp = shortenIntersectingLineSegments (pointsRightTmp);
         pointsLeftTmp = shortenIntersectingLineSegments (pointsLeftTmp);
+
+        pointsRightTmp = interpolate (pointsRightTmp, bezierCurveFactor);
+        pointsLeftTmp = interpolate (pointsLeftTmp, bezierCurveFactor);
+
+        PointsRight = pointsRightTmp;
+        PointsLeft = pointsLeftTmp;
     }
 
     List<Vector3> shortenIntersectingLineSegments (List <Vector3> points)
@@ -139,7 +155,7 @@ public class StageModel
                         Vector3 b_p2 = p2 - nextDirection * bezierDistanceFactor * (1f - d2) * dist * 0.2f;
                         Vector3 b_p3 = p2;
 
-                        for (float j = 0.1f; j < 1f; j += 0.1f)
+                        for (float j = 0.05f; j < 1f; j += 0.05f)
                         {
                             Vector3 newPoint = Curver.cubeBezier3 (b_p0, b_p1, b_p2, b_p3, j);
                             result.Add (newPoint);

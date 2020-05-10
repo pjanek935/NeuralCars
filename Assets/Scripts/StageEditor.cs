@@ -53,11 +53,11 @@ public class StageEditor : MonoBehaviour
     {
         if (CurrentSelectedFlag != null)
         {
-            float newWidth = CurrentSelectedFlag.Width - 0.5f;
+            float newWidth = CurrentSelectedFlag.Width - StageConsts.NodeD;
 
-            if (newWidth < 0.5f)
+            if (newWidth < StageConsts.MinNodeWidth)
             {
-                newWidth = 0.5f;
+                newWidth = StageConsts.MinNodeWidth;
             }
 
             CurrentSelectedFlag.Width = newWidth;
@@ -70,11 +70,11 @@ public class StageEditor : MonoBehaviour
     {
         if (CurrentSelectedFlag != null)
         {
-            float newWidth = CurrentSelectedFlag.Width + 0.5f;
+            float newWidth = CurrentSelectedFlag.Width + StageConsts.NodeD;
 
-            if (newWidth > 5f)
+            if (newWidth > StageConsts.MaxNodeWidth)
             {
-                newWidth = 5f;
+                newWidth = StageConsts.MaxNodeWidth;
             }
 
             CurrentSelectedFlag.Width = newWidth;
@@ -93,6 +93,14 @@ public class StageEditor : MonoBehaviour
         }
 
         return pos;
+    }
+
+    public List <StageNode> GetNodes ()
+    {
+        List<StageNode> nodes = new List<StageNode> ();
+        flags.ForEach (f => nodes.Add (new StageNode (f.transform.position, f.Width)));
+
+        return nodes;
     }
 
     private void OnMouseDown ()
@@ -222,8 +230,8 @@ public class StageEditor : MonoBehaviour
             {
                 Vector3 p1 = flags [i-1].transform.position;
                 Vector3 p2 = flags [i].transform.position;
-                Line line = new Line (p1, p2);
-                float d = line.DistToLineSegment (pos);
+
+                float d = StageUtilities.DistToLineSegment (p1, p2, pos);
 
                 if (d < distance)
                 {
