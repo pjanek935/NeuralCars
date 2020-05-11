@@ -22,6 +22,8 @@ public class StageModel
         private set;
     }
 
+    StageTimeline stageTimeline = new StageTimeline ();
+
     const float epsilon = 0.01f;
 
     public StageModel ()
@@ -29,6 +31,208 @@ public class StageModel
         Nodes = new List<StageNode> ();
         PointsLeft = new List<Vector3> ();
         PointsRight = new List<Vector3> ();
+    }
+
+    public void MakeAndAddAction (StageAction stageAction)
+    {
+        if (stageAction != null)
+        {
+            makeAction (stageAction);
+            AddAction (stageAction);
+        }
+    }
+
+    public void AddAction (StageAction stageAction)
+    {
+        if (stageAction != null)
+        {
+            stageTimeline.AddAction (stageAction);
+        }
+    }
+
+    public void UndoLastAction ()
+    {
+        if (CanUndoLastAction ())
+        {
+            StageAction actionToUndo = stageTimeline.MakeOneStepBack ();
+            undoAction (actionToUndo);
+        }
+    }
+
+    void undoAction (StageAction stageAction)
+    {
+        if (stageAction == null)
+        {
+            return;
+        }
+
+        if (stageAction.GetType () == typeof (CreateNodeAction))
+        {
+            undoMove ((CreateNodeAction) stageAction);
+        }
+        else if (stageAction.GetType () == typeof (DeleteNodeAction))
+        {
+            undoMove ((DeleteNodeAction) stageAction);
+        }
+        else if (stageAction.GetType () == typeof (ChangeWidthAction))
+        {
+            undoMove ((ChangeWidthAction) stageAction);
+        }
+        else if (stageAction.GetType () == typeof (MoveNodeAction))
+        {
+            undoMove ((MoveNodeAction) stageAction);
+        }
+    }
+
+    void makeAction (StageAction stageAction)
+    {
+        if (stageAction == null)
+        {
+            return;
+        }
+
+        if (stageAction.GetType () == typeof (CreateNodeAction))
+        {
+            makeMove ((CreateNodeAction) stageAction);
+        }
+        else if (stageAction.GetType () == typeof (DeleteNodeAction))
+        {
+            makeMove ((DeleteNodeAction) stageAction);
+        }
+        else if (stageAction.GetType () == typeof (ChangeWidthAction))
+        {
+            makeMove ((ChangeWidthAction) stageAction);
+        }
+        else if (stageAction.GetType () == typeof (MoveNodeAction))
+        {
+            makeMove ((MoveNodeAction) stageAction);
+        }
+    }
+
+    void makeMove (CreateNodeAction createNodeAction)
+    {
+        if (createNodeAction == null)
+        {
+            return;
+        }
+
+        StageNode stageNode = new StageNode (createNodeAction.Position, createNodeAction.Width);
+        
+        if (createNodeAction.IndexInList != -1)
+        {
+            Nodes.Insert (createNodeAction.IndexInList, stageNode);
+        }
+        else
+        {
+            Nodes.Add (stageNode);
+        }
+    }
+
+    void undoMove (CreateNodeAction createNodeAction)
+    {
+        if (createNodeAction == null)
+        {
+            return;
+        }
+
+        StageNode stageNode = new StageNode (createNodeAction.Position, createNodeAction.Width);
+
+        if (createNodeAction.IndexInList != -1)
+        {
+            Nodes.RemoveAt (createNodeAction.IndexInList);
+        }
+        else
+        {
+            Nodes.RemoveAt (Nodes.Count - 1);
+        }
+    }
+
+    void makeMove (DeleteNodeAction deleteNodeAction)
+    {
+        if (deleteNodeAction == null)
+        {
+            return;
+        }
+
+        Nodes.RemoveAt (deleteNodeAction.IndexInList);
+    }
+
+    void undoMove (DeleteNodeAction deleteNodeAction)
+    {
+        if (deleteNodeAction == null)
+        {
+            return;
+        }
+
+        StageNode stageNode = new StageNode (deleteNodeAction.Position, deleteNodeAction.Width);
+
+        if (deleteNodeAction.IndexInList != -1)
+        {
+            Nodes.Insert (deleteNodeAction.IndexInList, stageNode);
+        }
+        else
+        {
+            Nodes.Add (stageNode);
+        }
+    }
+
+    void makeMove (ChangeWidthAction changeWidthAction)
+    {
+        if (changeWidthAction == null)
+        {
+            return;
+        }
+
+        Nodes [changeWidthAction.IndexInList].Width = changeWidthAction.To;
+    }
+
+    void undoMove (ChangeWidthAction changeWidthAction)
+    {
+        if (changeWidthAction == null)
+        {
+            return;
+        }
+
+        Nodes [changeWidthAction.IndexInList].Width = changeWidthAction.From;
+    }
+
+    void makeMove (MoveNodeAction moveNodeAction)
+    {
+        if (moveNodeAction == null)
+        {
+            return;
+        }
+
+        Nodes [moveNodeAction.IndexInList].Position = moveNodeAction.To;
+    }
+
+    void undoMove (MoveNodeAction moveNodeAction)
+    {
+        if (moveNodeAction == null)
+        {
+            return;
+        }
+
+        Nodes [moveNodeAction.IndexInList].Position = moveNodeAction.From;
+    }
+
+    public void MakeStepForward ()
+    {
+        if (CanMakeStepForward ())
+        {
+            StageAction actionToMake = stageTimeline.MakeOneStepForward ();
+            makeAction (actionToMake);
+        }
+    }
+
+    public bool CanMakeStepForward ()
+    {
+        return stageTimeline.CanMakeOneStepForward ();
+    }
+
+    public bool CanUndoLastAction ()
+    {
+        return stageTimeline.CanMakeOneStepBack ();
     }
 
     public void SetNodes (List <StageNode> nodes, float bezierCurveFactor)
