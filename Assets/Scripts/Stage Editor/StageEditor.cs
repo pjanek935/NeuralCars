@@ -4,15 +4,19 @@ using UnityEngine;
 
 public class StageEditor : MonoBehaviour
 {
-    public delegate void OnStageEditorEventHandler ();
-    public event OnStageEditorEventHandler OnFlagsRefreshed;
-
-    [SerializeField] new Camera camera;
-    [SerializeField] CameraController cameraController;
+    [SerializeField] StageFloor stageFloor;
     [SerializeField] FlagEditor flagEditor;
     [SerializeField] LineRenderer lineRenderer;
     [SerializeField] GameObject flagPrefab;
+    [SerializeField] TimelinePanel timelinePanel;
+    [Range (0, 3.5f)] [SerializeField] float bezierDistanceFactor = 0.25f;
+    [SerializeField] GameObject wallPrefab;
+    [SerializeField] Transform flagsContainer;
+    [SerializeField] Transform wallsContainer;
 
+    List<GameObject> wallsRight = new List<GameObject> ();
+    List<GameObject> wallsLeft = new List<GameObject> ();
+    StageModel stageModel = new StageModel ();
     List<Flag> flags = new List<Flag> ();
     
     public Flag CurrentSelectedFlag
@@ -37,6 +41,173 @@ public class StageEditor : MonoBehaviour
             flagEditor.OnWidthDownClicked += flagEditorOnWidthDownClicked;
             flagEditor.OnWidthUpClicked += flagEditorOnWidthUpClicked;
         }
+
+        if (stageFloor != null)
+        {
+            stageFloor.OnFloorClicked += onFloorClicked;
+        }
+
+        if (timelinePanel != null)
+        {
+            timelinePanel.OnBackClicked += onBackClicked;
+            timelinePanel.OnForwardClicked += onForwardClicked;
+        }
+    }
+
+    void onBackClicked ()
+    {
+        if (stageModel.CanUndoLastAction ())
+        {
+            stageModel.UndoLastAction ();
+            synchornizeFlagsWithModel ();
+        }
+    }
+
+    void onForwardClicked ()
+    {
+        if (stageModel.CanMakeStepForward ())
+        {
+            stageModel.MakeStepForward ();
+            synchornizeFlagsWithModel ();
+        }
+    }
+
+    void onFloorClicked (Vector3 pos)
+    {
+        createNewFlag (pos);
+        refreshLineRenderer ();
+    }
+
+    void synchronizeModelWithFlags ()
+    {
+        List<StageNode> nodes = GetNodes ();
+        stageModel.SetNodes (nodes, bezierDistanceFactor);
+        createWalls ();
+        timelinePanel.Refresh (stageModel);
+    }
+
+    void synchornizeFlagsWithModel ()
+    {
+        List<StageNode> nodes = stageModel.Nodes;
+
+        for (int i = 0; i < nodes.Count; i++)
+        {
+            if (i >= flags.Count)
+            {
+                Flag flag = createNewFlagGameObject ();
+                flags.Add (flag);
+            }
+
+            flags [i].transform.position = nodes [i].Position;
+            flags [i].Width = nodes [i].Width;
+        }
+
+        int diff = flags.Count - nodes.Count;
+
+        if (diff > 0)
+        {
+            for (int i = 0; i < diff; i ++)
+            {
+                GameObject tmp = flags [flags.Count - 1].gameObject;
+                flags.RemoveAt (flags.Count - 1);
+                Destroy (tmp);
+            }
+        }
+
+        createWalls ();
+        timelinePanel.Refresh (stageModel);
+        refreshLineRenderer ();
+    }
+
+    void createWalls (List<Vector3> points, List<GameObject> walls)
+    {
+        if (points != null && points.Count > 1)
+        {
+            Vector3 startPoint = points [0];
+            Vector3 prevDirection = points [1] - startPoint;
+            prevDirection.Normalize ();
+            int helpIndex = 0;
+
+            for (int i = 2; i < points.Count; i++)
+            {
+                Vector3 direction = points [i] - points [i - 1];
+                direction.Normalize ();
+                float d = Vector3.Dot (direction, prevDirection);
+
+                if (Mathf.Abs (d - 1f) < StageConsts.Epsilon)
+                {
+
+                }
+                else
+                {
+                    if (helpIndex >= walls.Count)
+                    {
+                        GameObject newObject = Instantiate (wallPrefab);
+                        newObject.SetActive (true);
+                        newObject.transform.SetParent (wallsContainer, true);
+                        newObject.transform.localScale = Vector3.one;
+                        walls.Add (newObject);
+                    }
+
+                    float dist = Vector3.Distance (startPoint, points [i - 1]);
+                    walls [helpIndex].transform.position = startPoint;
+                    walls [helpIndex].transform.LookAt (points [i - 1], Vector3.up);
+                    Vector3 scale = walls [helpIndex].transform.localScale;
+                    scale.z = dist;
+                    walls [helpIndex].transform.localScale = scale;
+
+                    helpIndex++;
+
+                    startPoint = points [i - 1];
+                    prevDirection = direction;
+                }
+            }
+
+            if (helpIndex >= walls.Count)
+            {
+                GameObject newObject = Instantiate (wallPrefab);
+                newObject.SetActive (true);
+                newObject.transform.SetParent (wallsContainer, true);
+                newObject.transform.localScale = Vector3.one;
+                walls.Add (newObject);
+            }
+
+            float dist2 = Vector3.Distance (startPoint, points [points.Count - 1]);
+            walls [helpIndex].transform.position = startPoint;
+            walls [helpIndex].transform.LookAt (points [points.Count - 1], Vector3.up);
+            Vector3 scale2 = walls [helpIndex].transform.localScale;
+            scale2.z = dist2;
+            walls [helpIndex].transform.localScale = scale2;
+            helpIndex++;
+
+            if (walls.Count > helpIndex)
+            {
+                int diff = walls.Count - helpIndex;
+
+                for (int i = 0; i < diff; i++)
+                {
+                    GameObject tmp = walls [walls.Count - 1].gameObject;
+                    walls.RemoveAt (walls.Count - 1);
+                    Destroy (tmp);
+                }
+            }
+        }
+    }
+
+    void createWalls ()
+    {
+        createWalls (stageModel.PointsRight, wallsRight);
+        createWalls (stageModel.PointsLeft, wallsLeft);
+    }
+
+    private void OnValidate ()
+    {
+        if (Application.isPlaying)
+        {
+            stageModel.BezierCurveFactor = bezierDistanceFactor;
+            synchronizeModelWithFlags ();
+            timelinePanel.Refresh (stageModel);
+        }
     }
 
     void flagEditorOnDeleteClicked ()
@@ -60,9 +231,12 @@ public class StageEditor : MonoBehaviour
                 newWidth = StageConsts.MinNodeWidth;
             }
 
-            CurrentSelectedFlag.Width = newWidth;
-
-            onFlagMoved (CurrentSelectedFlag);
+            if (Mathf.Abs (CurrentSelectedFlag.Width - newWidth) > StageConsts.Epsilon)
+            {
+                float from = CurrentSelectedFlag.Width;
+                CurrentSelectedFlag.Width = newWidth;
+                onFlagWidthChanged (CurrentSelectedFlag, from, newWidth);
+            }
         }
     }
 
@@ -77,10 +251,23 @@ public class StageEditor : MonoBehaviour
                 newWidth = StageConsts.MaxNodeWidth;
             }
 
-            CurrentSelectedFlag.Width = newWidth;
-
-            onFlagMoved (CurrentSelectedFlag);
+            if (Mathf.Abs (CurrentSelectedFlag.Width - newWidth) > StageConsts.Epsilon)
+            {
+                float from = CurrentSelectedFlag.Width;
+                CurrentSelectedFlag.Width = newWidth;
+                onFlagWidthChanged (CurrentSelectedFlag, from, newWidth);
+            }
         }
+    }
+
+    void onFlagWidthChanged (Flag flag, float from, float to)
+    {
+        setNewCurrentFlag (flag);
+        refreshLineRenderer ();
+        StageAction stageAction = new ChangeWidthAction (flags.IndexOf (flag), from, to);
+        stageModel.MakeAndAddAction (stageAction);
+        timelinePanel.Refresh (stageModel);
+        createWalls ();
     }
 
     public Vector3 [] GetFlagsPositions ()
@@ -101,24 +288,6 @@ public class StageEditor : MonoBehaviour
         flags.ForEach (f => nodes.Add (new StageNode (f.transform.position, f.Width)));
 
         return nodes;
-    }
-
-    private void OnMouseDown ()
-    {
-        Ray raycast = camera.ScreenPointToRay (Input.mousePosition);
-        RaycastHit hit;
-        int layerMask = LayerMask.GetMask ("Floor");
-
-        if (Physics.Raycast (raycast, out hit, 1000, layerMask))
-        {
-            if (cameraController != null && ! cameraController.IsPointerOverGUI ())
-            {
-                Vector3 pos = hit.point;
-                pos.y = 0;
-                createNewFlag (pos);
-                refreshLineRenderer ();
-            }
-        }
     }
 
     void setNewCurrentFlag (Flag flag)
@@ -143,6 +312,17 @@ public class StageEditor : MonoBehaviour
         lineRenderer.SetPositions (pos);
     }
 
+    Flag createNewFlagGameObject ()
+    {
+        GameObject newGameObject = Instantiate (flagPrefab);
+        newGameObject.transform.SetParent (flagsContainer, false);
+        newGameObject.SetActive (true);
+        Flag flag = newGameObject.GetComponent<Flag> (); ;
+        flag.OnFlagMoved += onFlagMoved;
+
+        return flag;
+    }
+
     void createNewFlag (Vector3 pos)
     {
         if (flagPrefab == null)
@@ -150,11 +330,8 @@ public class StageEditor : MonoBehaviour
             return;
         }
 
-        GameObject newGameObject = Instantiate (flagPrefab);
-        newGameObject.transform.SetParent (this.transform, false);
-        newGameObject.transform.position = pos;
-        newGameObject.SetActive (true);
-        Flag flag = newGameObject.GetComponent<Flag> ();
+        Flag flag = createNewFlagGameObject ();
+        flag.gameObject.transform.position = pos;
 
         if (flag != null)
         {
@@ -188,10 +365,12 @@ public class StageEditor : MonoBehaviour
 
                 if (addAtEnd)
                 {
+                    startPointIndex = -1;
                     flags.Add (flag);
                 }
                 else
                 {
+                    startPointIndex = 0;
                     flags.Insert (0, flag);
                 }
             }
@@ -202,7 +381,10 @@ public class StageEditor : MonoBehaviour
             
             flag.OnFlagMoved += onFlagMoved;
             setNewCurrentFlag (flag);
-            OnFlagsRefreshed?.Invoke ();
+            StageAction stageAction = new CreateNodeAction (startPointIndex, pos, flag.Width);
+            stageModel.MakeAndAddAction (stageAction);
+            timelinePanel.Refresh (stageModel);
+            createWalls ();
         }
     }
 
@@ -210,7 +392,7 @@ public class StageEditor : MonoBehaviour
     {
         setNewCurrentFlag (flag);
         refreshLineRenderer ();
-        OnFlagsRefreshed?.Invoke ();
+        synchronizeModelWithFlags ();
     }
 
     /// <summary>

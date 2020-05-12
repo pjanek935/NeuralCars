@@ -16,7 +16,15 @@ public class StageTimeline
         }
         else
         {
-            actions.RemoveRange (lastActionIndex, actions.Count - lastActionIndex);
+            if (lastActionIndex < 0)
+            {
+                actions.Clear ();
+            }
+            else
+            {
+                actions.RemoveRange (lastActionIndex, actions.Count - lastActionIndex);
+            }
+            
             actions.Add (stageAction);
             lastActionIndex = actions.Count - 1;
         }

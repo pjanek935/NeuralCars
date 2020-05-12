@@ -32,7 +32,7 @@ public class Flag : MonoBehaviour
 
     private void Start ()
     {
-        Selected = true;
+        //Selected = true;
     }
 
     private void OnMouseDown ()

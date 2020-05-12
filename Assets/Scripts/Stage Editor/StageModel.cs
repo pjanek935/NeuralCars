@@ -22,6 +22,12 @@ public class StageModel
         private set;
     }
 
+    public float BezierCurveFactor
+    {
+        get;
+        set;
+    }
+
     StageTimeline stageTimeline = new StageTimeline ();
 
     const float epsilon = 0.01f;
@@ -39,6 +45,7 @@ public class StageModel
         {
             makeAction (stageAction);
             AddAction (stageAction);
+            refreshPointsRightAndLeft (BezierCurveFactor);
         }
     }
 
@@ -56,6 +63,7 @@ public class StageModel
         {
             StageAction actionToUndo = stageTimeline.MakeOneStepBack ();
             undoAction (actionToUndo);
+            refreshPointsRightAndLeft (BezierCurveFactor);
         }
     }
 
@@ -222,6 +230,7 @@ public class StageModel
         {
             StageAction actionToMake = stageTimeline.MakeOneStepForward ();
             makeAction (actionToMake);
+            refreshPointsRightAndLeft (BezierCurveFactor);
         }
     }
 
