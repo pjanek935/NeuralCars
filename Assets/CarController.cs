@@ -19,6 +19,7 @@ public class CarController : MonoBehaviour
 
     float torque = 0;
     float steerAngle = 0;
+    bool handBrake = false;
 
     // Use this for initialization
     /// <summary>
@@ -34,9 +35,27 @@ public class CarController : MonoBehaviour
     {
         torque = Input.GetAxis ("Vertical"); ;
         steerAngle = Input.GetAxis ("Horizontal");
+        handBrake = Input.GetKey (KeyCode.Space);
 
-        wheelColliderRR.motorTorque = maxTorque * torque;
-        wheelColliderRL.motorTorque = maxTorque * torque;
+        if (! handBrake)
+        {
+            wheelColliderRR.motorTorque = maxTorque * torque;
+            wheelColliderRL.motorTorque = maxTorque * torque;
+
+            WheelFrictionCurve frictionCurve = wheelColliderRR.sidewaysFriction;
+            frictionCurve.stiffness = 7.2f;
+            wheelColliderRR.sidewaysFriction = frictionCurve;
+            wheelColliderRL.sidewaysFriction = frictionCurve;
+        }
+        else
+        {
+            wheelColliderRR.motorTorque = wheelColliderRR.motorTorque * 0.99f;
+            wheelColliderRL.motorTorque = wheelColliderRL.motorTorque * 0.99f;
+            WheelFrictionCurve frictionCurve = wheelColliderRR.sidewaysFriction;
+            frictionCurve.stiffness = 5f;
+            wheelColliderRR.sidewaysFriction = frictionCurve;
+            wheelColliderRL.sidewaysFriction = frictionCurve;
+        }
 
         wheelColliderFL.steerAngle = maxSteerAngle * steerAngle;
         wheelColliderFR.steerAngle = maxSteerAngle * steerAngle;
