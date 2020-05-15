@@ -1057,7 +1057,7 @@ WheelCollider:
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
-    m_Stiffness: 7.2
+    m_Stiffness: 11
   m_Enabled: 1
 --- !u!135 &707701356
 SphereCollider:
@@ -1364,7 +1364,7 @@ WheelCollider:
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
-    m_Stiffness: 10
+    m_Stiffness: 15
   m_Enabled: 1
 --- !u!1 &889669332
 GameObject:
@@ -2030,7 +2030,7 @@ WheelCollider:
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
-    m_Stiffness: 7.2
+    m_Stiffness: 11
   m_Enabled: 1
 --- !u!1 &1485413367
 GameObject:
@@ -2308,8 +2308,10 @@ MonoBehaviour:
   wheelTransformFR: {fileID: 967854409}
   wheelTransformRL: {fileID: 209752512}
   wheelTransformRR: {fileID: 1551333518}
-  maxTorque: 20000
-  maxSteerAngle: 40
+  maxTorque: 30000
+  maxSteerAngle: 30
+  defaultStiffness: 13
+  handBrakeStiffness: 5
 --- !u!4 &1486457729
 Transform:
   m_ObjectHideFlags: 0
@@ -2994,7 +2996,7 @@ WheelCollider:
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
-    m_Stiffness: 10
+    m_Stiffness: 15
   m_Enabled: 1
 --- !u!1 &1808783745
 GameObject:

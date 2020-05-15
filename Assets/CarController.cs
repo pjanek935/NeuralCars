@@ -17,6 +17,9 @@ public class CarController : MonoBehaviour
     [SerializeField] float maxTorque = 50;
     [SerializeField] float maxSteerAngle = 40;
 
+    [SerializeField] float defaultStiffness = 7.2f;
+    [SerializeField] float handBrakeStiffness = 5f;
+
     float torque = 0;
     float steerAngle = 0;
     bool handBrake = false;
@@ -43,7 +46,7 @@ public class CarController : MonoBehaviour
             wheelColliderRL.motorTorque = maxTorque * torque;
 
             WheelFrictionCurve frictionCurve = wheelColliderRR.sidewaysFriction;
-            frictionCurve.stiffness = 7.2f;
+            frictionCurve.stiffness = defaultStiffness;
             wheelColliderRR.sidewaysFriction = frictionCurve;
             wheelColliderRL.sidewaysFriction = frictionCurve;
         }
@@ -52,7 +55,7 @@ public class CarController : MonoBehaviour
             wheelColliderRR.motorTorque = wheelColliderRR.motorTorque * 0.99f;
             wheelColliderRL.motorTorque = wheelColliderRL.motorTorque * 0.99f;
             WheelFrictionCurve frictionCurve = wheelColliderRR.sidewaysFriction;
-            frictionCurve.stiffness = 5f;
+            frictionCurve.stiffness = handBrakeStiffness;
             wheelColliderRR.sidewaysFriction = frictionCurve;
             wheelColliderRL.sidewaysFriction = frictionCurve;
         }
