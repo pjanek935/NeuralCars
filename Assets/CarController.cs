@@ -23,23 +23,33 @@ public class CarController : MonoBehaviour
     float torque = 0;
     float steerAngle = 0;
     bool handBrake = false;
+    Vector3 prevPosition = Vector3.zero;
+    Queue<Vector3> movementDirectionBuffer = new Queue<Vector3> ();
 
-    // Use this for initialization
-    /// <summary>
-    /// 
-    /// </summary>
+    public Vector3 MovementDirection
+    {
+        get;
+        private set;
+    }
+
     void Start ()
     {
+        prevPosition = transform.position;
         GetComponent<Rigidbody> ().centerOfMass.Set (0, -0.9f, 0);
     }
 
-    // Update is called once per frame
     void Update ()
     {
         torque = Input.GetAxis ("Vertical"); ;
         steerAngle = Input.GetAxis ("Horizontal");
         handBrake = Input.GetKey (KeyCode.Space);
 
+        updateWheelTransforms ();
+        updateMovementParameters ();
+    }
+
+    private void FixedUpdate ()
+    {
         if (! handBrake)
         {
             wheelColliderRR.motorTorque = maxTorque * torque;
@@ -62,8 +72,30 @@ public class CarController : MonoBehaviour
 
         wheelColliderFL.steerAngle = maxSteerAngle * steerAngle;
         wheelColliderFR.steerAngle = maxSteerAngle * steerAngle;
+    }
 
-        updateWheelTransforms ();
+    void updateMovementParameters ()
+    {
+        MovementDirection = transform.position - prevPosition;
+
+        if (MovementDirection.magnitude < 0.1f)
+        {
+            MovementDirection = Vector3.zero;
+        }
+
+        MovementDirection.Normalize ();
+        prevPosition = transform.position;
+        movementDirectionBuffer.Enqueue (MovementDirection);
+
+        if (movementDirectionBuffer.Count > 10)
+        {
+            movementDirectionBuffer.Dequeue ();
+        }
+
+        MovementDirection = calculateAverageMovementDirection ();
+
+        Debug.DrawLine (this.transform.position, this.transform.position + MovementDirection * 10, Color.yellow);
+        Debug.Log ("torque normalized: " + GetCurrentTorqueNormalized ());
     }
 
     void updateWheelTransform (WheelCollider wheelCollider, Transform wheelTransform)
@@ -85,5 +117,51 @@ public class CarController : MonoBehaviour
         updateWheelTransform (wheelColliderFR, wheelTransformFR);
         updateWheelTransform (wheelColliderRL, wheelTransformRL);
         updateWheelTransform (wheelColliderRR, wheelTransformRR);
+    }
+
+    public float GetSteerAngleNormalized ()
+    {
+        return (wheelColliderFL.steerAngle / maxSteerAngle);
+    }
+
+    public Vector3 calculateAverageMovementDirection ()
+    {
+        Vector3 result = Vector3.zero;
+        
+        foreach (Vector3 v in movementDirectionBuffer)
+        {
+            result += v;
+        }
+
+        result /= movementDirectionBuffer.Count;
+        result.Normalize ();
+
+        return result;
+    }
+
+    public float GetAngleBetweenForwardAndMovementDirection (bool normalized = false)
+    {
+        float result = Vector3.SignedAngle (transform.forward, MovementDirection, Vector3.up);
+
+        if (normalized)
+        {
+            if (result > 180)
+            {
+                result = 180;
+            }
+            else if (result < -180)
+            {
+                result = -180;
+            }
+
+            result /= 180;
+        }
+
+        return result;
+    }
+
+    public float GetCurrentTorqueNormalized ()
+    {
+        return wheelColliderRL.motorTorque / maxTorque;
     }
 }
