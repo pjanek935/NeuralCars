@@ -7,7 +7,7 @@ public class Flag : MonoBehaviour
     public delegate void OnFlagEventHandler (Flag flag);
     public event OnFlagEventHandler OnFlagMoved;
 
-    [SerializeField] float width = 2f;
+    [SerializeField] float width = 5f;
     [SerializeField] new Camera camera;
     [SerializeField] CameraController cameraController;
 

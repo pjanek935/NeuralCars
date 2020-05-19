@@ -4,8 +4,8 @@ using UnityEngine;
 
 public static class StageConsts
 {
-    public const float MaxNodeWidth = 5f;
-    public const float MinNodeWidth = 1.5f;
+    public const float MaxNodeWidth = 15f;
+    public const float MinNodeWidth = 4f;
     public const float NodeD = 0.5f;
 
     public const float FlagHeight = 4f; //flag object size in world space, used to calculate fag editor height based on camera position
