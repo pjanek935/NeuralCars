@@ -10,12 +10,12 @@ public class CarRadar : MonoBehaviour
 
     private void Start ()
     {
-        Init (6, 15f, 15f);
+        //Init (6, 15f, 15f);
     }
 
-    public List<float> GetValues ()
+    public List<double> GetValues ()
     {
-        List<float> result = new List<float> ();
+        List<double> result = new List<double> ();
         sensors.ForEach (s => result.Add (s.Value));
 
         return result;
@@ -63,6 +63,14 @@ public class CarRadar : MonoBehaviour
             GameObject tmp = sensors [sensors.Count - 1].gameObject;
             sensors.RemoveAt (sensors.Count - 1);
             Destroy (tmp);
+        }
+    }
+
+    private void FixedUpdate ()
+    {
+        for (int i = 0; i < sensors.Count; i ++)
+        {
+            sensors [i].ShootRaycast ();
         }
     }
 }

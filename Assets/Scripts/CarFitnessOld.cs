@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class CarFitness : Fitness {
+public class CarFitnessOld : Fitness {
 
     private float timer = 0;
     private float resetLimiter = 5;

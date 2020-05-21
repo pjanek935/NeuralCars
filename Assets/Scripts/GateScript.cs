@@ -24,9 +24,9 @@ public class GateScript : MonoBehaviour {
         if (collider.gameObject.tag == "Car")
         {
             GameObject car = collider.gameObject;
-            if (car.GetComponent<CarFitness>().IsActive())
+            if (car.GetComponent<CarFitnessOld>().IsActive())
             {
-                car.GetComponent<CarFitness>().IncreaseFitness(1, id);
+                car.GetComponent<CarFitnessOld>().IncreaseFitness(1, id);
                 //Debug.Log(car.GetComponent<FitnessScript>().GetFitness());
             }
 

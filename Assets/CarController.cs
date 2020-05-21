@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class CarController : MonoBehaviour
 {
+    [SerializeField] bool playerControlled = false;
+
     [SerializeField] WheelCollider wheelColliderFL;
     [SerializeField] WheelCollider wheelColliderFR;
     [SerializeField] WheelCollider wheelColliderRL;
@@ -43,12 +45,25 @@ public class CarController : MonoBehaviour
 
     void Update ()
     {
-        torque = Input.GetAxis ("Vertical"); ;
-        steerAngle = Input.GetAxis ("Horizontal");
-        handBrake = Input.GetKey (KeyCode.Space);
+        if (playerControlled)
+        {
+            torque = Input.GetAxis ("Vertical"); ;
+            steerAngle = Input.GetAxis ("Horizontal");
+            handBrake = Input.GetKey (KeyCode.Space);
+        }
 
         updateWheelTransforms ();
         updateMovementParameters ();
+    }
+
+    public void SetTorque (float torque)
+    {
+        this.torque = torque;
+    }
+
+    public void SetSteerAngle (float steerAngle)
+    {
+        this.steerAngle = steerAngle;
     }
 
     private void FixedUpdate ()

@@ -59,9 +59,4 @@ public class CarSensor : MonoBehaviour
             lineRenderer.SetPositions (new Vector3 [2] { transform.position, hitLocalPos});
         }
     }
-
-    private void FixedUpdate ()
-    {
-        ShootRaycast ();
-    }
 }

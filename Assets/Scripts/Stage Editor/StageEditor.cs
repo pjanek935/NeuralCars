@@ -7,15 +7,21 @@ public class StageEditor : MonoBehaviour
     [SerializeField] StageFloor stageFloor;
     [SerializeField] FlagEditor flagEditor;
     [SerializeField] LineRenderer lineRenderer;
+
     [SerializeField] GameObject flagPrefab;
+    [SerializeField] GameObject wallPrefab;
+    [SerializeField] GameObject gatePrefab;
+
     [SerializeField] TimelinePanel timelinePanel;
     [Range (0, 3.5f)] [SerializeField] float bezierDistanceFactor = 0.25f;
-    [SerializeField] GameObject wallPrefab;
+    
     [SerializeField] Transform flagsContainer;
     [SerializeField] Transform wallsContainer;
+    [SerializeField] Transform gatesContainer;
 
     List<GameObject> wallsRight = new List<GameObject> ();
     List<GameObject> wallsLeft = new List<GameObject> ();
+    List<Gate> gates = new List<Gate> ();
     StageModel stageModel = new StageModel ();
     List<Flag> flags = new List<Flag> ();
     
@@ -198,6 +204,7 @@ public class StageEditor : MonoBehaviour
     {
         createWalls (stageModel.PointsRight, wallsRight);
         createWalls (stageModel.PointsLeft, wallsLeft);
+        createGates ();
     }
 
     private void OnValidate ()
@@ -298,6 +305,84 @@ public class StageEditor : MonoBehaviour
         {
             flagEditor.Setup (flag);
         }
+    }
+
+    void createGates ()
+    {
+        List<StageNode> nodes = stageModel.Nodes;
+        List<Vector3> positions = new List<Vector3> ();
+        List<Vector3> forwards = new List<Vector3> ();
+        List<float> widths = new List<float> ();
+        const float d = 2f;
+
+        for (int i = 0; i < nodes.Count - 1; i ++)
+        {
+            Vector3 dir = nodes [i + 1].Position - nodes [i].Position;
+            float mag = dir.magnitude;
+            dir.Normalize ();
+            Vector3 pos = nodes [i].Position;
+
+            for (float j = d; j < mag - nodes [i+1].Width; j += d)
+            {
+                float lengthNormalized = j / mag;
+                float width = Mathf.Lerp (nodes [i].Width, nodes [i + 1].Width, lengthNormalized);
+                pos += dir * d;
+
+                forwards.Add (dir);
+                positions.Add (pos);
+                widths.Add (width);
+            }
+        }
+
+        for (int i = 0; i < positions.Count; i ++)
+        {
+            if (i >= gates.Count)
+            {
+                GameObject newObject = Instantiate (gatePrefab);
+                newObject.SetActive (true);
+                newObject.transform.SetParent (gatesContainer, false);
+                gates.Add (newObject.GetComponent <Gate> ());
+            }
+
+            gates [i].transform.position = positions [i];
+            gates [i].transform.forward = forwards [i];
+            Vector3 scale = gates [i].transform.localScale;
+            gates [i].transform.localScale = new Vector3 (widths [i] * 2f, scale.y, scale.z);
+            gates [i].Index = i + 1;
+        }
+
+        int diff = gates.Count - positions.Count;
+        
+        if (diff > 0)
+        {
+            for (int i = 0; i < diff; i ++)
+            {
+                GameObject tmp = gates [gates.Count - 1].gameObject;
+                gates.RemoveAt (gates.Count - 1);
+                Destroy (tmp);
+            }
+        }
+
+
+
+        //for (int i = gates.Count - 1; i >= 6; i --)
+        //{
+        //    Gate g1 = gates [i];
+
+        //    for (int j = 1; j < 5; j ++)
+        //    {
+        //        Gate g2 = gates [i - j];
+
+        //        if (g1.Collider.bounds.Intersects (g2.Collider.bounds))
+        //        {
+        //            GameObject tmp = gates [i].gameObject;
+        //            gates.RemoveAt (i);
+        //            Destroy (tmp);
+
+        //            break;
+        //        }
+        //    }
+        //}
     }
 
     void refreshLineRenderer ()
