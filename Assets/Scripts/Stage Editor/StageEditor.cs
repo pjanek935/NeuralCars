@@ -13,6 +13,7 @@ public class StageEditor : MonoBehaviour
     [SerializeField] GameObject gatePrefab;
 
     [SerializeField] TimelinePanel timelinePanel;
+    [SerializeField] TopPanelController topPanelController;
     [Range (0, 3.5f)] [SerializeField] float bezierDistanceFactor = 0.25f;
     
     [SerializeField] Transform flagsContainer;
@@ -58,6 +59,55 @@ public class StageEditor : MonoBehaviour
             timelinePanel.OnBackClicked += onBackClicked;
             timelinePanel.OnForwardClicked += onForwardClicked;
         }
+
+        if (topPanelController != null)
+        {
+            topPanelController.OnLoadClicked += onLoadStageClicked;
+            topPanelController.OnSaveClicked += onSaveStageClicked;
+        }
+    }
+
+    void onLoadStageClicked (int stageId)
+    {
+        StageModel newStageModel = SaveManager.Instance.LoadStage (stageId);
+
+        if (newStageModel != null)
+        {
+            stageModel = newStageModel;
+            stageModel.RefreshPointsRightAndLeft (bezierDistanceFactor);
+            synchornizeFlagsWithModel ();
+        }
+    }
+
+    void onSaveStageClicked (int stageId)
+    {
+        SaveManager.Instance.SaveStage (stageModel, stageId);
+    }
+
+    private void OnValidate ()
+    {
+        if (Application.isPlaying)
+        {
+            stageModel.BezierCurveFactor = bezierDistanceFactor;
+            synchronizeModelWithFlags ();
+            timelinePanel.Refresh (stageModel);
+        }
+    }
+
+    private void Update ()
+    {
+        if (Input.GetKeyDown (KeyCode.Space))
+        {
+            string json = StageModelToJson ();
+            Debug.Log (json);
+        }
+    }
+
+    public string StageModelToJson ()
+    {
+        string result = JsonUtility.ToJson (stageModel);
+
+        return result;
     }
 
     void onBackClicked ()
@@ -207,16 +257,6 @@ public class StageEditor : MonoBehaviour
         createGates ();
     }
 
-    private void OnValidate ()
-    {
-        if (Application.isPlaying)
-        {
-            stageModel.BezierCurveFactor = bezierDistanceFactor;
-            synchronizeModelWithFlags ();
-            timelinePanel.Refresh (stageModel);
-        }
-    }
-
     void flagEditorOnDeleteClicked ()
     {
         if (CurrentSelectedFlag != null)
@@ -362,27 +402,6 @@ public class StageEditor : MonoBehaviour
                 Destroy (tmp);
             }
         }
-
-
-
-        //for (int i = gates.Count - 1; i >= 6; i --)
-        //{
-        //    Gate g1 = gates [i];
-
-        //    for (int j = 1; j < 5; j ++)
-        //    {
-        //        Gate g2 = gates [i - j];
-
-        //        if (g1.Collider.bounds.Intersects (g2.Collider.bounds))
-        //        {
-        //            GameObject tmp = gates [i].gameObject;
-        //            gates.RemoveAt (i);
-        //            Destroy (tmp);
-
-        //            break;
-        //        }
-        //    }
-        //}
     }
 
     void refreshLineRenderer ()

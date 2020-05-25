@@ -1,13 +1,16 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[Serializable]
 public class StageModel
 {
+    [SerializeField] List<StageNode> nodes;
+
     public List <StageNode> Nodes
     {
-        get;
-        private set;
+        get { return nodes; }
     }
 
     public List<Vector3> PointsRight
@@ -34,7 +37,7 @@ public class StageModel
 
     public StageModel ()
     {
-        Nodes = new List<StageNode> ();
+        nodes = new List<StageNode> ();
         PointsLeft = new List<Vector3> ();
         PointsRight = new List<Vector3> ();
     }
@@ -45,7 +48,7 @@ public class StageModel
         {
             makeAction (stageAction);
             AddAction (stageAction);
-            refreshPointsRightAndLeft (BezierCurveFactor);
+            RefreshPointsRightAndLeft (BezierCurveFactor);
         }
     }
 
@@ -63,7 +66,7 @@ public class StageModel
         {
             StageAction actionToUndo = stageTimeline.MakeOneStepBack ();
             undoAction (actionToUndo);
-            refreshPointsRightAndLeft (BezierCurveFactor);
+            RefreshPointsRightAndLeft (BezierCurveFactor);
         }
     }
 
@@ -147,11 +150,11 @@ public class StageModel
 
         if (createNodeAction.IndexInList != -1)
         {
-            Nodes.RemoveAt (createNodeAction.IndexInList);
+            nodes.RemoveAt (createNodeAction.IndexInList);
         }
         else
         {
-            Nodes.RemoveAt (Nodes.Count - 1);
+            nodes.RemoveAt (Nodes.Count - 1);
         }
     }
 
@@ -176,11 +179,11 @@ public class StageModel
 
         if (deleteNodeAction.IndexInList != -1)
         {
-            Nodes.Insert (deleteNodeAction.IndexInList, stageNode);
+            nodes.Insert (deleteNodeAction.IndexInList, stageNode);
         }
         else
         {
-            Nodes.Add (stageNode);
+            nodes.Add (stageNode);
         }
     }
 
@@ -191,7 +194,7 @@ public class StageModel
             return;
         }
 
-        Nodes [changeWidthAction.IndexInList].Width = changeWidthAction.To;
+        nodes [changeWidthAction.IndexInList].Width = changeWidthAction.To;
     }
 
     void undoMove (ChangeWidthAction changeWidthAction)
@@ -201,7 +204,7 @@ public class StageModel
             return;
         }
 
-        Nodes [changeWidthAction.IndexInList].Width = changeWidthAction.From;
+        nodes [changeWidthAction.IndexInList].Width = changeWidthAction.From;
     }
 
     void makeMove (MoveNodeAction moveNodeAction)
@@ -211,7 +214,7 @@ public class StageModel
             return;
         }
 
-        Nodes [moveNodeAction.IndexInList].Position = moveNodeAction.To;
+        nodes [moveNodeAction.IndexInList].Position = moveNodeAction.To;
     }
 
     void undoMove (MoveNodeAction moveNodeAction)
@@ -221,7 +224,7 @@ public class StageModel
             return;
         }
 
-        Nodes [moveNodeAction.IndexInList].Position = moveNodeAction.From;
+        nodes [moveNodeAction.IndexInList].Position = moveNodeAction.From;
     }
 
     public void MakeStepForward ()
@@ -230,7 +233,7 @@ public class StageModel
         {
             StageAction actionToMake = stageTimeline.MakeOneStepForward ();
             makeAction (actionToMake);
-            refreshPointsRightAndLeft (BezierCurveFactor);
+            RefreshPointsRightAndLeft (BezierCurveFactor);
         }
     }
 
@@ -248,12 +251,12 @@ public class StageModel
     {
         if (nodes != null)
         {
-            this.Nodes = nodes;
-            refreshPointsRightAndLeft (bezierCurveFactor);
+            this.nodes = nodes;
+            RefreshPointsRightAndLeft (bezierCurveFactor);
         }
     }
 
-    void refreshPointsRightAndLeft (float bezierCurveFactor)
+    public void RefreshPointsRightAndLeft (float bezierCurveFactor)
     {
         PointsRight.Clear ();
         PointsLeft.Clear ();
