@@ -11,6 +11,12 @@ public class SaveManager
 
     static SaveManager instance;
 
+    public int CurrentOpenedStageId
+    {
+        get;
+        private set;
+    }
+
     public static SaveManager Instance
     {
         get
@@ -31,7 +37,7 @@ public class SaveManager
 
     private SaveManager ()
     {
-
+        CurrentOpenedStageId = 0;
     }
 
     public bool IsSlotEmpty (int slotId)
@@ -97,6 +103,11 @@ public class SaveManager
                 file.Close ();
 
                 result = JsonUtility.FromJson<StageModel> (json);
+
+                if (result != null)
+                {
+                    CurrentOpenedStageId = slotId;
+                }
             }
             else
             {

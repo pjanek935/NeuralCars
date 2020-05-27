@@ -5,15 +5,21 @@ using UnityEngine.UI;
 
 public class TopPanelController : MonoBehaviour
 {
-    public delegate void OnSaveOrLoadRequestedEventHandler (int slotId);
-    public event OnSaveOrLoadRequestedEventHandler OnSaveClicked;
-    public event OnSaveOrLoadRequestedEventHandler OnLoadClicked;
+    public delegate void OnLoadRequestedEventHandler (int slotId);
+    public event OnLoadRequestedEventHandler OnLoadClicked;
+
+    public delegate void TopPanelControllerEventHandler ();
+    public event TopPanelControllerEventHandler OnSaveClicked;
+    public event TopPanelControllerEventHandler OnResetClicked;
+    public event TopPanelControllerEventHandler OnClearClicked;
 
     [SerializeField] Button saveButton;
     [SerializeField] Button loadButton;
-
-    [SerializeField] SaveList saveList;
     [SerializeField] SaveList loadList;
+    [SerializeField] Text stageName;
+    [SerializeField] Button resetStageButton;
+    [SerializeField] Button clearStageButton;
+    [SerializeField] GameObject saveStar;
 
     private void Awake ()
     {
@@ -27,51 +33,67 @@ public class TopPanelController : MonoBehaviour
             loadButton.onClick.AddListener (() => onLoadButtonClicked ());
         }
 
-        if (saveList != null)
-        {
-            saveList.OnElementOnListClicked += onElementOnListClicekd;
-        }
-
-        if (saveList != null)
+        if (loadList != null)
         {
             loadList.OnElementOnListClicked += onElementOnListClicekd;
         }
+
+        if (resetStageButton != null)
+        {
+            resetStageButton.onClick.AddListener (() => OnResetClicked?.Invoke ());
+        }
+
+        if (clearStageButton != null)
+        {
+            clearStageButton.onClick.AddListener (() => OnClearClicked?.Invoke ());
+        }
+    }
+
+    public void Refresh ()
+    {
+        if (stageName != null)
+        {
+            stageName.text = "STAGE 0" + SaveManager.Instance.CurrentOpenedStageId;
+        }
+
+        loadList.Refresh ();
+    }
+
+    public void Refresh (StageModel stageModel)
+    {
+        if (stageModel != null)
+        {
+            bool canUndoLastAction = stageModel.CanUndoLastAction ();
+            resetStageButton.interactable = canUndoLastAction;
+            clearStageButton.interactable = stageModel.Nodes.Count > 0;
+            saveStar.gameObject.SetActive (canUndoLastAction);
+        }
+
+        Refresh ();
     }
 
     void onElementOnListClicekd (SaveList list, int slotId)
     {
-        if (list == saveList)
-        {
-            OnSaveClicked?.Invoke (slotId);
-        }
-        else if (list == loadList)
+        if (list == loadList)
         {
             OnLoadClicked?.Invoke (slotId);
         }
 
-        list.Refresh ();
+        Refresh ();
     }
 
     void onSaveButtonClicked ()
     {
-        if (saveList != null)
-        {
-            saveList.gameObject.SetActive (!saveList.gameObject.activeSelf);
-        }
-
         if (loadList != null)
         {
             loadList.gameObject.SetActive (false);
         }
+
+        OnSaveClicked?.Invoke ();
     }
 
     void onLoadButtonClicked ()
     {
-        if (saveList != null)
-        {
-            saveList.gameObject.SetActive (false);
-        }
-
         if (loadList != null)
         {
             loadList.gameObject.SetActive (! loadList.gameObject.activeSelf);

@@ -64,7 +64,24 @@ public class StageEditor : MonoBehaviour
         {
             topPanelController.OnLoadClicked += onLoadStageClicked;
             topPanelController.OnSaveClicked += onSaveStageClicked;
+            topPanelController.OnResetClicked += onResetStageClicked;
+            topPanelController.OnClearClicked += onClearStageClicked;
         }
+
+        onLoadStageClicked (SaveManager.Instance.CurrentOpenedStageId);
+    }
+
+    void onResetStageClicked ()
+    {
+        onLoadStageClicked (SaveManager.Instance.CurrentOpenedStageId);
+    }
+
+    void onClearStageClicked ()
+    {
+        stageModel.SetNodes (new List<StageNode> (), bezierDistanceFactor);
+        synchornizeFlagsWithModel ();
+        createWalls ();
+        refreshViews ();
     }
 
     void onLoadStageClicked (int stageId)
@@ -76,12 +93,13 @@ public class StageEditor : MonoBehaviour
             stageModel = newStageModel;
             stageModel.RefreshPointsRightAndLeft (bezierDistanceFactor);
             synchornizeFlagsWithModel ();
+            refreshViews ();
         }
     }
 
-    void onSaveStageClicked (int stageId)
+    void onSaveStageClicked ()
     {
-        SaveManager.Instance.SaveStage (stageModel, stageId);
+        SaveManager.Instance.SaveStage (stageModel, SaveManager.Instance.CurrentOpenedStageId);
     }
 
     private void OnValidate ()
@@ -90,7 +108,7 @@ public class StageEditor : MonoBehaviour
         {
             stageModel.BezierCurveFactor = bezierDistanceFactor;
             synchronizeModelWithFlags ();
-            timelinePanel.Refresh (stageModel);
+            refreshViews ();
         }
     }
 
@@ -108,6 +126,12 @@ public class StageEditor : MonoBehaviour
         string result = JsonUtility.ToJson (stageModel);
 
         return result;
+    }
+
+    void refreshViews ()
+    {
+        timelinePanel.Refresh (stageModel);
+        topPanelController.Refresh (stageModel);
     }
 
     void onBackClicked ()
@@ -139,7 +163,7 @@ public class StageEditor : MonoBehaviour
         List<StageNode> nodes = GetNodes ();
         stageModel.SetNodes (nodes, bezierDistanceFactor);
         createWalls ();
-        timelinePanel.Refresh (stageModel);
+        refreshViews ();
     }
 
     void synchornizeFlagsWithModel ()
@@ -171,7 +195,7 @@ public class StageEditor : MonoBehaviour
         }
 
         createWalls ();
-        timelinePanel.Refresh (stageModel);
+        refreshViews ();
         refreshLineRenderer ();
     }
 
@@ -248,6 +272,21 @@ public class StageEditor : MonoBehaviour
                 }
             }
         }
+        else
+        {
+            for (int i = 0; i < wallsLeft.Count; i ++)
+            {
+                Destroy (wallsLeft [i].gameObject);
+            }
+
+            for (int i = 0; i < wallsRight.Count; i++)
+            {
+                Destroy (wallsRight [i].gameObject);
+            }
+
+            wallsRight.Clear ();
+            wallsLeft.Clear ();
+        }
     }
 
     void createWalls ()
@@ -313,7 +352,7 @@ public class StageEditor : MonoBehaviour
         refreshLineRenderer ();
         StageAction stageAction = new ChangeWidthAction (flags.IndexOf (flag), from, to);
         stageModel.MakeAndAddAction (stageAction);
-        timelinePanel.Refresh (stageModel);
+        refreshViews ();
         createWalls ();
     }
 
@@ -487,7 +526,7 @@ public class StageEditor : MonoBehaviour
             setNewCurrentFlag (flag);
             StageAction stageAction = new CreateNodeAction (startPointIndex, pos, flag.Width);
             stageModel.MakeAndAddAction (stageAction);
-            timelinePanel.Refresh (stageModel);
+            refreshViews ();
             createWalls ();
         }
     }
