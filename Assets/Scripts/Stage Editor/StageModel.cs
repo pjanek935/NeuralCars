@@ -360,7 +360,7 @@ public class StageModel
                 float d2 = Vector3.Dot (prevDirection, nextDirection);
                 float dist = Vector3.Distance (p1, p2);
 
-                if (Mathf.Abs (d1 - 1f) >= epsilon && Mathf.Abs (d2 - 1f) >= epsilon && dist < 20f)
+                if (Mathf.Abs (d1 - 1f) >= epsilon && Mathf.Abs (d2 - 1f) >= epsilon && dist < 40f)
                 {
                     result.Add (points [i]);
 

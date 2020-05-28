@@ -458,9 +458,10 @@ MonoBehaviour:
   gatePrefab: {fileID: 1986260756}
   timelinePanel: {fileID: 413127892}
   topPanelController: {fileID: 840588363}
-  bezierDistanceFactor: 2.5
+  bezierDistanceFactor: 3.5
   snapToGrid: 1
   gridCellSize: 4
+  defaultWidth: 8
   flagsContainer: {fileID: 439223456}
   wallsContainer: {fileID: 527663334}
   gatesContainer: {fileID: 1289489524}
@@ -2162,6 +2163,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0983d7a3c3997b142abe463c55daf52c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  stageEditor: {fileID: 95786314}
   saveButton: {fileID: 1848820903}
   loadButton: {fileID: 956168073}
   loadList: {fileID: 117516050}
@@ -2170,6 +2172,9 @@ MonoBehaviour:
   clearStageButton: {fileID: 1983687913}
   saveStar: {fileID: 540834945}
   snapToGridToggle: {fileID: 1990286067}
+  defaultWidthText: {fileID: 1876857916}
+  defaultWidthUpButton: {fileID: 1135702361}
+  defaultWdithDownButton: {fileID: 1742473235}
 --- !u!1 &889669332
 GameObject:
   m_ObjectHideFlags: 0

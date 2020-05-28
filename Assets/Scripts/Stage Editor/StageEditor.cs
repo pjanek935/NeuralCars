@@ -17,6 +17,7 @@ public class StageEditor : MonoBehaviour
     [Range (0, 3.5f)] [SerializeField] float bezierDistanceFactor = 0.25f;
     [SerializeField] bool snapToGrid = false;
     [SerializeField] float gridCellSize = 0.5f;
+    [SerializeField] float defaultWidth = 8f;
     
     [SerializeField] Transform flagsContainer;
     [SerializeField] Transform wallsContainer;
@@ -52,6 +53,11 @@ public class StageEditor : MonoBehaviour
         get { return gridCellSize; }
     }
 
+    public float DefaultWidth
+    {
+        get { return defaultWidth; }
+    }
+
     private void Awake ()
     {
         if (flagEditor != null)
@@ -79,9 +85,29 @@ public class StageEditor : MonoBehaviour
             topPanelController.OnResetClicked += onResetStageClicked;
             topPanelController.OnClearClicked += onClearStageClicked;
             topPanelController.OnSnapToGridToggleClicked += onSnapToGridClicked;
+            topPanelController.OnDefaultWidthDownClicked += onDefaultWidthDownClicked;
+            topPanelController.OnDefaultWidthUpClicked += onDefaultWidthUpClicked;
         }
 
         onLoadStageClicked (SaveManager.Instance.CurrentOpenedStageId);
+    }
+
+    void onDefaultWidthDownClicked ()
+    {
+        float newWidth = defaultWidth - StageConsts.NodeD;
+        newWidth = Mathf.Clamp (newWidth, StageConsts.MinNodeWidth, StageConsts.MaxNodeWidth);
+        defaultWidth = newWidth;
+
+        refreshViews ();
+    }
+
+    void onDefaultWidthUpClicked ()
+    {
+        float newWidth = defaultWidth + StageConsts.NodeD;
+        newWidth = Mathf.Clamp (newWidth, StageConsts.MinNodeWidth, StageConsts.MaxNodeWidth);
+        defaultWidth = newWidth;
+
+        refreshViews ();
     }
 
     void onResetStageClicked ()

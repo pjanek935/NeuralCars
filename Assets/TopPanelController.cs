@@ -12,10 +12,13 @@ public class TopPanelController : MonoBehaviour
     public event TopPanelControllerEventHandler OnSaveClicked;
     public event TopPanelControllerEventHandler OnResetClicked;
     public event TopPanelControllerEventHandler OnClearClicked;
+    public event TopPanelControllerEventHandler OnDefaultWidthUpClicked;
+    public event TopPanelControllerEventHandler OnDefaultWidthDownClicked;
 
     public delegate void OnSnapToGridToggleClickedEventHandler (bool value);
     public event OnSnapToGridToggleClickedEventHandler OnSnapToGridToggleClicked;
 
+    [SerializeField] StageEditor stageEditor;
     [SerializeField] Button saveButton;
     [SerializeField] Button loadButton;
     [SerializeField] SaveList loadList;
@@ -24,48 +27,27 @@ public class TopPanelController : MonoBehaviour
     [SerializeField] Button clearStageButton;
     [SerializeField] GameObject saveStar;
     [SerializeField] Toggle snapToGridToggle;
+    [SerializeField] Text defaultWidthText;
+    [SerializeField] Button defaultWidthUpButton;
+    [SerializeField] Button defaultWdithDownButton;
 
     private void Awake ()
     {
-        if (saveButton != null)
-        {
-            saveButton.onClick.AddListener (() => onSaveButtonClicked ());
-        }
-
-        if (loadButton != null)
-        {
-            loadButton.onClick.AddListener (() => onLoadButtonClicked ());
-        }
-
-        if (loadList != null)
-        {
-            loadList.OnElementOnListClicked += onElementOnListClicekd;
-        }
-
-        if (resetStageButton != null)
-        {
-            resetStageButton.onClick.AddListener (() => OnResetClicked?.Invoke ());
-        }
-
-        if (clearStageButton != null)
-        {
-            clearStageButton.onClick.AddListener (() => OnClearClicked?.Invoke ());
-        }
-
-        if (snapToGridToggle != null)
-        {
-            snapToGridToggle.onValueChanged.AddListener ((val) => OnSnapToGridToggleClicked?.Invoke (val));
-        }
+        saveButton.onClick.AddListener (() => onSaveButtonClicked ());
+        loadButton.onClick.AddListener (() => onLoadButtonClicked ());
+        loadList.OnElementOnListClicked += onElementOnListClicekd;
+        resetStageButton.onClick.AddListener (() => OnResetClicked?.Invoke ());
+        clearStageButton.onClick.AddListener (() => OnClearClicked?.Invoke ());
+        snapToGridToggle.onValueChanged.AddListener ((val) => OnSnapToGridToggleClicked?.Invoke (val));
+        defaultWdithDownButton.onClick.AddListener (() => OnDefaultWidthDownClicked?.Invoke ());
+        defaultWidthUpButton.onClick.AddListener (() => OnDefaultWidthUpClicked?.Invoke ());
     }
 
     public void Refresh ()
     {
-        if (stageName != null)
-        {
-            stageName.text = "STAGE 0" + SaveManager.Instance.CurrentOpenedStageId;
-        }
-
+        stageName.text = "STAGE 0" + SaveManager.Instance.CurrentOpenedStageId;
         loadList.Refresh ();
+        defaultWidthText.text = stageEditor.DefaultWidth.ToString ();
     }
 
     public void Refresh (StageModel stageModel)
@@ -93,19 +75,12 @@ public class TopPanelController : MonoBehaviour
 
     void onSaveButtonClicked ()
     {
-        if (loadList != null)
-        {
-            loadList.gameObject.SetActive (false);
-        }
-
+        loadList.gameObject.SetActive (false);
         OnSaveClicked?.Invoke ();
     }
 
     void onLoadButtonClicked ()
     {
-        if (loadList != null)
-        {
-            loadList.gameObject.SetActive (! loadList.gameObject.activeSelf);
-        }
+        loadList.gameObject.SetActive (!loadList.gameObject.activeSelf);
     }
 }

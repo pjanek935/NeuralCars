@@ -35,7 +35,10 @@ public class Flag : MonoBehaviour
 
     private void Start ()
     {
-        //Selected = true;
+        if (stageEditor != null)
+        {
+            width = stageEditor.DefaultWidth;
+        }
     }
 
     private void OnMouseDown ()
