@@ -15,6 +15,8 @@ public class StageEditor : MonoBehaviour
     [SerializeField] TimelinePanel timelinePanel;
     [SerializeField] TopPanelController topPanelController;
     [Range (0, 3.5f)] [SerializeField] float bezierDistanceFactor = 0.25f;
+    [SerializeField] bool snapToGrid = false;
+    [SerializeField] float gridCellSize = 0.5f;
     
     [SerializeField] Transform flagsContainer;
     [SerializeField] Transform wallsContainer;
@@ -32,12 +34,22 @@ public class StageEditor : MonoBehaviour
         private set;
     }
 
-    public List <Flag> Flags
+    public List<Flag> Flags
     {
         get
         {
             return flags;
         }
+    }
+
+    public bool SnapToGrid
+    {
+        get { return snapToGrid; }
+    }
+
+    public float GridCellSize
+    {
+        get { return gridCellSize; }
     }
 
     private void Awake ()
@@ -66,6 +78,7 @@ public class StageEditor : MonoBehaviour
             topPanelController.OnSaveClicked += onSaveStageClicked;
             topPanelController.OnResetClicked += onResetStageClicked;
             topPanelController.OnClearClicked += onClearStageClicked;
+            topPanelController.OnSnapToGridToggleClicked += onSnapToGridClicked;
         }
 
         onLoadStageClicked (SaveManager.Instance.CurrentOpenedStageId);
@@ -74,6 +87,11 @@ public class StageEditor : MonoBehaviour
     void onResetStageClicked ()
     {
         onLoadStageClicked (SaveManager.Instance.CurrentOpenedStageId);
+    }
+
+    void onSnapToGridClicked (bool value)
+    {
+        snapToGrid = value;
     }
 
     void onClearStageClicked ()
@@ -214,11 +232,7 @@ public class StageEditor : MonoBehaviour
                 direction.Normalize ();
                 float d = Vector3.Dot (direction, prevDirection);
 
-                if (Mathf.Abs (d - 1f) < StageConsts.Epsilon)
-                {
-
-                }
-                else
+                if (Mathf.Abs (d - 1f) >= StageConsts.Epsilon)
                 {
                     if (helpIndex >= walls.Count)
                     {
@@ -473,6 +487,14 @@ public class StageEditor : MonoBehaviour
             return;
         }
 
+        if (snapToGrid)
+        {
+            pos.x = pos.x / gridCellSize;
+            pos.x = (float) (gridCellSize * (int) pos.x);
+            pos.z = pos.z / gridCellSize;
+            pos.z = (float) (gridCellSize * (int) pos.z);
+        }
+
         Flag flag = createNewFlagGameObject ();
         flag.gameObject.transform.position = pos;
 
@@ -483,7 +505,7 @@ public class StageEditor : MonoBehaviour
 
             if (startPointIndex != -1)
             {
-                if (dist > 2f)
+                if (dist > 4f) //MAGIC NUMBER TODO
                 {
                     startPointIndex = -1;
                 }
@@ -523,6 +545,7 @@ public class StageEditor : MonoBehaviour
             }
             
             flag.OnFlagMoved += onFlagMoved;
+            flag.OnAddedByUser ();
             setNewCurrentFlag (flag);
             StageAction stageAction = new CreateNodeAction (startPointIndex, pos, flag.Width);
             stageModel.MakeAndAddAction (stageAction);

@@ -10,6 +10,9 @@ public class Flag : MonoBehaviour
     [SerializeField] float width = 5f;
     [SerializeField] new Camera camera;
     [SerializeField] CameraController cameraController;
+    [SerializeField] Animation animation;
+    [SerializeField] ParticleSystem particleSystem;
+    [SerializeField] StageEditor stageEditor;
 
     public float Width
     {
@@ -49,6 +52,24 @@ public class Flag : MonoBehaviour
         Selected = false;
     }
 
+    public void OnAddedByUser ()
+    {
+        Selected = true;
+
+        if (animation != null)
+        {
+            animation.Play ();
+        }
+    }
+
+    public void OnAnimationFinished ()
+    {
+        if (particleSystem != null)
+        {
+            particleSystem.Play ();
+        }
+    }
+
     private void Update ()
     {
         if (Selected)
@@ -61,6 +82,16 @@ public class Flag : MonoBehaviour
             {
                 Vector3 newPos = hit.point;
                 newPos.y = 0;
+
+                if (stageEditor.SnapToGrid)
+                {
+                    float gridCellSize = stageEditor.GridCellSize;
+                    newPos.x = newPos.x / gridCellSize;
+                    newPos.x = (float) (gridCellSize * (int) newPos.x);
+                    newPos.z = newPos.z / gridCellSize;
+                    newPos.z = (float) (gridCellSize * (int) newPos.z);
+                }
+
                 this.transform.position = newPos;
 
                 OnFlagMoved?.Invoke (this);

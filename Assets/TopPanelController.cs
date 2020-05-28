@@ -13,6 +13,9 @@ public class TopPanelController : MonoBehaviour
     public event TopPanelControllerEventHandler OnResetClicked;
     public event TopPanelControllerEventHandler OnClearClicked;
 
+    public delegate void OnSnapToGridToggleClickedEventHandler (bool value);
+    public event OnSnapToGridToggleClickedEventHandler OnSnapToGridToggleClicked;
+
     [SerializeField] Button saveButton;
     [SerializeField] Button loadButton;
     [SerializeField] SaveList loadList;
@@ -20,6 +23,7 @@ public class TopPanelController : MonoBehaviour
     [SerializeField] Button resetStageButton;
     [SerializeField] Button clearStageButton;
     [SerializeField] GameObject saveStar;
+    [SerializeField] Toggle snapToGridToggle;
 
     private void Awake ()
     {
@@ -46,6 +50,11 @@ public class TopPanelController : MonoBehaviour
         if (clearStageButton != null)
         {
             clearStageButton.onClick.AddListener (() => OnClearClicked?.Invoke ());
+        }
+
+        if (snapToGridToggle != null)
+        {
+            snapToGridToggle.onValueChanged.AddListener ((val) => OnSnapToGridToggleClicked?.Invoke (val));
         }
     }
 

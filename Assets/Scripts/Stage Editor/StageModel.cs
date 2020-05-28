@@ -360,27 +360,21 @@ public class StageModel
                 float d2 = Vector3.Dot (prevDirection, nextDirection);
                 float dist = Vector3.Distance (p1, p2);
 
-                if (Mathf.Abs (d1 - 1f) >= epsilon && Mathf.Abs (d2 - 1f) >= epsilon)
+                if (Mathf.Abs (d1 - 1f) >= epsilon && Mathf.Abs (d2 - 1f) >= epsilon && dist < 20f)
                 {
                     result.Add (points [i]);
 
-                    if (dist >= 0.2 && dist <= 10f)
-                    {
-                        Vector3 b_p0 = p1;
-                        Vector3 b_p1 = p1 + prevDirection * bezierDistanceFactor * (1f - d2) * dist * 0.2f;
-                        Vector3 b_p2 = p2 - nextDirection * bezierDistanceFactor * (1f - d2) * dist * 0.2f;
-                        Vector3 b_p3 = p2;
+                    Vector3 b_p0 = p1;
+                    Vector3 b_p1 = p1 + prevDirection * bezierDistanceFactor * (1f - d2) * dist * 0.1f;
+                    Vector3 b_p2 = p2 - nextDirection * bezierDistanceFactor * (1f - d2) * dist * 0.1f;
+                    Vector3 b_p3 = p2;
 
-                        for (float j = 0.05f; j < 1f; j += 0.05f)
-                        {
-                            Vector3 newPoint = Curver.cubeBezier3 (b_p0, b_p1, b_p2, b_p3, j);
-                            result.Add (newPoint);
-                        }
+                    for (float j = 0.05f; j < 1f; j += 0.05f)
+                    {
+                        Vector3 newPoint = Curver.cubeBezier3 (b_p0, b_p1, b_p2, b_p3, j);
+                        result.Add (newPoint);
                     }
 
-
-                    result.Add (points [i + 1]);
-                    i++;
                     prevDirection = nextDirection;
                 }
                 else
