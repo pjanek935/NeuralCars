@@ -6,6 +6,7 @@ public class Flag : MonoBehaviour
 {
     public delegate void OnFlagEventHandler (Flag flag);
     public event OnFlagEventHandler OnFlagMoved;
+    public event OnFlagEventHandler OnFlagReleased;
 
     [SerializeField] float width = 5f;
     [SerializeField] new Camera camera;
@@ -13,6 +14,8 @@ public class Flag : MonoBehaviour
     [SerializeField] Animation animation;
     [SerializeField] ParticleSystem particleSystem;
     [SerializeField] StageEditor stageEditor;
+
+    Vector3 prevMousePos;
 
     public float Width
     {
@@ -53,6 +56,7 @@ public class Flag : MonoBehaviour
     private void OnMouseUp ()
     {
         Selected = false;
+        OnFlagReleased?.Invoke (this);
     }
 
     public void OnAddedByUser ()
@@ -77,33 +81,40 @@ public class Flag : MonoBehaviour
     {
         if (Selected)
         {
-            Ray raycast = camera.ScreenPointToRay (Input.mousePosition);
-            RaycastHit hit;
-            int layerMask = LayerMask.GetMask ("Floor");
-
-            if (Physics.Raycast (raycast, out hit, 1000, layerMask))
-            {
-                Vector3 newPos = hit.point;
-                newPos.y = 0;
-
-                if (stageEditor.SnapToGrid)
-                {
-                    float gridCellSize = stageEditor.GridCellSize;
-                    newPos.x = newPos.x / gridCellSize;
-                    newPos.x = (float) (gridCellSize * (int) newPos.x);
-                    newPos.z = newPos.z / gridCellSize;
-                    newPos.z = (float) (gridCellSize * (int) newPos.z);
-                }
-
-                this.transform.position = newPos;
-
-                OnFlagMoved?.Invoke (this);
-            }
-
             if (Input.GetMouseButtonUp (0))
             {
                 Selected = false;
+                OnFlagReleased?.Invoke (this);
             }
+            else if (Vector3.Distance (prevMousePos, Input.mousePosition) > StageConsts.Epsilon)
+            {
+                Ray raycast = camera.ScreenPointToRay (Input.mousePosition);
+                RaycastHit hit;
+                int layerMask = LayerMask.GetMask ("Floor");
+
+                if (Physics.Raycast (raycast, out hit, 1000, layerMask))
+                {
+                    Vector3 newPos = hit.point;
+                    newPos.y = 0;
+
+                    if (stageEditor.SnapToGrid)
+                    {
+                        float gridCellSize = stageEditor.GridCellSize;
+                        newPos.x = newPos.x / gridCellSize;
+                        newPos.x = (float) (gridCellSize * (int) newPos.x);
+                        newPos.z = newPos.z / gridCellSize;
+                        newPos.z = (float) (gridCellSize * (int) newPos.z);
+                    }
+
+                    if (Vector3.Distance (newPos, this.transform.localPosition) > StageConsts.Epsilon)
+                    {
+                        this.transform.localPosition = newPos;
+                        OnFlagMoved?.Invoke (this);
+                    }
+                }
+            }
+
+            prevMousePos = Input.mousePosition;
         }
     }
 }

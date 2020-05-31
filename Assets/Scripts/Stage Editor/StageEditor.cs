@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class StageEditor : MonoBehaviour
 {
+    [SerializeField] MeshFilter roadMeshFilter;
     [SerializeField] StageFloor stageFloor;
     [SerializeField] FlagEditor flagEditor;
     [SerializeField] LineRenderer lineRenderer;
@@ -141,6 +142,48 @@ public class StageEditor : MonoBehaviour
         }
     }
 
+    void createRoadMesh ()
+    {
+        List<Vector3> points = new List<Vector3> ();
+        List<Vector3> pointsLeft = stageModel.PointsLeft;
+        points.AddRange (pointsLeft);
+        List<Vector3> pointsRight = stageModel.PointsRight;
+        List<Vector3> pointsRightReversed = new List<Vector3> ();
+
+        for (int i = pointsRight.Count - 1; i >= 0; i--)
+        {
+            pointsRightReversed.Add (pointsRight [i]);
+        }
+
+        points.AddRange (pointsRightReversed);
+        Vector2 [] vertices2D = new Vector2 [points.Count];
+        
+        for (int i = 0; i < points.Count; i ++)
+        {
+            vertices2D [i] = new Vector2 (points [i].x, points [i].z);
+        }
+
+        Triangulator tr = new Triangulator (vertices2D);
+        int [] indices = tr.Triangulate ();
+
+        // Create the Vector3 vertices
+        Vector3 [] vertices = new Vector3 [vertices2D.Length];
+
+        for (int i = 0; i < vertices.Length; i++)
+        {
+            vertices [i] = new Vector3 (vertices2D [i].x, 0, vertices2D [i].y);
+        }
+
+        // Create the mesh
+        Mesh msh = new Mesh ();
+        msh.vertices = vertices;
+        msh.triangles = indices;
+        msh.RecalculateNormals ();
+        msh.RecalculateBounds ();
+
+        roadMeshFilter.mesh = msh;
+    }
+
     void onSaveStageClicked ()
     {
         SaveManager.Instance.SaveStage (stageModel, SaveManager.Instance.CurrentOpenedStageId);
@@ -160,8 +203,63 @@ public class StageEditor : MonoBehaviour
     {
         if (Input.GetKeyDown (KeyCode.Space))
         {
-            string json = StageModelToJson ();
-            Debug.Log (json);
+            createRoadMesh ();
+        }
+    }
+
+    private void OnEnable ()
+    {
+        stageModel.BezierCurveFactor = bezierDistanceFactor;
+    }
+
+    IEnumerator drawPoints ()
+    {
+        List<Vector3> points = new List<Vector3> ();
+        List<Vector3> pointsLeft = stageModel.PointsLeft;
+
+        for (int i = pointsLeft.Count - 1; i >=0; i --)
+        {
+            for (int j = i - 1; j >= 0; j --)
+            {
+                float d = Vector3.Distance (pointsLeft [i], pointsLeft [j]);
+
+                if (d < StageConsts.Epsilon)
+                {
+                    pointsLeft.RemoveAt (i);
+                }
+            }
+        }
+
+        points.AddRange (pointsLeft);
+
+        List<Vector3> pointsRight = stageModel.PointsRight;
+        List<Vector3> pointsRightReversed = new List<Vector3> ();
+
+        for (int i = pointsRight.Count - 1; i>=0; i --)
+        {
+            pointsRightReversed.Add (pointsRight [i]);
+        }
+
+        for (int i = pointsRightReversed.Count - 1; i >= 0; i--)
+        {
+            for (int j = i - 1; j >= 0; j--)
+            {
+                float d = Vector3.Distance (pointsRightReversed [i], pointsRightReversed [j]);
+
+                if (d < StageConsts.Epsilon)
+                {
+                    pointsRightReversed.RemoveAt (i);
+                }
+            }
+        }
+
+        points.AddRange (pointsRightReversed);
+
+        for (int i = 0; i < points.Count; i++)
+        {
+            Debug.DrawLine (points [i], points [i] + new Vector3 (0f, 20f, 0f), Color.red, 0.1f);
+
+            yield return new WaitForSeconds (0.1f);
         }
     }
 
@@ -200,6 +298,7 @@ public class StageEditor : MonoBehaviour
     {
         createNewFlag (pos);
         refreshLineRenderer ();
+        createRoadMesh ();
     }
 
     void synchronizeModelWithFlags ()
@@ -222,7 +321,7 @@ public class StageEditor : MonoBehaviour
                 flags.Add (flag);
             }
 
-            flags [i].transform.position = nodes [i].Position;
+            flags [i].transform.localPosition = nodes [i].Position;
             flags [i].Width = nodes [i].Width;
         }
 
@@ -270,7 +369,7 @@ public class StageEditor : MonoBehaviour
                     }
 
                     float dist = Vector3.Distance (startPoint, points [i - 1]);
-                    walls [helpIndex].transform.position = startPoint;
+                    walls [helpIndex].transform.localPosition = startPoint;
                     walls [helpIndex].transform.LookAt (points [i - 1], Vector3.up);
                     Vector3 scale = walls [helpIndex].transform.localScale;
                     scale.z = dist;
@@ -293,7 +392,7 @@ public class StageEditor : MonoBehaviour
             }
 
             float dist2 = Vector3.Distance (startPoint, points [points.Count - 1]);
-            walls [helpIndex].transform.position = startPoint;
+            walls [helpIndex].transform.localPosition = startPoint;
             walls [helpIndex].transform.LookAt (points [points.Count - 1], Vector3.up);
             Vector3 scale2 = walls [helpIndex].transform.localScale;
             scale2.z = dist2;
@@ -342,7 +441,11 @@ public class StageEditor : MonoBehaviour
         {
             Flags.Remove (CurrentSelectedFlag);
             Destroy (CurrentSelectedFlag.gameObject);
-            onFlagMoved (null);
+            setNewCurrentFlag (null);
+            refreshLineRenderer ();
+            synchronizeModelWithFlags ();
+            createRoadMesh ();
+            refreshViews ();
         }
     }
 
@@ -394,6 +497,7 @@ public class StageEditor : MonoBehaviour
         stageModel.MakeAndAddAction (stageAction);
         refreshViews ();
         createWalls ();
+        createRoadMesh ();
     }
 
     public Vector3 [] GetFlagsPositions ()
@@ -402,7 +506,7 @@ public class StageEditor : MonoBehaviour
 
         for (int i = 0; i < flags.Count; i++)
         {
-            pos [i] = flags [i].transform.position;
+            pos [i] = flags [i].transform.localPosition;
         }
 
         return pos;
@@ -463,7 +567,7 @@ public class StageEditor : MonoBehaviour
                 gates.Add (newObject.GetComponent <Gate> ());
             }
 
-            gates [i].transform.position = positions [i];
+            gates [i].transform.localPosition = positions [i];
             gates [i].transform.forward = forwards [i];
             Vector3 scale = gates [i].transform.localScale;
             gates [i].transform.localScale = new Vector3 (widths [i] * 2f, scale.y, scale.z);
@@ -502,6 +606,7 @@ public class StageEditor : MonoBehaviour
         newGameObject.SetActive (true);
         Flag flag = newGameObject.GetComponent<Flag> (); ;
         flag.OnFlagMoved += onFlagMoved;
+        flag.OnFlagReleased += onFlagReleased;
 
         return flag;
     }
@@ -522,7 +627,7 @@ public class StageEditor : MonoBehaviour
         }
 
         Flag flag = createNewFlagGameObject ();
-        flag.gameObject.transform.position = pos;
+        flag.gameObject.transform.localPosition = pos;
 
         if (flag != null)
         {
@@ -544,7 +649,7 @@ public class StageEditor : MonoBehaviour
                 if (flags.Count > 1)
                 {
                     Vector3 startPoint = flags [0].transform.position;
-                    Vector3 endPoint = flags [flags.Count - 1].transform.position;
+                    Vector3 endPoint = flags [flags.Count - 1].transform.localPosition;
                     float startPointDist = Vector3.Distance (startPoint, pos);
                     float endPointDist = Vector3.Distance (endPoint, pos);
 
@@ -570,7 +675,6 @@ public class StageEditor : MonoBehaviour
                 flags.Insert (startPointIndex, flag);
             }
             
-            flag.OnFlagMoved += onFlagMoved;
             flag.OnAddedByUser ();
             setNewCurrentFlag (flag);
             StageAction stageAction = new CreateNodeAction (startPointIndex, pos, flag.Width);
@@ -584,7 +688,14 @@ public class StageEditor : MonoBehaviour
     {
         setNewCurrentFlag (flag);
         refreshLineRenderer ();
+        refreshViews ();
+    }
+
+    void onFlagReleased (Flag flag)
+    {
+        refreshLineRenderer ();
         synchronizeModelWithFlags ();
+        createRoadMesh ();
     }
 
     /// <summary>
@@ -602,8 +713,8 @@ public class StageEditor : MonoBehaviour
         {
             for (int i = 1; i < flags.Count; i ++)
             {
-                Vector3 p1 = flags [i-1].transform.position;
-                Vector3 p2 = flags [i].transform.position;
+                Vector3 p1 = flags [i-1].transform.localPosition;
+                Vector3 p2 = flags [i].transform.localPosition;
 
                 float d = StageUtilities.DistToLineSegment (p1, p2, pos);
 

@@ -293,6 +293,46 @@ public class StageModel
         PointsLeft = pointsLeftTmp;
     }
 
+    void optimize (List <Vector3> points)
+    {
+        float d;
+
+        for (int i = points.Count - 1; i >= 0; i--)
+        {
+            for (int j = i - 1; j >= 0; j--)
+            {
+                d = Vector3.Distance (points [i], points [j]);
+
+                if (d < StageConsts.Epsilon)
+                {
+                    points.RemoveAt (i);
+                }
+            }
+        }
+    }
+
+    void add (List<Vector3> list, Vector3 point)
+    {
+        if (list != null)
+        {
+            if (list.Count > 0)
+            {
+                Vector3 newPoint = list [list.Count - 1];
+                float d = Vector3.Distance (newPoint, point);
+
+                if (d > StageConsts.Epsilon)
+                {
+                    list.Add (point);
+                }
+            }
+            else
+            {
+                list.Add (point);
+            }
+        }
+        
+    }
+
     List<Vector3> shortenIntersectingLineSegments (List <Vector3> points)
     {
         List<Vector3> result = new List<Vector3> ();
@@ -362,7 +402,7 @@ public class StageModel
 
                 if (Mathf.Abs (d1 - 1f) >= epsilon && Mathf.Abs (d2 - 1f) >= epsilon && dist < 40f)
                 {
-                    result.Add (points [i]);
+                    add (result, points [i]);
 
                     Vector3 b_p0 = p1;
                     Vector3 b_p1 = p1 + prevDirection * bezierDistanceFactor * (1f - d2) * dist * 0.1f;
@@ -372,20 +412,20 @@ public class StageModel
                     for (float j = 0.05f; j < 1f; j += 0.05f)
                     {
                         Vector3 newPoint = Curver.cubeBezier3 (b_p0, b_p1, b_p2, b_p3, j);
-                        result.Add (newPoint);
+                        add (result, newPoint);
                     }
 
                     prevDirection = nextDirection;
                 }
                 else
                 {
-                    result.Add (points [i]);
+                    add (result, points [i]);
                 }
             }
 
             for (int i = points.Count - 2; i < points.Count; i++)
             {
-                result.Add (points [i]);
+                add (result, points [i]);
             }
 
         }
