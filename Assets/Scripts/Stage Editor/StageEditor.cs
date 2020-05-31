@@ -217,7 +217,7 @@ public class StageEditor : MonoBehaviour
         List<Vector3> points = new List<Vector3> ();
         List<Vector3> pointsLeft = stageModel.PointsLeft;
 
-        for (int i = pointsLeft.Count - 1; i >=0; i --)
+        for (int i = pointsLeft.Count - 1; i >= 0; i --)
         {
             for (int j = i - 1; j >= 0; j --)
             {
