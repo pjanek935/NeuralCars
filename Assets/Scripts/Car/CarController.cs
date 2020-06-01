@@ -24,6 +24,7 @@ public class CarController : MonoBehaviour
     [SerializeField] float defaultFrontWheelFriction = 11f;
     [SerializeField] float handBrakeFrontWheelFriction = 5f;
     [Range (0, 1f)] [SerializeField] float handBrakeFriction = 0.1f;
+    [SerializeField] bool changeFriction = false;
 
     float torque = 0;
     float steerAngle = 0;
@@ -73,15 +74,19 @@ public class CarController : MonoBehaviour
             wheelColliderRR.motorTorque = maxTorque * torque;
             wheelColliderRL.motorTorque = maxTorque * torque;
 
-            WheelFrictionCurve frictionCurve = wheelColliderRR.sidewaysFriction;
-            frictionCurve.stiffness = defaultRearWheelFriction;
-            wheelColliderRR.sidewaysFriction = frictionCurve;
-            wheelColliderRL.sidewaysFriction = frictionCurve;
+            if (changeFriction)
+            {
+                WheelFrictionCurve frictionCurve = wheelColliderRR.sidewaysFriction;
+                frictionCurve.stiffness = defaultRearWheelFriction;
+                wheelColliderRR.sidewaysFriction = frictionCurve;
+                wheelColliderRL.sidewaysFriction = frictionCurve;
 
-            frictionCurve = wheelColliderFL.sidewaysFriction;
-            frictionCurve.stiffness = defaultFrontWheelFriction;
-            wheelColliderFL.sidewaysFriction = frictionCurve;
-            wheelColliderFR.sidewaysFriction = frictionCurve;
+                frictionCurve = wheelColliderFL.sidewaysFriction;
+                frictionCurve.stiffness = defaultFrontWheelFriction;
+                wheelColliderFL.sidewaysFriction = frictionCurve;
+                wheelColliderFR.sidewaysFriction = frictionCurve;
+            }
+            
         }
         else
         {
@@ -89,15 +94,18 @@ public class CarController : MonoBehaviour
             wheelColliderRR.motorTorque = wheelColliderRR.motorTorque * friction;
             wheelColliderRL.motorTorque = wheelColliderRL.motorTorque * friction;
 
-            WheelFrictionCurve frictionCurve = wheelColliderRR.sidewaysFriction;
-            frictionCurve.stiffness = handBrakeRearWheelFriction;
-            wheelColliderRR.sidewaysFriction = frictionCurve;
-            wheelColliderRL.sidewaysFriction = frictionCurve;
+            if (changeFriction)
+            {
+                WheelFrictionCurve frictionCurve = wheelColliderRR.sidewaysFriction;
+                frictionCurve.stiffness = handBrakeRearWheelFriction;
+                wheelColliderRR.sidewaysFriction = frictionCurve;
+                wheelColliderRL.sidewaysFriction = frictionCurve;
 
-            frictionCurve = wheelColliderFL.sidewaysFriction;
-            frictionCurve.stiffness = handBrakeFrontWheelFriction;
-            wheelColliderFL.sidewaysFriction = frictionCurve;
-            wheelColliderFR.sidewaysFriction = frictionCurve;
+                frictionCurve = wheelColliderFL.sidewaysFriction;
+                frictionCurve.stiffness = handBrakeFrontWheelFriction;
+                wheelColliderFL.sidewaysFriction = frictionCurve;
+                wheelColliderFR.sidewaysFriction = frictionCurve;
+            }
         }
 
         wheelColliderFL.steerAngle = maxSteerAngle * steerAngle;

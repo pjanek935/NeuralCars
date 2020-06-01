@@ -138,6 +138,7 @@ public class StageEditor : MonoBehaviour
             stageModel = newStageModel;
             stageModel.RefreshPointsRightAndLeft (bezierDistanceFactor);
             synchornizeFlagsWithModel ();
+            createRoadMesh ();
             refreshViews ();
         }
     }
