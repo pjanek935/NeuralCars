@@ -110,6 +110,8 @@ public class CarController : MonoBehaviour
 
         wheelColliderFL.steerAngle = maxSteerAngle * steerAngle;
         wheelColliderFR.steerAngle = maxSteerAngle * steerAngle;
+
+        transform.eulerAngles = new Vector3 (0f, transform.eulerAngles.y, 0f);
     }
 
     void updateMovementParameters ()
