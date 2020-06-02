@@ -1132,7 +1132,7 @@ GameObject:
   - component: {fileID: 440027555}
   - component: {fileID: 440027554}
   - component: {fileID: 440027553}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1446,6 +1446,21 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 69937457147528718, guid: 61e37ed19957b0e459e0c5804ed337e8,
+        type: 3}
+      propertyPath: EmissionModule.rateOverTime.scalar
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 628672134994222285, guid: 61e37ed19957b0e459e0c5804ed337e8,
+        type: 3}
+      propertyPath: EmissionModule.rateOverTime.scalar
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 3139307131463607996, guid: 61e37ed19957b0e459e0c5804ed337e8,
+        type: 3}
+      propertyPath: EmissionModule.rateOverTime.scalar
+      value: 20
+      objectReference: {fileID: 0}
     - target: {fileID: 7662206465374266803, guid: 61e37ed19957b0e459e0c5804ed337e8,
         type: 3}
       propertyPath: m_SuspensionSpring.spring
@@ -1459,7 +1474,7 @@ PrefabInstance:
     - target: {fileID: 7662206465374266803, guid: 61e37ed19957b0e459e0c5804ed337e8,
         type: 3}
       propertyPath: m_ForwardFriction.m_Stiffness
-      value: 11
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 7662206465374266803, guid: 61e37ed19957b0e459e0c5804ed337e8,
         type: 3}
@@ -1469,7 +1484,7 @@ PrefabInstance:
     - target: {fileID: 7662206465374266803, guid: 61e37ed19957b0e459e0c5804ed337e8,
         type: 3}
       propertyPath: m_SidewaysFriction.m_Stiffness
-      value: 5
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 7662206465820325847, guid: 61e37ed19957b0e459e0c5804ed337e8,
         type: 3}
@@ -1484,7 +1499,7 @@ PrefabInstance:
     - target: {fileID: 7662206465820325847, guid: 61e37ed19957b0e459e0c5804ed337e8,
         type: 3}
       propertyPath: m_ForwardFriction.m_Stiffness
-      value: 11
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 7662206465820325847, guid: 61e37ed19957b0e459e0c5804ed337e8,
         type: 3}
@@ -1509,7 +1524,7 @@ PrefabInstance:
     - target: {fileID: 7662206465935750231, guid: 61e37ed19957b0e459e0c5804ed337e8,
         type: 3}
       propertyPath: m_ForwardFriction.m_Stiffness
-      value: 11
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 7662206465935750231, guid: 61e37ed19957b0e459e0c5804ed337e8,
         type: 3}
@@ -1519,7 +1534,7 @@ PrefabInstance:
     - target: {fileID: 7662206465935750231, guid: 61e37ed19957b0e459e0c5804ed337e8,
         type: 3}
       propertyPath: m_SidewaysFriction.m_Stiffness
-      value: 5
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 7662206466222359640, guid: 61e37ed19957b0e459e0c5804ed337e8,
         type: 3}
@@ -1629,7 +1644,7 @@ PrefabInstance:
     - target: {fileID: 7662206466443893177, guid: 61e37ed19957b0e459e0c5804ed337e8,
         type: 3}
       propertyPath: m_ForwardFriction.m_Stiffness
-      value: 11
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 7662206466443893177, guid: 61e37ed19957b0e459e0c5804ed337e8,
         type: 3}
@@ -1640,6 +1655,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SidewaysFriction.m_Stiffness
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8434968531261081309, guid: 61e37ed19957b0e459e0c5804ed337e8,
+        type: 3}
+      propertyPath: EmissionModule.rateOverTime.scalar
+      value: 20
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 61e37ed19957b0e459e0c5804ed337e8, type: 3}
@@ -10486,7 +10506,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1985716457}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}

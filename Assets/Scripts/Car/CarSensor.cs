@@ -39,7 +39,8 @@ public class CarSensor : MonoBehaviour
 
     public void ShootRaycast ()
     {
-        int layerMask = LayerMask.NameToLayer ("Wall");
+        int layerMask = LayerMask.GetMask ("Wall");
+
         RaycastHit hit;
         Vector3 hitLocalPos = transform.position + transform.forward * Length;
 
@@ -48,6 +49,8 @@ public class CarSensor : MonoBehaviour
             Value = hit.distance / Length;
             Value = 1f - Value;
             hitLocalPos = hit.point;
+
+            Debug.DrawLine (transform.position, hit.point, Color.red);
         }
         else
         {

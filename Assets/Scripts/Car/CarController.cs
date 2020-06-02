@@ -6,6 +6,8 @@ public class CarController : MonoBehaviour
 {
     [SerializeField] bool playerControlled = false;
 
+    [SerializeField] CarParticlesManager carParticlesManager;
+
     [SerializeField] WheelCollider wheelColliderFL;
     [SerializeField] WheelCollider wheelColliderFR;
     [SerializeField] WheelCollider wheelColliderRL;
@@ -26,13 +28,15 @@ public class CarController : MonoBehaviour
     [Range (0, 1f)] [SerializeField] float handBrakeFriction = 0.1f;
     [SerializeField] bool changeFriction = false;
 
+    float torqueChange = 0;
+    float prevTorque = 0;
     float torque = 0;
     float steerAngle = 0;
     bool handBrake = false;
     Vector3 prevPosition = Vector3.zero;
     Queue<Vector3> movementDirectionBuffer = new Queue<Vector3> ();
 
-    public Vector3 MovementDirection
+    public Vector3 MovementDirectionAverage
     {
         get;
         private set;
@@ -48,13 +52,16 @@ public class CarController : MonoBehaviour
     {
         if (playerControlled)
         {
+            prevTorque = torque;
             torque = Input.GetAxis ("Vertical"); ;
             steerAngle = Input.GetAxis ("Horizontal");
             handBrake = Input.GetKey (KeyCode.Space);
+            torqueChange = Mathf.Abs ((prevTorque - torque) * Time.deltaTime);
         }
 
         updateWheelTransforms ();
         updateMovementParameters ();
+        updateParticles ();
     }
 
     public void SetTorque (float torque)
@@ -114,27 +121,48 @@ public class CarController : MonoBehaviour
         transform.eulerAngles = new Vector3 (0f, transform.eulerAngles.y, 0f);
     }
 
+    void updateParticles ()
+    {  
+        float alpha = GetAngleBetweenForwardAndMovementDirection (true);
+
+        if (torqueChange > 0)
+        {
+            carParticlesManager.StartSmoke ();
+        }
+        else if (Mathf.Abs (alpha) > 0.03f)
+        {
+            carParticlesManager.StartSmoke ();
+        }
+        else
+        {
+            carParticlesManager.StopSmoke ();
+        }
+    }
+
     void updateMovementParameters ()
     {
-        MovementDirection = transform.position - prevPosition;
+        MovementDirectionAverage = transform.position - prevPosition;
 
-        if (MovementDirection.magnitude < 0.1f)
+        if (MovementDirectionAverage.magnitude < 0.1f)
         {
-            MovementDirection = Vector3.zero;
+            MovementDirectionAverage = Vector3.zero;
         }
 
-        MovementDirection.Normalize ();
-        prevPosition = transform.position;
-        movementDirectionBuffer.Enqueue (MovementDirection);
+        Vector3 currentVelocity = MovementDirectionAverage / Time.deltaTime;
+
+        MovementDirectionAverage.Normalize ();
+        movementDirectionBuffer.Enqueue (MovementDirectionAverage);
 
         if (movementDirectionBuffer.Count > 10)
         {
             movementDirectionBuffer.Dequeue ();
         }
 
-        MovementDirection = calculateAverageMovementDirection ();
+        MovementDirectionAverage = calculateAverage (movementDirectionBuffer).normalized;
+        prevPosition = transform.position;
 
-        Debug.DrawLine (this.transform.position, this.transform.position + MovementDirection * 10, Color.yellow);
+
+        Debug.DrawLine (this.transform.position, this.transform.position + MovementDirectionAverage * 10, Color.yellow);
     }
 
     void updateWheelTransform (WheelCollider wheelCollider, Transform wheelTransform)
@@ -163,24 +191,23 @@ public class CarController : MonoBehaviour
         return (wheelColliderFL.steerAngle / maxSteerAngle);
     }
 
-    public Vector3 calculateAverageMovementDirection ()
+    public Vector3 calculateAverage (Queue <Vector3> queue)
     {
         Vector3 result = Vector3.zero;
         
-        foreach (Vector3 v in movementDirectionBuffer)
+        foreach (Vector3 v in queue)
         {
             result += v;
         }
 
-        result /= movementDirectionBuffer.Count;
-        result.Normalize ();
+        result /= queue.Count;
 
         return result;
     }
 
     public float GetAngleBetweenForwardAndMovementDirection (bool normalized = false)
     {
-        float result = Vector3.SignedAngle (transform.forward, MovementDirection, Vector3.up);
+        float result = Vector3.SignedAngle (transform.forward, MovementDirectionAverage, Vector3.up);
 
         if (normalized)
         {
