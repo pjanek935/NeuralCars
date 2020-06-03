@@ -48,7 +48,7 @@ public class StageModel
         {
             makeAction (stageAction);
             AddAction (stageAction);
-            RefreshPointsRightAndLeft (BezierCurveFactor);
+            RefreshPointsRightAndLeft ();
         }
     }
 
@@ -66,7 +66,7 @@ public class StageModel
         {
             StageAction actionToUndo = stageTimeline.MakeOneStepBack ();
             undoAction (actionToUndo);
-            RefreshPointsRightAndLeft (BezierCurveFactor);
+            RefreshPointsRightAndLeft ();
         }
     }
 
@@ -233,7 +233,7 @@ public class StageModel
         {
             StageAction actionToMake = stageTimeline.MakeOneStepForward ();
             makeAction (actionToMake);
-            RefreshPointsRightAndLeft (BezierCurveFactor);
+            RefreshPointsRightAndLeft ();
         }
     }
 
@@ -247,16 +247,16 @@ public class StageModel
         return stageTimeline.CanMakeOneStepBack ();
     }
 
-    public void SetNodes (List <StageNode> nodes, float bezierCurveFactor)
+    public void SetNodes (List <StageNode> nodes)
     {
         if (nodes != null)
         {
             this.nodes = nodes;
-            RefreshPointsRightAndLeft (bezierCurveFactor);
+            RefreshPointsRightAndLeft ();
         }
     }
 
-    public void RefreshPointsRightAndLeft (float bezierCurveFactor)
+    public void RefreshPointsRightAndLeft ()
     {
         PointsRight.Clear ();
         PointsLeft.Clear ();
@@ -286,8 +286,8 @@ public class StageModel
         pointsRightTmp = shortenIntersectingLineSegments (pointsRightTmp);
         pointsLeftTmp = shortenIntersectingLineSegments (pointsLeftTmp);
 
-        pointsRightTmp = interpolate (pointsRightTmp, bezierCurveFactor);
-        pointsLeftTmp = interpolate (pointsLeftTmp, bezierCurveFactor);
+        pointsRightTmp = interpolate (pointsRightTmp, BezierCurveFactor);
+        pointsLeftTmp = interpolate (pointsLeftTmp, BezierCurveFactor);
 
         PointsRight = pointsRightTmp;
         PointsLeft = pointsLeftTmp;

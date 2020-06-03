@@ -25,21 +25,21 @@ public class TimelinePanel : MonoBehaviour
         }
     }
 
-    public void Refresh (StageModel stageModel)
+    public void Refresh (Stage stage)
     {
-        if (stageModel == null)
+        if (stage == null)
         {
             return;
         }
 
         if (backButton != null)
         {
-            backButton.interactable = stageModel.CanUndoLastAction ();
+            backButton.interactable = stage.CanUndoLastAction ();
         }
 
         if (forwardButton != null)
         {
-            forwardButton.interactable = stageModel.CanMakeStepForward ();
+            forwardButton.interactable = stage.CanMakeStepForward ();
         }
     }
 }

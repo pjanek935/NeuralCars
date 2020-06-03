@@ -50,13 +50,13 @@ public class TopPanelController : MonoBehaviour
         defaultWidthText.text = stageEditor.DefaultWidth.ToString ();
     }
 
-    public void Refresh (StageModel stageModel)
+    public void Refresh (Stage stage)
     {
-        if (stageModel != null)
+        if (stage != null)
         {
-            bool canUndoLastAction = stageModel.CanUndoLastAction ();
+            bool canUndoLastAction = stage.CanUndoLastAction ();
             resetStageButton.interactable = canUndoLastAction;
-            clearStageButton.interactable = stageModel.Nodes.Count > 0;
+            clearStageButton.interactable = stage.GetStageNodes ().Count > 0;
             saveStar.gameObject.SetActive (canUndoLastAction);
         }
 
