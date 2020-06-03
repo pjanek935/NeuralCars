@@ -47,6 +47,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68b438ab4aa943346ba63807186d41be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  carTelemetry: {fileID: 4142239997908023143}
+  carController: {fileID: 7662206466222359640}
   rrSmoke: {fileID: 69937457147528718}
   rlSmoke: {fileID: 3139307131463607996}
   frSmoke: {fileID: 8434968531261081309}
@@ -911,7 +913,7 @@ ParticleSystem:
           m_PostInfinity: 2
           m_RotationOrder: 4
   EmissionModule:
-    enabled: 0
+    enabled: 1
     serializedVersion: 4
     rateOverTime:
       serializedVersion: 2
@@ -4830,13 +4832,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4586694562465760224}
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: -0, w: -0.7071068}
   m_LocalPosition: {x: -1.185, y: 0.031, z: 2.109}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1325758958114385194}
   m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 270, z: 0}
 --- !u!198 &628672134994222285
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -5665,7 +5667,7 @@ ParticleSystem:
           m_PostInfinity: 2
           m_RotationOrder: 4
   EmissionModule:
-    enabled: 0
+    enabled: 1
     serializedVersion: 4
     rateOverTime:
       serializedVersion: 2
@@ -10419,7 +10421,7 @@ ParticleSystem:
           m_PostInfinity: 2
           m_RotationOrder: 4
   EmissionModule:
-    enabled: 0
+    enabled: 1
     serializedVersion: 4
     rateOverTime:
       serializedVersion: 2
@@ -14513,8 +14515,8 @@ WheelCollider:
   m_Center: {x: 0, y: 0, z: 0}
   m_Radius: 2.5
   m_SuspensionSpring:
-    spring: 1
-    damper: 1
+    spring: 35000
+    damper: 4000
     targetPosition: 1
   m_SuspensionDistance: 0.8
   m_ForceAppPointDistance: 0
@@ -14525,13 +14527,13 @@ WheelCollider:
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.8
     m_AsymptoteValue: 0.5
-    m_Stiffness: 20
+    m_Stiffness: 15
   m_SidewaysFriction:
     m_ExtremumSlip: 0.2
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
-    m_Stiffness: 11
+    m_Stiffness: 7
   m_Enabled: 1
 --- !u!135 &7662206465374266804
 SphereCollider:
@@ -14746,8 +14748,8 @@ WheelCollider:
   m_Center: {x: 0, y: 0, z: 0}
   m_Radius: 2.5
   m_SuspensionSpring:
-    spring: 1
-    damper: 1
+    spring: 35000
+    damper: 4000
     targetPosition: 1
   m_SuspensionDistance: 0.8
   m_ForceAppPointDistance: 0
@@ -14758,13 +14760,13 @@ WheelCollider:
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.8
     m_AsymptoteValue: 0.5
-    m_Stiffness: 20
+    m_Stiffness: 6
   m_SidewaysFriction:
     m_ExtremumSlip: 0.2
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
-    m_Stiffness: 11
+    m_Stiffness: 5
   m_Enabled: 1
 --- !u!135 &7662206465820325844
 SphereCollider:
@@ -14966,8 +14968,8 @@ WheelCollider:
   m_Center: {x: 0, y: 0, z: 0}
   m_Radius: 2.5
   m_SuspensionSpring:
-    spring: 1
-    damper: 1
+    spring: 35000
+    damper: 4000
     targetPosition: 1
   m_SuspensionDistance: 0.8
   m_ForceAppPointDistance: 0
@@ -14978,13 +14980,13 @@ WheelCollider:
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.8
     m_AsymptoteValue: 0.5
-    m_Stiffness: 20
+    m_Stiffness: 15
   m_SidewaysFriction:
     m_ExtremumSlip: 0.2
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
-    m_Stiffness: 11
+    m_Stiffness: 7
   m_Enabled: 1
 --- !u!135 &7662206465935750228
 SphereCollider:
@@ -15092,6 +15094,7 @@ GameObject:
   - component: {fileID: 7662206466222359642}
   - component: {fileID: 7662206466222359643}
   - component: {fileID: 7662206466222359645}
+  - component: {fileID: 4142239997908023143}
   m_Layer: 8
   m_Name: Car
   m_TagString: Untagged
@@ -15109,7 +15112,7 @@ Transform:
   m_LocalRotation: {x: 0.000034922778, y: -0.0000000018277658, z: 0.000052337356,
     w: 1}
   m_LocalPosition: {x: 0, y: -0.60603607, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.6, y: 0.6, z: 0.6}
   m_Children:
   - {fileID: 3399959203409334857}
   - {fileID: 7662206466803020359}
@@ -15137,18 +15140,23 @@ MonoBehaviour:
   wheelColliderFR: {fileID: 7662206465820325847}
   wheelColliderRL: {fileID: 7662206465935750231}
   wheelColliderRR: {fileID: 7662206465374266803}
-  wheelTransformFL: {fileID: 7662206465757285270}
-  wheelTransformFR: {fileID: 7662206465700742801}
-  wheelTransformRL: {fileID: 7662206464814718488}
-  wheelTransformRR: {fileID: 7662206466141222742}
-  maxTorque: 30000
+  wheelTransformFL: {fileID: 6407905671880861253}
+  wheelTransformFR: {fileID: 889902611811557287}
+  wheelTransformRL: {fileID: 2522537970003185402}
+  wheelTransformRR: {fileID: 7812942269650177859}
+  maxTorque: 10000
   maxSteerAngle: 30
-  defaultRearWheelFriction: 20
-  handBrakeRearWheelFriction: 5
-  defaultFrontWheelFriction: 20
-  handBrakeFrontWheelFriction: 9
+  defaultFrontWheelsForwardFriction: 6
+  defaultFrontWheelsSidewaysFriction: 5
+  driftFrontWheelsForwardFriction: 7
+  driftFrontWheelsSidewaysFriction: 1.8
+  defaultRearWheelForwardFriction: 15
+  defaultRearWheelSidewaysFriction: 7
+  driftRearWheelForwardFriction: 15
+  driftRearWheelSidewaysdFriction: 1
   handBrakeFriction: 0.1
-  changeFriction: 0
+  changeFriction: 1
+  frictionChangeSmoothness: 2
 --- !u!114 &7662206466222359644
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15177,7 +15185,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 84
+  m_Constraints: 80
   m_CollisionDetection: 0
 --- !u!65 &7662206466222359643
 BoxCollider:
@@ -15206,6 +15214,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   carNeuralCore: {fileID: 7662206466222359644}
   GatesPassed: 0
+--- !u!114 &4142239997908023143
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7662206466222359719}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88615529e95c97742871091c58190f7c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bufferSize: 10
 --- !u!1 &7662206466443893124
 GameObject:
   m_ObjectHideFlags: 0
@@ -15248,8 +15269,8 @@ WheelCollider:
   m_Center: {x: 0, y: 0, z: 0}
   m_Radius: 2.5
   m_SuspensionSpring:
-    spring: 1
-    damper: 1
+    spring: 35000
+    damper: 4000
     targetPosition: 1
   m_SuspensionDistance: 0.8
   m_ForceAppPointDistance: 0
@@ -15260,13 +15281,13 @@ WheelCollider:
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.8
     m_AsymptoteValue: 0.5
-    m_Stiffness: 20
+    m_Stiffness: 6
   m_SidewaysFriction:
     m_ExtremumSlip: 0.2
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
-    m_Stiffness: 11
+    m_Stiffness: 5
   m_Enabled: 1
 --- !u!135 &7662206466443893126
 SphereCollider:
@@ -15340,13 +15361,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8934432766042782278}
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 1.185, y: 0.031, z: 2.109}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1325758958114385194}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!198 &8434968531261081309
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -16175,7 +16196,7 @@ ParticleSystem:
           m_PostInfinity: 2
           m_RotationOrder: 4
   EmissionModule:
-    enabled: 0
+    enabled: 1
     serializedVersion: 4
     rateOverTime:
       serializedVersion: 2

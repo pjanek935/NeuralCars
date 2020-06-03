@@ -21,22 +21,29 @@ public class CarController : MonoBehaviour
     [SerializeField] float maxTorque = 50;
     [SerializeField] float maxSteerAngle = 40;
 
-    [SerializeField] float defaultRearWheelFriction = 7.2f;
-    [SerializeField] float handBrakeRearWheelFriction = 5f;
-    [SerializeField] float defaultFrontWheelFriction = 11f;
-    [SerializeField] float handBrakeFrontWheelFriction = 5f;
-    [Range (0, 1f)] [SerializeField] float handBrakeFriction = 0.1f;
-    [SerializeField] bool changeFriction = false;
+    [SerializeField] float defaultFrontWheelsForwardFriction = 7.2f;
+    [SerializeField] float defaultFrontWheelsSidewaysFriction = 7.2f;
 
-    float torqueChange = 0;
+    [SerializeField] float driftFrontWheelsForwardFriction = 7.2f;
+    [SerializeField] float driftFrontWheelsSidewaysFriction = 7.2f;
+
+    [SerializeField] float defaultRearWheelForwardFriction = 7.2f;
+    [SerializeField] float defaultRearWheelSidewaysFriction = 7.2f;
+
+    [SerializeField] float driftRearWheelForwardFriction = 7.2f;
+    [SerializeField] float driftRearWheelSidewaysdFriction = 7.2f;
+
+    [Range (0, 1f)] [SerializeField] float handBrakeFriction = 0.1f;
+
+    [SerializeField] bool changeFriction = false;
+    [SerializeField] float frictionChangeSmoothness = 10f;
+
     float prevTorque = 0;
     float torque = 0;
     float steerAngle = 0;
     bool handBrake = false;
-    Vector3 prevPosition = Vector3.zero;
-    Queue<Vector3> movementDirectionBuffer = new Queue<Vector3> ();
 
-    public Vector3 MovementDirectionAverage
+    public float TorqueChange
     {
         get;
         private set;
@@ -44,7 +51,6 @@ public class CarController : MonoBehaviour
 
     void Start ()
     {
-        prevPosition = transform.position;
         GetComponent<Rigidbody> ().centerOfMass.Set (0, -0.9f, 0);
     }
 
@@ -56,12 +62,10 @@ public class CarController : MonoBehaviour
             torque = Input.GetAxis ("Vertical"); ;
             steerAngle = Input.GetAxis ("Horizontal");
             handBrake = Input.GetKey (KeyCode.Space);
-            torqueChange = Mathf.Abs ((prevTorque - torque) * Time.deltaTime);
+            TorqueChange = Mathf.Abs ((prevTorque - torque) * Time.deltaTime);
         }
 
         updateWheelTransforms ();
-        updateMovementParameters ();
-        updateParticles ();
     }
 
     public void SetTorque (float torque)
@@ -80,89 +84,98 @@ public class CarController : MonoBehaviour
         {
             wheelColliderRR.motorTorque = maxTorque * torque;
             wheelColliderRL.motorTorque = maxTorque * torque;
-
-            if (changeFriction)
-            {
-                WheelFrictionCurve frictionCurve = wheelColliderRR.sidewaysFriction;
-                frictionCurve.stiffness = defaultRearWheelFriction;
-                wheelColliderRR.sidewaysFriction = frictionCurve;
-                wheelColliderRL.sidewaysFriction = frictionCurve;
-
-                frictionCurve = wheelColliderFL.sidewaysFriction;
-                frictionCurve.stiffness = defaultFrontWheelFriction;
-                wheelColliderFL.sidewaysFriction = frictionCurve;
-                wheelColliderFR.sidewaysFriction = frictionCurve;
-            }
-            
         }
         else
         {
             float friction = 1f - handBrakeFriction;
             wheelColliderRR.motorTorque = wheelColliderRR.motorTorque * friction;
             wheelColliderRL.motorTorque = wheelColliderRL.motorTorque * friction;
-
-            if (changeFriction)
-            {
-                WheelFrictionCurve frictionCurve = wheelColliderRR.sidewaysFriction;
-                frictionCurve.stiffness = handBrakeRearWheelFriction;
-                wheelColliderRR.sidewaysFriction = frictionCurve;
-                wheelColliderRL.sidewaysFriction = frictionCurve;
-
-                frictionCurve = wheelColliderFL.sidewaysFriction;
-                frictionCurve.stiffness = handBrakeFrontWheelFriction;
-                wheelColliderFL.sidewaysFriction = frictionCurve;
-                wheelColliderFR.sidewaysFriction = frictionCurve;
-            }
         }
 
         wheelColliderFL.steerAngle = maxSteerAngle * steerAngle;
         wheelColliderFR.steerAngle = maxSteerAngle * steerAngle;
 
         transform.eulerAngles = new Vector3 (0f, transform.eulerAngles.y, 0f);
+        changeFrictionIfNeeded ();
     }
 
-    void updateParticles ()
-    {  
-        float alpha = GetAngleBetweenForwardAndMovementDirection (true);
-
-        if (torqueChange > 0)
+    void changeFrictionIfNeeded ()
+    {
+        if (changeFriction)
         {
-            carParticlesManager.StartSmoke ();
+            lerpFrontWheelsForwardFriction ();
+            lerpFrontWheelsSidewaysFriction ();
+            lerpRearWheelsForwardFriction ();
+            lerpRearWheelsSidewaysFriction ();
         }
-        else if (Mathf.Abs (alpha) > 0.03f)
+    }
+
+    void lerpFrontWheelsForwardFriction ()
+    {
+        WheelFrictionCurve fronWheelForwardFrictionCurve = wheelColliderFR.forwardFriction;
+
+        if (handBrake)
         {
-            carParticlesManager.StartSmoke ();
+            fronWheelForwardFrictionCurve.stiffness = driftFrontWheelsForwardFriction;
         }
         else
         {
-            carParticlesManager.StopSmoke ();
+            fronWheelForwardFrictionCurve.stiffness = Mathf.Lerp (fronWheelForwardFrictionCurve.stiffness, defaultFrontWheelsForwardFriction, frictionChangeSmoothness * Time.deltaTime);
         }
+
+        wheelColliderFR.forwardFriction = fronWheelForwardFrictionCurve;
+        wheelColliderFL.forwardFriction = fronWheelForwardFrictionCurve;
     }
 
-    void updateMovementParameters ()
+    void lerpFrontWheelsSidewaysFriction ()
     {
-        MovementDirectionAverage = transform.position - prevPosition;
+        WheelFrictionCurve fronWheelSidewaysFrictionCurve = wheelColliderFR.sidewaysFriction;
 
-        if (MovementDirectionAverage.magnitude < 0.1f)
+        if (handBrake)
         {
-            MovementDirectionAverage = Vector3.zero;
+            fronWheelSidewaysFrictionCurve.stiffness = driftFrontWheelsSidewaysFriction;
+        }
+        else
+        {
+            fronWheelSidewaysFrictionCurve.stiffness = Mathf.Lerp (fronWheelSidewaysFrictionCurve.stiffness, defaultFrontWheelsSidewaysFriction, frictionChangeSmoothness * Time.deltaTime);
         }
 
-        Vector3 currentVelocity = MovementDirectionAverage / Time.deltaTime;
+        wheelColliderFR.sidewaysFriction = fronWheelSidewaysFrictionCurve;
+        wheelColliderFL.sidewaysFriction = fronWheelSidewaysFrictionCurve;
+    }
 
-        MovementDirectionAverage.Normalize ();
-        movementDirectionBuffer.Enqueue (MovementDirectionAverage);
+    void lerpRearWheelsSidewaysFriction ()
+    {
+        WheelFrictionCurve rearWheelSidewaysFrictionCurve = wheelColliderRR.sidewaysFriction;
 
-        if (movementDirectionBuffer.Count > 10)
+        if (handBrake)
         {
-            movementDirectionBuffer.Dequeue ();
+            rearWheelSidewaysFrictionCurve.stiffness = driftRearWheelSidewaysdFriction;
+        }
+        else
+        {
+            rearWheelSidewaysFrictionCurve.stiffness = Mathf.Lerp (rearWheelSidewaysFrictionCurve.stiffness, defaultRearWheelSidewaysFriction, frictionChangeSmoothness * Time.deltaTime);
         }
 
-        MovementDirectionAverage = calculateAverage (movementDirectionBuffer).normalized;
-        prevPosition = transform.position;
+        wheelColliderRR.sidewaysFriction = rearWheelSidewaysFrictionCurve;
+        wheelColliderRL.sidewaysFriction = rearWheelSidewaysFrictionCurve;
+    }
 
+    void lerpRearWheelsForwardFriction ()
+    {
+        WheelFrictionCurve rearWheelForwardFrictionCurve = wheelColliderRR.forwardFriction;
 
-        Debug.DrawLine (this.transform.position, this.transform.position + MovementDirectionAverage * 10, Color.yellow);
+        if (handBrake)
+        {
+            rearWheelForwardFrictionCurve.stiffness = driftRearWheelForwardFriction;
+        }
+        else
+        {
+            rearWheelForwardFrictionCurve.stiffness = Mathf.Lerp (rearWheelForwardFrictionCurve.stiffness, defaultRearWheelForwardFriction, frictionChangeSmoothness * Time.deltaTime);
+        }
+
+        wheelColliderRR.forwardFriction = rearWheelForwardFrictionCurve;
+        wheelColliderRL.forwardFriction = rearWheelForwardFrictionCurve;
     }
 
     void updateWheelTransform (WheelCollider wheelCollider, Transform wheelTransform)
@@ -189,41 +202,6 @@ public class CarController : MonoBehaviour
     public float GetSteerAngleNormalized ()
     {
         return (wheelColliderFL.steerAngle / maxSteerAngle);
-    }
-
-    public Vector3 calculateAverage (Queue <Vector3> queue)
-    {
-        Vector3 result = Vector3.zero;
-        
-        foreach (Vector3 v in queue)
-        {
-            result += v;
-        }
-
-        result /= queue.Count;
-
-        return result;
-    }
-
-    public float GetAngleBetweenForwardAndMovementDirection (bool normalized = false)
-    {
-        float result = Vector3.SignedAngle (transform.forward, MovementDirectionAverage, Vector3.up);
-
-        if (normalized)
-        {
-            if (result > 180)
-            {
-                result = 180;
-            }
-            else if (result < -180)
-            {
-                result = -180;
-            }
-
-            result /= 180;
-        }
-
-        return result;
     }
 
     public float GetCurrentTorqueNormalized ()
