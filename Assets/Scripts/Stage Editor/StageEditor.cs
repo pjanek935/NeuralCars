@@ -20,6 +20,7 @@ public class StageEditor : MonoBehaviour
     [SerializeField] float defaultWidth = 8f;
 
     List<Flag> flags = new List<Flag> ();
+    bool editorEnabled = true;
 
     public Flag CurrentSelectedFlag
     {
@@ -84,6 +85,20 @@ public class StageEditor : MonoBehaviour
         onLoadStageClicked (SaveManager.Instance.CurrentOpenedStageId);
     }
 
+    public void DisableStageEditor ()
+    {
+        editorEnabled = false;
+        flagsContainer.gameObject.SetActive (false);
+        lineRenderer.gameObject.SetActive (false);
+    }
+
+    public void EnableStageEditor ()
+    {
+        editorEnabled = true;
+        flagsContainer.gameObject.SetActive (true);
+        lineRenderer.gameObject.SetActive (true);
+    }
+
     void onDefaultWidthDownClicked ()
     {
         float newWidth = defaultWidth - StageConsts.NodeD;
@@ -121,6 +136,7 @@ public class StageEditor : MonoBehaviour
 
     void onLoadStageClicked (int stageId)
     {
+        stage.SetBeizerCurverFactor (bezierDistanceFactor);
         stage.LoadStageWithId (stageId);
         synchornizeFlagsWithModel ();
         refreshViews ();
@@ -170,8 +186,11 @@ public class StageEditor : MonoBehaviour
 
     void onFloorClicked (Vector3 pos)
     {
-        createNewFlag (pos);
-        refreshLineRenderer ();
+        if (editorEnabled)
+        {
+            createNewFlag (pos);
+            refreshLineRenderer ();
+        }
     }
 
     void synchronizeModelWithFlags ()

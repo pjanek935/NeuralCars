@@ -11,6 +11,8 @@ public class Stage : MonoBehaviour
     [SerializeField] Transform wallsContainer;
     [SerializeField] Transform gatesContainer;
 
+    [SerializeField] Transform trackBeginning;
+
     List<GameObject> wallsRight = new List<GameObject> ();
     List<GameObject> wallsLeft = new List<GameObject> ();
     List<Gate> gates = new List<Gate> ();
@@ -48,13 +50,21 @@ public class Stage : MonoBehaviour
 
     public void LoadStageWithId (int stageId)
     {
+        float bezierCurveFactor = 3.5f;
+
+        if (stageModel != null)
+        {
+            bezierCurveFactor = stageModel.BezierCurveFactor;
+        }
+
         StageModel newStageModel = SaveManager.Instance.LoadStage (stageId);
 
         if (newStageModel != null)
         {
             stageModel = newStageModel;
+            stageModel.BezierCurveFactor = bezierCurveFactor;
             stageModel.RefreshPointsRightAndLeft ();
-            createRoadMesh ();
+            RefreshGeometry ();
         }
     }
 
@@ -100,6 +110,7 @@ public class Stage : MonoBehaviour
         createWalls ();
         createGates ();
         createRoadMesh ();
+        refreshTrackBeginningPosition ();
     }
 
     void createWalls ()
@@ -292,5 +303,24 @@ public class Stage : MonoBehaviour
         msh.RecalculateBounds ();
 
         roadMeshFilter.mesh = msh;
+    }
+
+    void refreshTrackBeginningPosition ()
+    {
+        List<StageNode> nodes = stageModel.Nodes;
+
+        if (nodes.Count > 0)
+        {
+            Vector3 pos = nodes [0].Position;
+            Vector3 forward = Vector3.forward;
+
+            if (nodes.Count > 1)
+            {
+                forward = nodes [1].Position - pos;
+            }
+
+            trackBeginning.position = pos;
+            trackBeginning.forward = forward;
+        }
     }
 }
