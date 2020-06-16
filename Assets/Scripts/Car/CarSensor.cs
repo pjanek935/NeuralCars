@@ -8,8 +8,7 @@ public class CarSensor : MonoBehaviour
 
     public float Length
     {
-        get;
-        private set;
+        get { return length; }
     }
 
     public float Value
@@ -28,13 +27,28 @@ public class CarSensor : MonoBehaviour
 
     public void Init (float length, float angle)
     {
-        transform.eulerAngles = new Vector3 (0f, angle, 0f);
-        this.Length = length;
+        SetAngle (angle);
+        this.length = length;
 
         if (lineRenderer != null)
         {
             lineRenderer.useWorldSpace = true;
         }
+    }
+
+    public void SetVisible (bool visible)
+    {
+        lineRenderer.enabled = visible;
+    }
+
+    public void SetLength (float length)
+    {
+        this.length = length;
+    }
+
+    public void SetAngle (float angle)
+    {
+        transform.localEulerAngles = new Vector3 (0f, angle, 0f);
     }
 
     public void ShootRaycast ()

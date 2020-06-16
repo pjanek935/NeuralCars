@@ -177,13 +177,13 @@ public class ObserverScript : MonoBehaviour {
         while (index < limit)
         {
             //Wybierz indeksy rodzicow
-            int parent1index = genetics.rouletteSelect(fitness);
-            int parent2index = genetics.rouletteSelect(fitness);
+            int parent1index = genetics.RouletteSelect(fitness);
+            int parent2index = genetics.RouletteSelect(fitness);
 
             //Upewnij sie ze rodzice nie sa tacy sami
             while (parent1index == parent2index)
             {
-                parent2index = genetics.rouletteSelect(fitness);
+                parent2index = genetics.RouletteSelect(fitness);
             }
             
             //Pobierz wagi rodzicow

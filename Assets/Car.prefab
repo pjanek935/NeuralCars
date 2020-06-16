@@ -14806,8 +14806,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7662206465877828521}
-  m_LocalRotation: {x: -0.000034922778, y: 0.0000000018277658, z: -0.000052337356,
-    w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -15135,7 +15134,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerControlled: 1
-  carParticlesManager: {fileID: 5340290572683975485}
   wheelColliderFL: {fileID: 7662206466443893177}
   wheelColliderFR: {fileID: 7662206465820325847}
   wheelColliderRL: {fileID: 7662206465935750231}
@@ -15171,6 +15169,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   carRadar: {fileID: 7662206465267480811}
   carController: {fileID: 7662206466222359640}
+  carFitness: {fileID: 0}
+  carTelemetry: {fileID: 4142239997908023143}
+  isActive: 0
+  neuronsInHiddenLayer: 5
+  sensorsCount: 7
+  angleBetweenSensors: 15
+  sensorsLength: 15
 --- !u!54 &7662206466222359642
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -15213,6 +15218,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   carNeuralCore: {fileID: 7662206466222359644}
+  carTelemetry: {fileID: 4142239997908023143}
   GatesPassed: 0
 --- !u!114 &4142239997908023143
 MonoBehaviour:

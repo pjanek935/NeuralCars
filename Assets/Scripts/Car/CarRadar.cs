@@ -48,6 +48,34 @@ public class CarRadar : MonoBehaviour
         }
     }
 
+    public void SetSensorsVisible (bool visible)
+    {
+        foreach (CarSensor sensor in sensors)
+        {
+            sensor.SetVisible (visible);
+        }
+    }
+
+    public void SetSensorsLength (float length)
+    {
+        foreach (CarSensor sensor in sensors)
+        {
+            sensor.SetLength (length);
+        }
+    }
+
+    public void SetAngleBetweenSensors (float angleBetweenSensors)
+    {
+        float angle = -((sensors.Count * angleBetweenSensors) / 2f); //init start angle
+        angle += angleBetweenSensors / 2f;
+
+        for (int i = 0; i < sensors.Count; i++)
+        {
+            sensors [i].SetAngle (angle);
+            angle += angleBetweenSensors;
+        }
+    }
+
     void createNewSensor ()
     {
         GameObject newObject = Instantiate (sensorPrefab);

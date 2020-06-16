@@ -6,8 +6,6 @@ public class CarController : MonoBehaviour
 {
     [SerializeField] bool playerControlled = false;
 
-    [SerializeField] CarParticlesManager carParticlesManager;
-
     [SerializeField] WheelCollider wheelColliderFL;
     [SerializeField] WheelCollider wheelColliderFR;
     [SerializeField] WheelCollider wheelColliderRL;
@@ -76,6 +74,11 @@ public class CarController : MonoBehaviour
     public void SetSteerAngle (float steerAngle)
     {
         this.steerAngle = steerAngle;
+    }
+
+    public void SetBrake (float brakeForce)
+    {
+        handBrake = brakeForce > 0.3f;
     }
 
     private void FixedUpdate ()

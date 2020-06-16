@@ -11,11 +11,18 @@ public class CarTelemetry : MonoBehaviour
     [SerializeField] int bufferSize = 10;
 
     Queue<Vector3> movementDirectionBuffer = new Queue<Vector3> ();
+    Queue<Vector3> velocityBuffer = new Queue<Vector3> ();
     Vector3 prevPosition = Vector3.zero;
 
     const float MIN_SQRD_MAGNITUDE = 0.1f;
 
     public Vector3 MovementDirectionAverage
+    {
+        get;
+        private set;
+    }
+
+    public Vector3 VelocityAverage
     {
         get;
         private set;
@@ -34,6 +41,7 @@ public class CarTelemetry : MonoBehaviour
     void updateMovementParameters ()
     {
         MovementDirectionAverage = transform.position - prevPosition;
+        VelocityAverage = MovementDirectionAverage / Time.deltaTime;
 
         if (MovementDirectionAverage.sqrMagnitude < MIN_SQRD_MAGNITUDE)
         {
@@ -42,13 +50,20 @@ public class CarTelemetry : MonoBehaviour
 
         MovementDirectionAverage.Normalize ();
         movementDirectionBuffer.Enqueue (MovementDirectionAverage);
+        velocityBuffer.Enqueue (VelocityAverage);
 
         if (movementDirectionBuffer.Count > bufferSize)
         {
             movementDirectionBuffer.Dequeue ();
         }
 
+        if (velocityBuffer.Count > bufferSize)
+        {
+            velocityBuffer.Dequeue ();
+        }
+
         MovementDirectionAverage = calculateAverage (movementDirectionBuffer).normalized;
+        VelocityAverage = calculateAverage (velocityBuffer);
         prevPosition = transform.position;
 
         Debug.DrawLine (this.transform.position, this.transform.position + MovementDirectionAverage * 10, Color.yellow);
