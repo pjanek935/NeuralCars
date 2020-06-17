@@ -193,7 +193,7 @@ public class ObserverScript : MonoBehaviour {
             //Dokonaj krzyzowania
             double[] child1;
             double[] child2;
-            genetics.Crossover(parent1, parent2, out child1, out child2, crossType);
+            genetics.CrossoverWeights(parent1, parent2, out child1, out child2, crossType);
 
             child1.CopyTo(childrenWeights[index], 0);
             index++;

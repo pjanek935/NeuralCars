@@ -15,13 +15,28 @@ public class GeneticsManager : MonoBehaviour
     [SerializeField] int sensorsCount = 7;
     [SerializeField] float angleBetweenSensors = 15f;
     [SerializeField] float sensorsLength = 15f;
+    [SerializeField] bool crossBreedSensors = false;
+    [SerializeField] float mutationProbability = 0.2f;
+    [SerializeField] bool adaptiveMutationProbability = true;
 
     List<CarNeuralCore> cars = new List<CarNeuralCore> ();
     Genetics genetics = new Genetics ();
-    double [] prevBest;
-    double prevBestFitness;
+    CarSimpleData prevBestCar = new CarSimpleData ();
 
-    float mutationProbability = 0.2f;
+    const float SENSOR_LENGTH_D = 5f;
+    const float ANGLE_BETWEEN_SENSORS_D = 1f;
+
+    public bool CrossbreedSensors
+    {
+        get { return crossBreedSensors; }
+        set { crossBreedSensors = value; }
+    }
+
+    public bool AdaptiveMutationProbability
+    {
+        get { return adaptiveMutationProbability; }
+        set { adaptiveMutationProbability = value; }
+    }
 
     public int CarsCount
     {
@@ -164,39 +179,40 @@ public class GeneticsManager : MonoBehaviour
     void onAllCarsDisabled ()
     {
         List<CarNeuralCore> sortedCars = getSortedByFitnessCarsList ();
-        List<double []> newGenWeights = new List<double []> ();
         double [] fitnesses = new double [sortedCars.Count];
+        List<CarSimpleData> newGenCars = new List<CarSimpleData> ();
+        newGenCars.Add (sortedCars [0].GetCarSimpleData ());
 
         for (int i = 0; i < sortedCars.Count; i ++)
         {
             fitnesses [i] = sortedCars [i].GetComponent<CarFitness> ().GetFitness ();
         }
 
-        //Preserve best car in this generation (car with higher fitness)
-        newGenWeights.Add (sortedCars [0].GetWeights ());
-
-        if (fitnesses [0] > prevBestFitness)
+        if (fitnesses [0] > prevBestCar.Fitness)
         {
-            prevBestFitness = fitnesses [0];
-            prevBest = sortedCars [0].GetWeights ();
+            prevBestCar = sortedCars [0].GetCarSimpleData ();
         }
         else
         {
-            newGenWeights.Add (prevBest);
+
+            newGenCars.Add (prevBestCar.GetCopy ());
         }
 
-        if (prevBestFitness > fitnesses [0])
+        if (AdaptiveMutationProbability)
         {
-            mutationProbability += 0.01f;
-        }
-        else
-        {
-            mutationProbability -= 0.01f;
+            if (prevBestCar.Fitness > fitnesses [0])
+            {
+                mutationProbability += 0.01f;
+            }
+            else
+            {
+                mutationProbability -= 0.01f;
+            }
+
+            mutationProbability = Mathf.Clamp (mutationProbability, 0.05f, 0.6f);
         }
 
-        mutationProbability = Mathf.Clamp (mutationProbability, 0.05f, 0.6f);
-        
-        while (newGenWeights.Count < carsCount)
+        while (newGenCars.Count < carsCount)
         {
             int parent1index = genetics.RouletteSelect (fitnesses);
             int parent2index = genetics.RouletteSelect (fitnesses);
@@ -213,30 +229,52 @@ public class GeneticsManager : MonoBehaviour
                 }
             }
 
-            double [] parent1Weights = sortedCars [parent1index].GetWeights ();
-            double [] parent2Weights = sortedCars [parent2index].GetWeights ();
-
-            double [] child1;
-            double [] child2;
-            genetics.Crossover (parent1Weights, parent2Weights, out child1, out child2, Genetics.CrossType.ARYTM);
-
-            newGenWeights.Add (child1);
-            newGenWeights.Add (child2);
+            CarSimpleData c1;
+            CarSimpleData c2;
+            genetics.CrossoverCars (sortedCars [parent1index].GetCarSimpleData (), sortedCars [parent2index].GetCarSimpleData (), out c1, out c2, Genetics.CrossType.ARYTM);
+            newGenCars.Add (c1);
+            newGenCars.Add (c2);
         }
 
-        for (int i = 0; i < newGenWeights.Count; i++)
+        for (int i = 0; i < newGenCars.Count; i++)
         {
             System.Random rnd = new System.Random ((int) DateTime.Now.Ticks);
 
             if (rnd.NextDouble () < mutationProbability)
             {
-                genetics.Mutation (newGenWeights [i], mutationProbability);
+                genetics.Mutation (newGenCars [i].Weights, mutationProbability);
             }
         }
 
+        //if (CrossbreedSensors)
+        //{
+        //    System.Random rnd = new System.Random ((int) DateTime.Now.Ticks);
+
+        //    for (int i = 0; i < newGenWeights.Count; i++)
+        //    {
+        //        if (rnd.NextDouble () < mutationProbability)
+        //        {
+        //            float d = (float) rnd.NextDouble () * SENSOR_LENGTH_D - SENSOR_LENGTH_D / 2f;
+        //            newGenSensorLength [i] += d;
+        //        }
+
+        //        if (rnd.NextDouble () < mutationProbability)
+        //        {
+        //            float d = (float) rnd.NextDouble () * ANGLE_BETWEEN_SENSORS_D - ANGLE_BETWEEN_SENSORS_D / 2f;
+        //            newGenAngleBetweenSensors [i] += d;
+        //        }
+        //    }
+        //}
+
         for (int i = 0; i < cars.Count; i ++)
         {
-            cars [i].SetWeights (newGenWeights [i]);
+            cars [i].SetWeights (newGenCars [i].Weights);
+
+            //if (CrossbreedSensors)
+            //{
+            //    cars [i].SetSensorsLength (newGenSensorLength [i]);
+            //    cars [i].SetAngleBetweenSensors (newGenAngleBetweenSensors [i]);
+            //}
         }
 
         resetCars ();

@@ -10,7 +10,35 @@ public class Genetics
 
     System.Random rand = new System.Random((int) DateTime.Now.Ticks);
 
-    public void Crossover(double[] parent1, double[] parent2,
+    public float CrossoverFloats (float sensorLength1, float fitness1, float sensorLength2, float fitness2)
+    {
+        float w1 = fitness1 / (fitness1 + fitness2);
+        float w2 = fitness2 / (fitness1 + fitness2);
+        return (sensorLength1 * w1 + sensorLength2 * w2) / 2f;
+    }
+
+    public void CrossoverCars (CarSimpleData p1, CarSimpleData p2, out CarSimpleData c1, out CarSimpleData c2, CrossType type)
+    {
+        c1 = new CarSimpleData ();
+        c2 = new CarSimpleData ();
+
+        double [] c1w;
+        double [] c2w;
+        CrossoverWeights (p1.Weights, p2.Weights, out c1w, out c2w, type);
+
+        c1.Weights = c1w;
+        c2.Weights = c2w;
+
+        float newSensorLength = CrossoverFloats (p1.SensorsLength, (float) p1.Fitness, p2.SensorsLength, (float) p2.Fitness);
+        float newAngleBetweenSensors = CrossoverFloats (p1.AngleBetweenSensors, (float) p1.Fitness, p2.AngleBetweenSensors, (float) p2.Fitness);
+
+        c1.SensorsLength = newSensorLength;
+        c2.SensorsLength = newSensorLength;
+        c1.AngleBetweenSensors = newAngleBetweenSensors;
+        c2.AngleBetweenSensors = newAngleBetweenSensors;
+    }
+
+    public void CrossoverWeights(double[] parent1, double[] parent2,
         out double[] child1, out double[] child2, CrossType type)
     {
         int size = parent1.Length;

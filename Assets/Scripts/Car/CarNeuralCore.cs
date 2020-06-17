@@ -54,6 +54,11 @@ public class CarNeuralCore : MonoBehaviour
         set { sensorsLength = value; }
     }
 
+    public CarSimpleData GetCarSimpleData ()
+    {
+        return new CarSimpleData (GetWeights (), GetComponent< CarFitness> ().GetFitness (), SensorsLength, AngleBetweenSensors);
+    }
+
     private void Awake ()
     {
         carFitness.OnWallHit += disableCar;
