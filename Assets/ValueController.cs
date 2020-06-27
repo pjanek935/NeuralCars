@@ -41,6 +41,12 @@ public class ValueController : MonoBehaviour
         set;
     }
 
+    public string Format
+    {
+        get;
+        set;
+    }
+
     private void Awake ()
     {
         upButton.onClick.AddListener (() => onUpClicked ());
@@ -60,7 +66,7 @@ public class ValueController : MonoBehaviour
         CurrentValue = Mathf.Clamp (CurrentValue, MinValue, MaxValue);
         upButton.interactable = CurrentValue < MaxValue;
         downButton.interactable = CurrentValue > MinValue;
-        valueText.text = CurrentValue.ToString ();
+        setVal (CurrentValue);
         OnUpClicked?.Invoke ();
         OnValueChanged?.Invoke (CurrentValue);
     }
@@ -71,7 +77,7 @@ public class ValueController : MonoBehaviour
         CurrentValue = Mathf.Clamp (CurrentValue, MinValue, MaxValue);
         downButton.interactable = CurrentValue > MinValue;
         upButton.interactable = CurrentValue < MaxValue;
-        valueText.text = CurrentValue.ToString ();
+        setVal (CurrentValue);
         OnDownClicked?.Invoke ();
         OnValueChanged?.Invoke (CurrentValue);
     }
@@ -79,7 +85,7 @@ public class ValueController : MonoBehaviour
     public void SetValue (float value)
     {
         CurrentValue = value;
-        valueText.text = value.ToString ();
+        setVal (value);
     }
 
     public void Enable ()
@@ -97,6 +103,18 @@ public class ValueController : MonoBehaviour
         {
             canvasGroup.interactable = false;
             canvasGroup.alpha = 0.5f;
+        }
+    }
+
+    void setVal (float val)
+    {
+        if (string.IsNullOrEmpty (Format))
+        {
+            valueText.text = val.ToString ();
+        }
+        else
+        {
+            valueText.text = val.ToString (Format);
         }
     }
 }

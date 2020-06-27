@@ -42,6 +42,42 @@ public class StageModel
         PointsRight = new List<Vector3> ();
     }
 
+    /// <summary>
+    /// Returns distance from first node to given point along stage path.
+    /// </summary>
+    /// <param name="pos"></param>
+    /// <returns></returns>
+    public float GetDistanceFromBeginning (Vector3 pos)
+    {
+        int closestNodeIndex = 0;
+        float dist = float.MaxValue;
+        Vector3 closestPoint = pos;
+
+        for (int i = 0; i < nodes.Count - 1; i ++)
+        {
+            Vector3 closesetTMP = StageUtilities.FindClosestPointOnLineSegment (nodes [i].Position, nodes [i + 1].Position, pos);
+            float d = Vector3.Distance (pos, closesetTMP);
+
+            if (d < dist)
+            {
+                closestPoint = closesetTMP;
+                dist = d;
+                closestNodeIndex = i;
+            }
+        }
+
+        dist = 0;
+
+        for (int i = 0; i < closestNodeIndex; i ++)
+        {
+            dist += Vector3.Distance (nodes [i].Position, nodes [i + 1].Position);
+        }
+
+        dist += Vector3.Distance (nodes [closestNodeIndex].Position, closestPoint);
+
+        return dist;
+    }
+
     public void MakeAndAddAction (StageAction stageAction)
     {
         if (stageAction != null)

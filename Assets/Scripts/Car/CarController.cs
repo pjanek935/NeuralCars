@@ -47,6 +47,16 @@ public class CarController : MonoBehaviour
         private set;
     }
 
+    public float Torque
+    {
+        get { return torque; }
+    }
+
+    public float SteerAngle
+    {
+        get { return steerAngle; }
+    }
+
     void Start ()
     {
         GetComponent<Rigidbody> ().centerOfMass.Set (0, -0.9f, 0);
@@ -61,6 +71,10 @@ public class CarController : MonoBehaviour
             steerAngle = Input.GetAxis ("Horizontal");
             handBrake = Input.GetKey (KeyCode.Space);
             TorqueChange = Mathf.Abs ((prevTorque - torque) * Time.deltaTime);
+
+            //Debug.Log ("Torque: " + torque);
+            //Debug.Log ("Steer angle: " + steerAngle);
+            //Debug.Log ("Torque change: " + TorqueChange);
         }
 
         updateWheelTransforms ();
@@ -76,9 +90,9 @@ public class CarController : MonoBehaviour
         this.steerAngle = steerAngle;
     }
 
-    public void SetBrake (float brakeForce)
+    public void SetBrake (bool handBrake)
     {
-        handBrake = brakeForce > 0.3f;
+        this.handBrake = handBrake;
     }
 
     private void FixedUpdate ()

@@ -23,6 +23,11 @@ public class Stage : MonoBehaviour
         return stageModel.Nodes;
     }
 
+    public float GetDistanceFromBeginning (Vector3 pos)
+    {
+        return stageModel.GetDistanceFromBeginning (pos);
+    }
+
     public void SetBeizerCurverFactor (float val)
     {
         stageModel.BezierCurveFactor = val;

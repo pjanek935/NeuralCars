@@ -17,11 +17,22 @@ public class CameraController : MonoBehaviour
 
     Vector3 prevPointerPos = Vector3.zero;
     Vector3 prevRayHitPos = Vector3.zero;
+    Quaternion defaultQuaternion;
+
+    private void Start ()
+    {
+        defaultQuaternion = this.transform.rotation;
+    }
 
     public CameraState CurrentState
     {
         get;
         private set;
+    }
+
+    public void SetDefaultQuaternion ()
+    {
+        this.transform.rotation = defaultQuaternion;
     }
 
     public bool IsPointerOverGUI ()
@@ -50,6 +61,11 @@ public class CameraController : MonoBehaviour
 
         updateState ();
         updateZooming ();
+    }
+
+    private void FixedUpdate ()
+    {
+        transform.rotation = Quaternion.Slerp (transform.rotation, defaultQuaternion, 5 * Time.deltaTime);
     }
 
     void updateZooming ()
@@ -91,7 +107,6 @@ public class CameraController : MonoBehaviour
         {
             currentRayHitPos = hit.point;
         }
-
 
         Vector3 deltaPos = currentMousePos - prevPointerPos;
         deltaPos.y = 0;

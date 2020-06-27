@@ -31,6 +31,11 @@ public class CarSimpleData : MonoBehaviour
 
     }
 
+    public void Randomize ()
+    {
+
+    }
+
     public CarSimpleData GetCopy ()
     {
         return new CarSimpleData (Weights, Fitness, SensorsLength, AngleBetweenSensors);

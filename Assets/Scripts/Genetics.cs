@@ -14,7 +14,7 @@ public class Genetics
     {
         float w1 = fitness1 / (fitness1 + fitness2);
         float w2 = fitness2 / (fitness1 + fitness2);
-        return (sensorLength1 * w1 + sensorLength2 * w2) / 2f;
+        return (sensorLength1 * w1 + sensorLength2 * w2);
     }
 
     public void CrossoverCars (CarSimpleData p1, CarSimpleData p2, out CarSimpleData c1, out CarSimpleData c2, CrossType type)

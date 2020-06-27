@@ -77,10 +77,12 @@ namespace Assets
             int weightsCount = (inputNeuronsCount * hiddenNeuronsCount) +
               (hiddenNeuronsCount * outputNeuronsCount) + hiddenNeuronsCount + outputNeuronsCount;
             double[] randomWeights = new double[weightsCount];
+
             for (int i = 0; i < randomWeights.Length; ++i)
             {
                 randomWeights[i] = rnd.NextDouble() * 2 - 1f;
             }
+
             return randomWeights;
         }
 
@@ -88,6 +90,7 @@ namespace Assets
         {
             int weightsCount = (inputNeuronsCount * hiddenNeuronsCount) +
               (hiddenNeuronsCount * outputNeuronsCount) + hiddenNeuronsCount + outputNeuronsCount;
+
             if (weights.Length != weightsCount)
             {
                 throw new Exception("Bad weights array in SetWeights");
