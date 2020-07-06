@@ -26,6 +26,8 @@ public class CarNeuralCore : MonoBehaviour, IPointerClickHandler
     NeuralNetwork neuralNetwork;
     int lastPassedGateIndex = 0;
     float lastGatePassedTime = 0;
+    const float TIME_TO_DISABLE = 2f;
+    const float MIN_AVG_VELOCITY = 2f;
 
     public bool DisableOnWallHit
     {
@@ -85,6 +87,7 @@ public class CarNeuralCore : MonoBehaviour, IPointerClickHandler
     {
         lastPassedGateIndex = 0;
         lastGatePassedTime = Time.time;
+        isActive = false;
         carFitness.Reset ();
     }
 
@@ -136,9 +139,9 @@ public class CarNeuralCore : MonoBehaviour, IPointerClickHandler
 
         double [] output = neuralNetwork.GetOutput (inputList.ToArray ());
 
-        carController.SetTorque (1f);
-        carController.SetSteerAngle ((float) output [0]);
-        carController.SetBrake ((float) output [1] > 0f);
+        carController.SetTorque ((float) output [0]);
+        carController.SetSteerAngle ((float) output [1]);
+        //carController.SetBrake ((float) output [2] > 0f);
     }
 
     private void FixedUpdate ()
@@ -161,7 +164,7 @@ public class CarNeuralCore : MonoBehaviour, IPointerClickHandler
         {
             float timeDiff = Time.time - lastGatePassedTime;
 
-            if (timeDiff > 2f)
+            if (timeDiff > TIME_TO_DISABLE)
             {
                 disableCar ();
             }
@@ -179,6 +182,11 @@ public class CarNeuralCore : MonoBehaviour, IPointerClickHandler
     void onGatePassed ()
     {
         OnGatePassed?.Invoke (this);
+
+        if (carFitness.GatesPassed > 5 && carFitness.AvgVelocity < MIN_AVG_VELOCITY)
+        {
+            disableCar ();
+        }
     }
 
     void disableCar ()

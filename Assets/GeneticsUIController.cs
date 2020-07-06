@@ -13,6 +13,7 @@ public class GeneticsUIController : MonoBehaviour
     [SerializeField] Button pauseButton;
     [SerializeField] Button playButton;
     [SerializeField] Button resetCarsPositions;
+    [SerializeField] Button resetAllCars;
 
     [SerializeField] Toggle showSensorsToggle;
     [SerializeField] Toggle crossbreedSensorsToggle;
@@ -48,6 +49,7 @@ public class GeneticsUIController : MonoBehaviour
         pauseButton.onClick.AddListener (() => onPauseButtonClicked ());
         playButton.onClick.AddListener (() => onPlayButtonClicked ());
         resetCarsPositions.onClick.AddListener (() => onResetCarsPositionsButtonClicked ());
+        resetAllCars.onClick.AddListener (() => onResetAllCarsClicked ());
 
         showSensorsToggle.onValueChanged.AddListener ((value) => onShowSensorValueChanged (value));
         crossbreedSensorsToggle.onValueChanged.AddListener ((value) => onCrossbreedSensorsToggleValueChanged (value));
@@ -81,9 +83,16 @@ public class GeneticsUIController : MonoBehaviour
         refreshViews ();
     }
 
+    void onResetAllCarsClicked ()
+    {
+        geneticsManager.ResetSimulation ();
+        geneticsManager.ActivateCars ();
+    }
+
     void onResetCarsPositionsButtonClicked ()
     {
         geneticsManager.ResetCars ();
+        geneticsManager.ActivateCars ();
     }
 
     void onNewGenCreated ()

@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CarSimpleData : MonoBehaviour
+public class CarSimpleData
 {
     public double [] Weights;
-    public double Fitness;
-    public float SensorsLength;
-    public float AngleBetweenSensors;
+    public double Fitness = 0f;
+    public float SensorsLength = 0f;
+    public float AngleBetweenSensors = 0f;
 
     public CarSimpleData (double [] weights, double fitness, float sensorsLength, float angleBetweenSensors)
     {
@@ -27,11 +27,6 @@ public class CarSimpleData : MonoBehaviour
     }
 
     public CarSimpleData ()
-    {
-
-    }
-
-    public void Randomize ()
     {
 
     }

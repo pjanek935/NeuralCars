@@ -55,7 +55,8 @@ public class CanvasSwitcher : MonoBehaviour
             geneticsManager.Pause ();
         }
 
-        geneticsManager.ResetCars ();
         geneticsManager.gameObject.SetActive (true);
+        geneticsManager.ResetCars ();
+        geneticsManager.ActivateCars ();
     }
 }

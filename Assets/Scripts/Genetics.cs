@@ -12,8 +12,16 @@ public class Genetics
 
     public float CrossoverFloats (float sensorLength1, float fitness1, float sensorLength2, float fitness2)
     {
-        float w1 = fitness1 / (fitness1 + fitness2);
-        float w2 = fitness2 / (fitness1 + fitness2);
+        float sum = (fitness1 + fitness2);
+        float w1 = 0.5f;
+        float w2 = 0.5f;
+
+        if (sum > 0)
+        {
+            w1 = fitness1 / sum;
+            w2 = fitness2 / sum;
+        }
+        
         return (sensorLength1 * w1 + sensorLength2 * w2);
     }
 

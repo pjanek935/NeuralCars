@@ -31,9 +31,12 @@ public class GeneticsManager : MonoBehaviour
     Genetics genetics = new Genetics ();
     CarSimpleData prevBestCar = new CarSimpleData ();
     bool isActivatingCars = false;
+    Coroutine activatingCarsCoroutine;
 
-    const float SENSOR_LENGTH_D = 20f;
-    const float ANGLE_BETWEEN_SENSORS_D = 8f;
+    const float MAX_SENSOR_LENGTH = 50f; //if crossover sensors options enabled may exceed this value; used to calculate length for brand new cars
+    const float MAX_ANGLE_BETWEEN_SENSORS = 15f; //if crossover sensors options enabled may exceed this value; used to calculate angle for brand new cars
+    const float SENSOR_LENGTH_D = 4f; //max value that sensor length might change if crossover sensor option enabled
+    const float ANGLE_BETWEEN_SENSORS_D = 2f; //max value that angle between sensors might change if crossover sensor option enabled
     const float DEFAULT_MUTATION_PROBABILITY = 0.1f;
 
     public int Generation
@@ -162,17 +165,17 @@ public class GeneticsManager : MonoBehaviour
     public void Pause ()
     {
         IsPaused = true;
-        Time.timeScale = 0f;
     }
 
     public void Resume ()
     {
         IsPaused = false;
-        Time.timeScale = 1f;
     }
 
     public void ResetCars ()
     {
+        stopActivatingCarsCoroutineIfNeeded ();
+
         foreach (CarNeuralCore car in cars)
         {
             car.gameObject.transform.position = startPosition.position;
@@ -180,6 +183,12 @@ public class GeneticsManager : MonoBehaviour
 
             car.Reset ();
         }
+    }
+
+    public void ResetSimulation  ()
+    {
+        ResetCars ();
+        createCars ();
     }
 
     public void SetSensorsVisible (bool visible)
@@ -213,8 +222,8 @@ public class GeneticsManager : MonoBehaviour
 
             if (crossBreedSensors)
             {
-                cars [i].AngleBetweenSensors = (float) rand.NextDouble () * 15f;
-                cars [i].SensorsLength = (float) rand.NextDouble () * 50f; ;
+                cars [i].AngleBetweenSensors = (float) rand.NextDouble () *MAX_ANGLE_BETWEEN_SENSORS;
+                cars [i].SensorsLength = (float) rand.NextDouble () * MAX_SENSOR_LENGTH;
             }
             else
             {
@@ -235,13 +244,25 @@ public class GeneticsManager : MonoBehaviour
             }
         }
 
-        activateCars ();
+        ActivateCars ();
     }
 
-    void activateCars ()
+    public void ActivateCars ()
     {
+        stopActivatingCarsCoroutineIfNeeded ();
         isActivatingCars = true;
-        StartCoroutine (proceedActivateCars ());
+        activatingCarsCoroutine = StartCoroutine (proceedActivateCars ());
+    }
+
+    void stopActivatingCarsCoroutineIfNeeded ()
+    {
+        if (activatingCarsCoroutine != null)
+        {
+            StopCoroutine (activatingCarsCoroutine);
+            activatingCarsCoroutine = null;
+        }
+
+        isActivatingCars = false;
     }
 
     IEnumerator proceedActivateCars ()
@@ -317,15 +338,13 @@ public class GeneticsManager : MonoBehaviour
         {
             prevBestCar = sortedCars [0].GetCarSimpleData ();
         }
-        else
+        else if (prevBestCar.Weights != null)
         {
             newGenCars.Add (prevBestCar.GetCopy ());
         }
 
         if (AdaptiveMutationProbability)
         {
-            Debug.Log ("prev mutation prob: " + mutationProbability);
-
             if (prevBestFitness > currentBestFitness)
             {
                 float d = currentBestFitness / prevBestFitness;
@@ -341,11 +360,9 @@ public class GeneticsManager : MonoBehaviour
             //Debug.Log ("current best: " + currentBestFitness);
            
             mutationProbability = Mathf.Clamp (mutationProbability, 0.05f, 0.5f);
-
-            Debug.Log ("new mutation prob: " + mutationProbability);
         }
 
-        while (newGenCars.Count < carsCount - newRandomCarsCount - 1)
+        while (newGenCars.Count < carsCount - newRandomCarsCount)
         {
             int parent1index = genetics.RouletteSelect (fitnesses);
             int parent2index = genetics.RouletteSelect (fitnesses);
@@ -365,6 +382,7 @@ public class GeneticsManager : MonoBehaviour
             CarSimpleData c1;
             CarSimpleData c2;
             genetics.CrossoverCars (sortedCars [parent1index].GetCarSimpleData (), sortedCars [parent2index].GetCarSimpleData (), out c1, out c2, Genetics.CrossType.ARYTM);
+
             newGenCars.Add (c1);
             newGenCars.Add (c2);
         }
@@ -412,8 +430,8 @@ public class GeneticsManager : MonoBehaviour
         {
             CarSimpleData carSimpleData = new CarSimpleData ();
             carSimpleData.Weights = sortedCars [0].GetRandomNeuralNetworkWeights ();
-            carSimpleData.AngleBetweenSensors = (float) rnd.NextDouble () * 15f;
-            carSimpleData.SensorsLength = (float) rnd.NextDouble () * 50f; ;
+            carSimpleData.AngleBetweenSensors = (float) rnd.NextDouble () * MAX_ANGLE_BETWEEN_SENSORS;
+            carSimpleData.SensorsLength = (float) rnd.NextDouble () * MAX_SENSOR_LENGTH;
 
             newGenCars.Add (carSimpleData);
         }
@@ -431,7 +449,7 @@ public class GeneticsManager : MonoBehaviour
 
         ResetCars ();
         OnNewGenCreated?.Invoke ();
-        activateCars ();
+        ActivateCars ();
     }
 
     List <CarNeuralCore> getSortedByFitnessCarsList ()

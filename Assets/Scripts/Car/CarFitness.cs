@@ -16,8 +16,6 @@ public class CarFitness : MonoBehaviour
     [SerializeField] float distanceTravelled;
     [SerializeField] float driftScore;
 
-    const float DISTANCE_FACTOR = 10f;
-
     public int GatesPassed
     {
         get { return gatesPassed; }
@@ -61,7 +59,7 @@ public class CarFitness : MonoBehaviour
 
         if (gatesPassed > 5)
         {
-            result = (int) (distanceTravelled * DISTANCE_FACTOR * avgSpeed);
+            result = (int) (distanceTravelled + avgSpeed);
         }
 
         return result;
@@ -91,16 +89,17 @@ public class CarFitness : MonoBehaviour
                 if (gate.Index > GatesPassed)
                 {
                     GatesPassed = gate.Index;
-                    avgVelocity += carTelemetry.VelocityAverage.magnitude;
-                    avgVelocity /= 2f;
                 }
+
+                avgVelocity += carTelemetry.VelocityAverage.magnitude;
+                avgVelocity /= 2f;
             }
         } 
     }
 
     private void OnCollisionEnter (Collision collision)
     {
-        if (!carNeuralCore.IsActive)
+        if (! carNeuralCore.IsActive)
         {
             return;
         }
