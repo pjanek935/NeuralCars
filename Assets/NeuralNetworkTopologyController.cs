@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class NeuralNetworkTopologyController : MonoBehaviour
 {
@@ -27,6 +28,8 @@ public class NeuralNetworkTopologyController : MonoBehaviour
     [SerializeField] NeuronToggle steerAngleOutputToggle;
     [SerializeField] NeuronToggle handbrakeOutputToggle;
 
+    Coroutine refreshLinesCoroutine = null;
+
     private void Awake ()
     {
         sensorsCountController.Setup (20, 2, 1);
@@ -36,18 +39,28 @@ public class NeuralNetworkTopologyController : MonoBehaviour
         hiddenLayerNeuronsCountController.Setup (20, 1, 1);
         hiddenLayerNeuronsCountController.SetValue (1);
         hiddenLayerNeuronsCountController.OnValueChanged += hiddenLayerNeuronsCountValueChanged;
+
+        angleBetweenForwardVectorAndMovementDirectionInputToggle.OnValueChanged += onToggleValueChanged;
+        velocityInputToggle.OnValueChanged += onToggleValueChanged;
+        torqueInputToggle.OnValueChanged += onToggleValueChanged;
+        steerAngleInputToggle.OnValueChanged += onToggleValueChanged;
+    }
+
+    void onToggleValueChanged (NeuronToggle sender, bool isOn)
+    {
+        refreshLines ();
     }
 
     void onSensorsCountValueChanged (float newVal)
     {
         createNeurons ((int) newVal, sensorNeurons, sensorsContainer);
-        refreshLines ();
+        startNewRefreshLinesCoroutine ();
     }
 
     void hiddenLayerNeuronsCountValueChanged (float newVal)
     {
         createNeurons ((int) newVal, hiddenLayerNeurons, hiddenLayerNeuronsContainer);
-        refreshLines ();
+        startNewRefreshLinesCoroutine ();
     }
 
     void createNeurons (int count, List <GameObject> list, Transform container)
@@ -82,10 +95,60 @@ public class NeuralNetworkTopologyController : MonoBehaviour
         }
     }
 
+    IEnumerator waitForNextFrameAndInvoke (UnityAction action)
+    {
+        if (action != null)
+        {
+            yield return new WaitForEndOfFrame ();
+            action.Invoke ();
+        }
+    }
+
+    void stopRefreshLineCoroutineIfNeeded ()
+    {
+        if (refreshLinesCoroutine != null)
+        {
+            StopCoroutine (refreshLinesCoroutine);
+            refreshLinesCoroutine = null;
+        }
+    }
+
+    /// <summary>
+    /// Invokes refreshLines methods after one frame delay - it's to give layouter time to position elements in UI
+    /// </summary>
+    void startNewRefreshLinesCoroutine ()
+    {
+        stopRefreshLineCoroutineIfNeeded ();
+        refreshLinesCoroutine = StartCoroutine (waitForNextFrameAndInvoke (refreshLines));
+    }
+
+    /// <summary>
+    /// Immediately creates new lines according to current neurons (input, hidden, output)
+    /// </summary>
     void refreshLines ()
     {
         List<Vector2> starts = new List<Vector2> ();
         List<Vector2> ends = new List<Vector2> ();
+
+        if (angleBetweenForwardVectorAndMovementDirectionInputToggle.IsOn)
+        {
+            addLineFromAInputNeuron (angleBetweenForwardVectorAndMovementDirectionInputToggle, starts, ends);
+        }
+
+        if (velocityInputToggle.IsOn)
+        {
+            addLineFromAInputNeuron (velocityInputToggle, starts, ends);
+        }
+
+        if (torqueInputToggle.IsOn)
+        {
+            addLineFromAInputNeuron (torqueInputToggle, starts, ends);
+        }
+
+        if (steerAngleInputToggle.IsOn)
+        {
+            addLineFromAInputNeuron (steerAngleInputToggle, starts, ends);
+        }
 
         for (int i = 0; i < sensorNeurons.Count; i ++)
         {
@@ -119,6 +182,20 @@ public class NeuralNetworkTopologyController : MonoBehaviour
                 lines.RemoveAt (lines.Count - 1);
                 Destroy (tmp);
             }
+        }
+    }
+
+    void addLineFromAInputNeuron (NeuronToggle inputToggle, List<Vector2> starts, List<Vector2> ends)
+    {
+        if (inputToggle == null || starts == null || ends == null)
+        {
+            return;
+        }
+
+        for (int j = 0; j < hiddenLayerNeurons.Count; j++)
+        {
+            starts.Add (new Vector2 (inputToggle.transform.position.x, inputToggle.transform.position.y));
+            ends.Add (new Vector2 (hiddenLayerNeurons [j].transform.position.x, hiddenLayerNeurons [j].transform.position.y));
         }
     }
 }

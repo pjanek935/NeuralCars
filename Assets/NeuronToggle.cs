@@ -6,8 +6,16 @@ using UnityEngine.UI;
 [RequireComponent (typeof (Toggle))]
 public class NeuronToggle : MonoBehaviour
 {
+    public delegate void NeuronToggleValueChangedEventHandler (NeuronToggle sender, bool value);
+    public event NeuronToggleValueChangedEventHandler OnValueChanged;
+
     [SerializeField] List<Graphic> graphics = new List<Graphic> ();
     Toggle toggle;
+
+    public bool IsOn
+    {
+        get { return toggle.isOn; }
+    }
 
     private void Awake ()
     {
@@ -24,5 +32,7 @@ public class NeuronToggle : MonoBehaviour
             c.a = val ? 1f : 0.5f;
             g.color = c;
         }
+
+        OnValueChanged?.Invoke (this, toggle.isOn);
     }
 }
