@@ -14,14 +14,26 @@ public class NeuronToggle : MonoBehaviour
 
     public bool IsOn
     {
-        get { return toggle.isOn; }
+        get
+        {
+            getToggleReferenceIfNeeded ();
+            return toggle.isOn;
+        }
     }
 
     private void Awake ()
     {
-        toggle = GetComponent<Toggle> ();
+        getToggleReferenceIfNeeded ();
         toggle.onValueChanged.AddListener ((val) => onToggleValueChanged (val));
         onToggleValueChanged (toggle.isOn);
+    }
+
+    void getToggleReferenceIfNeeded ()
+    {
+        if (toggle == null)
+        {
+            toggle = GetComponent<Toggle> ();
+        }
     }
 
     void onToggleValueChanged (bool val)

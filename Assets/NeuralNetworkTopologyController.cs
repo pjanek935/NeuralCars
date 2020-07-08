@@ -44,6 +44,29 @@ public class NeuralNetworkTopologyController : MonoBehaviour
         velocityInputToggle.OnValueChanged += onToggleValueChanged;
         torqueInputToggle.OnValueChanged += onToggleValueChanged;
         steerAngleInputToggle.OnValueChanged += onToggleValueChanged;
+
+        torqueOutputToggle.OnValueChanged += onToggleValueChanged;
+        steerAngleOutputToggle.OnValueChanged += onToggleValueChanged;
+        handbrakeOutputToggle.OnValueChanged += onToggleValueChanged;
+    }
+
+    public NetworkTopologySimpleData GetNetworkTopologySimpleData ()
+    {
+        NetworkTopologySimpleData result = new NetworkTopologySimpleData ();
+
+        result.MovementAngleInput = angleBetweenForwardVectorAndMovementDirectionInputToggle.IsOn;
+        result.SteerAngleInput = steerAngleInputToggle.IsOn;
+        result.TorqueInput = torqueInputToggle.IsOn;
+        result.VelocityInput = velocityInputToggle.IsOn;
+
+        result.SensorsCount = sensorNeurons.Count;
+        result.HiddenLayerNeuronsCount = hiddenLayerNeurons.Count;
+
+        result.SteerAngleOutput = steerAngleOutputToggle.IsOn;
+        result.TorqueOutput = steerAngleOutputToggle.IsOn;
+        result.HandbrakeOutput = steerAngleOutputToggle.IsOn;
+
+        return result;
     }
 
     void onToggleValueChanged (NeuronToggle sender, bool isOn)
@@ -156,6 +179,27 @@ public class NeuralNetworkTopologyController : MonoBehaviour
             {
                 starts.Add (new Vector2 (sensorNeurons [i].transform.position.x, sensorNeurons [i].transform.position.y));
                 ends.Add (new Vector2 (hiddenLayerNeurons [j].transform.position.x, hiddenLayerNeurons [j].transform.position.y));
+            }
+        }
+
+        for (int i = 0; i < hiddenLayerNeurons.Count; i++)
+        {
+            if (torqueOutputToggle.IsOn)
+            {
+                starts.Add (new Vector2 (hiddenLayerNeurons [i].transform.position.x, hiddenLayerNeurons [i].transform.position.y));
+                ends.Add (new Vector2 (torqueOutputToggle.transform.position.x, torqueOutputToggle.transform.position.y));
+            }
+
+            if (steerAngleOutputToggle.IsOn)
+            {
+                starts.Add (new Vector2 (hiddenLayerNeurons [i].transform.position.x, hiddenLayerNeurons [i].transform.position.y));
+                ends.Add (new Vector2 (steerAngleOutputToggle.transform.position.x, steerAngleOutputToggle.transform.position.y));
+            }
+
+            if (handbrakeOutputToggle.IsOn)
+            {
+                starts.Add (new Vector2 (hiddenLayerNeurons [i].transform.position.x, hiddenLayerNeurons [i].transform.position.y));
+                ends.Add (new Vector2 (handbrakeOutputToggle.transform.position.x, handbrakeOutputToggle.transform.position.y));
             }
         }
 
