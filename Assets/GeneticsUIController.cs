@@ -80,13 +80,14 @@ public class GeneticsUIController : MonoBehaviour
 
         mutationProbabilityController.Format = "0.00";
 
-        refreshViews ();
+        RefreshViews ();
     }
 
     void onResetAllCarsClicked ()
     {
         geneticsManager.ResetSimulation ();
         geneticsManager.ActivateCars ();
+        RefreshViews ();
     }
 
     void onResetCarsPositionsButtonClicked ()
@@ -97,7 +98,7 @@ public class GeneticsUIController : MonoBehaviour
 
     void onNewGenCreated ()
     {
-        refreshViews ();
+        RefreshViews ();
     }
 
     void onCameraFollowDrag ()
@@ -115,7 +116,7 @@ public class GeneticsUIController : MonoBehaviour
         cameraFollow.SetTarget (carNeuralCore.transform);
     }
 
-    void refreshViews ()
+    public void RefreshViews ()
     {
         generationText.text = "GENERATION " + geneticsManager.Generation.ToString ("D3");
         mutationProbabilityController.SetValue (geneticsManager.MutationProbability);

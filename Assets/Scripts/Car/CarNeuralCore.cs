@@ -18,14 +18,14 @@ public class CarNeuralCore : MonoBehaviour, IPointerClickHandler
 
     [SerializeField] bool disableOnWallHit;
     [SerializeField] bool isActive = false;
-    [SerializeField] int neuronsInHiddenLayer = 1;
-    [SerializeField] int sensorsCount = 7;
     [SerializeField] float angleBetweenSensors = 15f;
     [SerializeField] float sensorsLength = 15f;
 
     NeuralNetwork neuralNetwork;
     int lastPassedGateIndex = 0;
     float lastGatePassedTime = 0;
+    NetworkTopologySimpleData nt = new NetworkTopologySimpleData ();
+
     const float TIME_TO_DISABLE = 2f;
     const float MIN_AVG_VELOCITY = 2f;
 
@@ -39,18 +39,6 @@ public class CarNeuralCore : MonoBehaviour, IPointerClickHandler
     {
         get { return isActive; }
         set { isActive = value; }
-    }
-
-    public int NeuronsInHiddenLayer
-    {
-        get { return neuronsInHiddenLayer; }
-        set { neuronsInHiddenLayer = value; }
-    }
-
-    public int SensorsCount
-    {
-        get { return sensorsCount; }
-        set { sensorsCount = value; }
     }
 
     public float AngleBetweenSensors
@@ -76,11 +64,14 @@ public class CarNeuralCore : MonoBehaviour, IPointerClickHandler
         carFitness.OnGatePassed += onGatePassed;
     }
 
-    public void Init ()
+    public void Init (NetworkTopologySimpleData networkTopology)
     {
-        initNeuralNetwork (sensorsCount);
-        carRadar.Init (sensorsCount, angleBetweenSensors, sensorsLength);
-        IsActive = false;
+        if (networkTopology != null)
+        {
+            initNeuralNetwork (networkTopology);
+            carRadar.Init (networkTopology.SensorsCount, angleBetweenSensors, sensorsLength);
+            IsActive = false;
+        }
     }
 
     public void Reset ()
@@ -123,25 +114,62 @@ public class CarNeuralCore : MonoBehaviour, IPointerClickHandler
         return neuralNetwork.GetRandomWeights ();
     }
 
-    void initNeuralNetwork (int sensorsCount)
+    void initNeuralNetwork (NetworkTopologySimpleData networkTopology)
     {
-        neuralNetwork = new NeuralNetwork (sensorsCount + 0, neuronsInHiddenLayer, 2);
+        if (networkTopology != null)
+        {
+            nt = networkTopology.GetCopy ();
+            int outputCount = 1 + (nt.TorqueOutput ? 1 : 0) + (nt.HandbrakeOutput ? 1 : 0);
+            int additionalInputCount = (nt.TorqueInput ? 1 : 0) + (nt.VelocityInput ? 1 : 0) +
+                (nt.SteerAngleInput ? 1 : 0) + (nt.MovementAngleInput ? 1 : 0);
+            neuralNetwork = new NeuralNetwork (networkTopology.SensorsCount + additionalInputCount, nt.HiddenLayerNeuronsCount, outputCount);
+        }
     }
 
     void steerCar ()
     {
         List<double> inputList = carRadar.GetValues ();
 
-        //inputList.Add (carTelemetry.GetAngleBetweenForwardAndMovementDirection (true));
-        //inputList.Add (carTelemetry.VelocityAverage.magnitude);
-        //inputList.Add (carController.Torque);
-        //inputList.Add (carController.SteerAngle);
+        if (nt.MovementAngleInput)
+        {
+            inputList.Add (carTelemetry.GetAngleBetweenForwardAndMovementDirection (true));
+        }
+
+        if (nt.VelocityInput)
+        {
+            inputList.Add (carTelemetry.GetAngleBetweenForwardAndMovementDirection (true));
+        }
+
+        if (nt.TorqueInput)
+        {
+            inputList.Add (carController.Torque);
+        }
+
+        if (nt.SteerAngleInput)
+        {
+            inputList.Add (carController.SteerAngle);
+        }
 
         double [] output = neuralNetwork.GetOutput (inputList.ToArray ());
+        int currentOutputIndex = 0;
 
-        carController.SetTorque ((float) output [0]);
-        carController.SetSteerAngle ((float) output [1]);
-        //carController.SetBrake ((float) output [2] > 0f);
+        carController.SetSteerAngle ((float) output [currentOutputIndex]);
+        currentOutputIndex ++;
+
+        if (nt.TorqueOutput)
+        {
+            carController.SetTorque ((float) output [currentOutputIndex]);
+            currentOutputIndex++;
+        }
+        else
+        {
+            carController.SetTorque (1f);
+        }
+
+        if (nt.HandbrakeOutput)
+        {
+            carController.SetBrake ((float) output [currentOutputIndex] > 0f);
+        }
     }
 
     private void FixedUpdate ()

@@ -10,7 +10,6 @@ public class NetworkTopologySimpleData
     public bool SteerAngleInput;
 
     public bool TorqueOutput;
-    public bool SteerAngleOutput;
     public bool HandbrakeOutput;
 
     public int SensorsCount;
@@ -53,14 +52,28 @@ public class NetworkTopologySimpleData
         {
             result = true;
         }
-        else if (SteerAngleOutput != other.SteerAngleOutput)
-        {
-            result = true;
-        }
         else if (HandbrakeOutput != other.HandbrakeOutput)
         {
             result = true;
         }
+
+        return result;
+    }
+    
+    public NetworkTopologySimpleData GetCopy ()
+    {
+        NetworkTopologySimpleData result = new NetworkTopologySimpleData ();
+
+        result.MovementAngleInput = MovementAngleInput;
+        result.SteerAngleInput = SteerAngleInput;
+        result.TorqueInput = TorqueInput;
+        result.VelocityInput = VelocityInput;
+
+        result.HiddenLayerNeuronsCount = HiddenLayerNeuronsCount;
+        result.SensorsCount = SensorsCount;
+
+        result.HandbrakeOutput = HandbrakeOutput;
+        result.TorqueOutput = TorqueOutput;
 
         return result;
     }

@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 public class NeuralNetworkTopologyController : MonoBehaviour
 {
     [SerializeField] GameObject neuronPrefab;
     [SerializeField] GameObject linePrefab;
+
+    [SerializeField] Button resetButton;
 
     [SerializeField] ValueController sensorsCountController;
     [SerializeField] ValueController hiddenLayerNeuronsCountController;
@@ -29,9 +32,12 @@ public class NeuralNetworkTopologyController : MonoBehaviour
     [SerializeField] NeuronToggle handbrakeOutputToggle;
 
     Coroutine refreshLinesCoroutine = null;
+    NetworkTopologySimpleData defaultTopology = new NetworkTopologySimpleData ();
 
     private void Awake ()
     {
+        //resetButton.onClick.AddListener (() => onResetClicked ());
+
         sensorsCountController.Setup (20, 2, 1);
         sensorsCountController.SetValue (1);
         sensorsCountController.OnValueChanged += onSensorsCountValueChanged;
@@ -62,11 +68,33 @@ public class NeuralNetworkTopologyController : MonoBehaviour
         result.SensorsCount = sensorNeurons.Count;
         result.HiddenLayerNeuronsCount = hiddenLayerNeurons.Count;
 
-        result.SteerAngleOutput = steerAngleOutputToggle.IsOn;
-        result.TorqueOutput = steerAngleOutputToggle.IsOn;
-        result.HandbrakeOutput = steerAngleOutputToggle.IsOn;
+        result.TorqueOutput = torqueOutputToggle.IsOn;
+        result.HandbrakeOutput = handbrakeOutputToggle.IsOn;
 
         return result;
+    }
+
+    public void Init (NetworkTopologySimpleData networkTopologySimpleData)
+    {
+        if (networkTopologySimpleData != null)
+        {
+            defaultTopology = networkTopologySimpleData.GetCopy ();
+
+            hiddenLayerNeuronsCountController.SetValue (networkTopologySimpleData.HiddenLayerNeuronsCount);
+            sensorsCountController.SetValue (networkTopologySimpleData.SensorsCount);
+
+            angleBetweenForwardVectorAndMovementDirectionInputToggle.IsOn = networkTopologySimpleData.MovementAngleInput;
+            velocityInputToggle.IsOn = networkTopologySimpleData.VelocityInput;
+            torqueInputToggle.IsOn = networkTopologySimpleData.TorqueInput;
+            steerAngleInputToggle.IsOn = networkTopologySimpleData.SteerAngleInput;
+
+            torqueOutputToggle.IsOn = networkTopologySimpleData.TorqueOutput;
+            handbrakeOutputToggle.IsOn = networkTopologySimpleData.HandbrakeOutput;
+
+            createNeurons (networkTopologySimpleData.SensorsCount, sensorNeurons, sensorsContainer);
+            createNeurons (networkTopologySimpleData.HiddenLayerNeuronsCount, hiddenLayerNeurons, hiddenLayerNeuronsContainer);
+            startNewRefreshLinesCoroutine ();
+        }
     }
 
     void onToggleValueChanged (NeuronToggle sender, bool isOn)
@@ -84,6 +112,11 @@ public class NeuralNetworkTopologyController : MonoBehaviour
     {
         createNeurons ((int) newVal, hiddenLayerNeurons, hiddenLayerNeuronsContainer);
         startNewRefreshLinesCoroutine ();
+    }
+
+    void onResetClicked ()
+    {
+        Init (defaultTopology);
     }
 
     void createNeurons (int count, List <GameObject> list, Transform container)

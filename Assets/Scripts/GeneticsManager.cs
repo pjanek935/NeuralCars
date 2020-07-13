@@ -32,6 +32,7 @@ public class GeneticsManager : MonoBehaviour
     CarSimpleData prevBestCar = new CarSimpleData ();
     bool isActivatingCars = false;
     Coroutine activatingCarsCoroutine;
+    NetworkTopologySimpleData currentTopology = new NetworkTopologySimpleData ();
 
     const float MAX_SENSOR_LENGTH = 50f; //if crossover sensors options enabled may exceed this value; used to calculate length for brand new cars
     const float MAX_ANGLE_BETWEEN_SENSORS = 15f; //if crossover sensors options enabled may exceed this value; used to calculate angle for brand new cars
@@ -49,6 +50,11 @@ public class GeneticsManager : MonoBehaviour
     {
         get;
         private set;
+    }
+
+    public NetworkTopologySimpleData CurrentTopology
+    {
+        get { return currentTopology; }
     }
 
     public bool DisableOnWallHit
@@ -146,19 +152,34 @@ public class GeneticsManager : MonoBehaviour
         }
     }
 
+    public void SetNetworkTopology (NetworkTopologySimpleData networkTopology)
+    {
+        if (networkTopology != null)
+        {
+            currentTopology = networkTopology.GetCopy ();
+        }
+    }
 
     private void Awake ()
     {
-        DisableOnWallHit = disableOnWallHit;    
+        DisableOnWallHit = disableOnWallHit;
     }
 
-    void OnEnable ()
+    public void SetDefaultNetworkTopology ()
     {
-        //Init ();
+        currentTopology.HiddenLayerNeuronsCount = NeuronsInHiddenLayer;
+        currentTopology.SensorsCount = SensorsCount;
+        currentTopology.MovementAngleInput = false;
+        currentTopology.SteerAngleInput = false;
+        currentTopology.TorqueInput = false;
+        currentTopology.VelocityInput = false;
+        currentTopology.HandbrakeOutput = false;
+        currentTopology.TorqueOutput = false;
     }
 
     public void Init ()
     {
+        SetDefaultNetworkTopology ();
         createCars ();
     }
 
@@ -187,6 +208,8 @@ public class GeneticsManager : MonoBehaviour
 
     public void ResetSimulation  ()
     {
+        Generation = 1;
+        prevBestCar = new CarSimpleData ();
         ResetCars ();
         createCars ();
     }
@@ -217,8 +240,6 @@ public class GeneticsManager : MonoBehaviour
 
             cars [i].gameObject.transform.position = startPosition.position;
             cars [i].gameObject.transform.forward = startPosition.forward;
-            cars [i].NeuronsInHiddenLayer = neuronsInHiddenLayer;
-            cars [i].SensorsCount = sensorsCount;
 
             if (crossBreedSensors)
             {
@@ -231,7 +252,7 @@ public class GeneticsManager : MonoBehaviour
                 cars [i].SensorsLength = sensorsLength;
             }
             
-            cars [i].Init ();
+            cars [i].Init (currentTopology);
         }
 
         int diff = cars.Count - carsCount;

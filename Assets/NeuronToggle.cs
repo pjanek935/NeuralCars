@@ -19,6 +19,12 @@ public class NeuronToggle : MonoBehaviour
             getToggleReferenceIfNeeded ();
             return toggle.isOn;
         }
+        
+        set
+        {
+            getToggleReferenceIfNeeded ();
+            toggle.isOn = value;
+        }
     }
 
     private void Awake ()

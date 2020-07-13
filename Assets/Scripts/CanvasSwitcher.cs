@@ -16,6 +16,8 @@ public class CanvasSwitcher : MonoBehaviour
 
     [SerializeField] StageEditor stageEditor;
     [SerializeField] GeneticsManager geneticsManager;
+    [SerializeField] NeuralNetworkTopologyController networkTopologyController;
+    [SerializeField] GeneticsUIController geneticsUIController;
 
     bool wasPaused = false;
 
@@ -69,6 +71,7 @@ public class CanvasSwitcher : MonoBehaviour
     {
         neuralNetworkCanvas.SetActive (false);
         networkTopologyCanvas.SetActive (true);
+        networkTopologyController.Init (geneticsManager.CurrentTopology);
 
         if (geneticsManager.IsPaused)
         {
@@ -88,13 +91,32 @@ public class CanvasSwitcher : MonoBehaviour
         networkTopologyCanvas.SetActive (false);
         neuralNetworkCanvas.SetActive (true);
 
+        NetworkTopologySimpleData currentTopology = geneticsManager.CurrentTopology;
+        NetworkTopologySimpleData newTopology = networkTopologyController.GetNetworkTopologySimpleData ();
+        bool isTpologyDifferent = currentTopology.IsDifferent (newTopology);
+
+        if (isTpologyDifferent)
+        {
+            geneticsManager.SetNetworkTopology (newTopology);
+        }
+      
         if (wasPaused)
         {
             geneticsManager.Pause ();
         }
 
         geneticsManager.gameObject.SetActive (true);
-        geneticsManager.ResetCars ();
-        geneticsManager.ActivateCars ();
+
+        if (isTpologyDifferent)
+        {
+            geneticsManager.ResetSimulation ();
+        }
+        else
+        {
+            geneticsManager.ResetCars ();
+            geneticsManager.ActivateCars ();
+        }
+
+        geneticsUIController.RefreshViews ();
     }
 }
