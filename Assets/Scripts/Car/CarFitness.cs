@@ -11,32 +11,22 @@ public class CarFitness : MonoBehaviour
     [SerializeField] CarTelemetry carTelemetry;
     [SerializeField] CarNeuralCore carNeuralCore;
 
-    [SerializeField] int gatesPassed;
-    [SerializeField] float avgVelocity;
-    [SerializeField] float distanceTravelled;
-    [SerializeField] float driftScore;
-
     public int GatesPassed
     {
-        get { return gatesPassed; }
-        set { gatesPassed = value; }
+        get;
+        private set;
     }
 
     public float AvgVelocity
     {
-        get { return avgVelocity; }
-        set { avgVelocity = value; }
+        get;
+        private set;
     }
 
     public float DistanceTravelled
     {
-        get { return distanceTravelled; }
-        set { distanceTravelled = value; }
-    }
-
-    public float DriftScore
-    {
-        get { return driftScore; }
+        get;
+        set;
     }
     
     public Vector3 PosWhenDisabled
@@ -49,11 +39,11 @@ public class CarFitness : MonoBehaviour
     {
         get 
         {
-            return CalculateFitness (gatesPassed, distanceTravelled, avgVelocity, driftScore);
+            return CalculateFitness (GatesPassed, DistanceTravelled, AvgVelocity);
         }
     }
 
-    public static int CalculateFitness (int gatesPassed, float distanceTravelled, float avgSpeed, float driftScore)
+    public static int CalculateFitness (int gatesPassed, float distanceTravelled, float avgSpeed)
     {
         int result = 0;
 
@@ -68,9 +58,8 @@ public class CarFitness : MonoBehaviour
     public void Reset ()
     {
         GatesPassed = 0;
-        avgVelocity = 0;
-        distanceTravelled = 0;
-        driftScore = 0;
+        AvgVelocity = 0;
+        DistanceTravelled = 0;
     }
 
     private void OnTriggerEnter (Collider other)
@@ -91,8 +80,8 @@ public class CarFitness : MonoBehaviour
                     GatesPassed = gate.Index;
                 }
 
-                avgVelocity += carTelemetry.VelocityAverage.magnitude;
-                avgVelocity /= 2f;
+                AvgVelocity += carTelemetry.VelocityAverage.magnitude;
+                AvgVelocity *= 0.5f;
             }
         } 
     }
@@ -109,9 +98,4 @@ public class CarFitness : MonoBehaviour
             OnWallHit?.Invoke ();
         }
     }
-
-    //private void FixedUpdate ()
-    //{
-    //    driftScore += Mathf.Abs (carTelemetry.GetAngleBetweenForwardAndMovementDirection (true));
-    //}
 }

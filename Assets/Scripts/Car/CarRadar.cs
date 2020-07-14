@@ -8,11 +8,6 @@ public class CarRadar : MonoBehaviour
 
     List<CarSensor> sensors = new List<CarSensor> ();
 
-    private void Start ()
-    {
-        //Init (6, 15f, 15f);
-    }
-
     public List<double> GetValues ()
     {
         List<double> result = new List<double> ();

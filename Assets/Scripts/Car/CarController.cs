@@ -33,13 +33,10 @@ public class CarController : MonoBehaviour
 
     [Range (0, 1f)] [SerializeField] float handBrakeFriction = 0.1f;
 
-    [SerializeField] bool changeFriction = false;
     [SerializeField] float frictionChangeSmoothness = 10f;
 
     float prevTorque = 0;
-    float torque = 0;
-    float steerAngle = 0;
-    bool handBrake = false;
+    bool isHandbrakeOn = false;
 
     public float TorqueChange
     {
@@ -49,12 +46,14 @@ public class CarController : MonoBehaviour
 
     public float Torque
     {
-        get { return torque; }
+        get;
+        private set;
     }
 
     public float SteerAngle
     {
-        get { return steerAngle; }
+        get;
+        private set;
     }
 
     void Start ()
@@ -66,11 +65,11 @@ public class CarController : MonoBehaviour
     {
         if (playerControlled)
         {
-            prevTorque = torque;
-            torque = Input.GetAxis ("Vertical"); ;
-            steerAngle = Input.GetAxis ("Horizontal");
-            handBrake = Input.GetKey (KeyCode.Space);
-            TorqueChange = Mathf.Abs ((prevTorque - torque) * Time.deltaTime);
+            prevTorque = Torque;
+            Torque = Input.GetAxis ("Vertical"); ;
+            SteerAngle = Input.GetAxis ("Horizontal");
+            isHandbrakeOn = Input.GetKey (KeyCode.Space);
+            TorqueChange = Mathf.Abs ((prevTorque - Torque) * Time.deltaTime);
 
             //Debug.Log ("Torque: " + torque);
             //Debug.Log ("Steer angle: " + steerAngle);
@@ -82,25 +81,25 @@ public class CarController : MonoBehaviour
 
     public void SetTorque (float torque)
     {
-        this.torque = torque;
+        this.Torque = torque;
     }
 
     public void SetSteerAngle (float steerAngle)
     {
-        this.steerAngle = steerAngle;
+        this.SteerAngle = steerAngle;
     }
 
     public void SetBrake (bool handBrake)
     {
-        this.handBrake = handBrake;
+        this.isHandbrakeOn = handBrake;
     }
 
     private void FixedUpdate ()
     {
-        if (! handBrake)
+        if (! isHandbrakeOn)
         {
-            wheelColliderRR.motorTorque = maxTorque * torque;
-            wheelColliderRL.motorTorque = maxTorque * torque;
+            wheelColliderRR.motorTorque = maxTorque * Torque;
+            wheelColliderRL.motorTorque = maxTorque * Torque;
         }
         else
         {
@@ -109,29 +108,29 @@ public class CarController : MonoBehaviour
             wheelColliderRL.motorTorque = wheelColliderRL.motorTorque * friction;
         }
 
-        wheelColliderFL.steerAngle = maxSteerAngle * steerAngle;
-        wheelColliderFR.steerAngle = maxSteerAngle * steerAngle;
+        wheelColliderFL.steerAngle = maxSteerAngle * SteerAngle;
+        wheelColliderFR.steerAngle = maxSteerAngle * SteerAngle;
 
         transform.eulerAngles = new Vector3 (0f, transform.eulerAngles.y, 0f);
-        changeFrictionIfNeeded ();
+        changeFriction ();
     }
 
-    void changeFrictionIfNeeded ()
+    /// <summary>
+    /// Return to default wheel friction after using handbrake.
+    /// </summary>
+    void changeFriction ()
     {
-        if (changeFriction)
-        {
-            lerpFrontWheelsForwardFriction ();
-            lerpFrontWheelsSidewaysFriction ();
-            lerpRearWheelsForwardFriction ();
-            lerpRearWheelsSidewaysFriction ();
-        }
+        lerpFrontWheelsForwardFriction ();
+        lerpFrontWheelsSidewaysFriction ();
+        lerpRearWheelsForwardFriction ();
+        lerpRearWheelsSidewaysFriction ();
     }
 
     void lerpFrontWheelsForwardFriction ()
     {
         WheelFrictionCurve fronWheelForwardFrictionCurve = wheelColliderFR.forwardFriction;
 
-        if (handBrake)
+        if (isHandbrakeOn)
         {
             fronWheelForwardFrictionCurve.stiffness = driftFrontWheelsForwardFriction;
         }
@@ -148,7 +147,7 @@ public class CarController : MonoBehaviour
     {
         WheelFrictionCurve fronWheelSidewaysFrictionCurve = wheelColliderFR.sidewaysFriction;
 
-        if (handBrake)
+        if (isHandbrakeOn)
         {
             fronWheelSidewaysFrictionCurve.stiffness = driftFrontWheelsSidewaysFriction;
         }
@@ -165,7 +164,7 @@ public class CarController : MonoBehaviour
     {
         WheelFrictionCurve rearWheelSidewaysFrictionCurve = wheelColliderRR.sidewaysFriction;
 
-        if (handBrake)
+        if (isHandbrakeOn)
         {
             rearWheelSidewaysFrictionCurve.stiffness = driftRearWheelSidewaysdFriction;
         }
@@ -182,7 +181,7 @@ public class CarController : MonoBehaviour
     {
         WheelFrictionCurve rearWheelForwardFrictionCurve = wheelColliderRR.forwardFriction;
 
-        if (handBrake)
+        if (isHandbrakeOn)
         {
             rearWheelForwardFrictionCurve.stiffness = driftRearWheelForwardFriction;
         }
@@ -208,6 +207,9 @@ public class CarController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Update wheel mesh to match its collider.
+    /// </summary>
     void updateWheelTransforms ()
     {
         updateWheelTransform (wheelColliderFL, wheelTransformFL);

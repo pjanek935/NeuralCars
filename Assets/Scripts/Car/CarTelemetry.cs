@@ -4,17 +4,17 @@ using UnityEngine;
 
 public class CarTelemetry : MonoBehaviour
 {
-    /// <summary>
-    /// Length of a buffer that contains consequent movement directions. Vector3 MovementDirectionAverage is calucalted
-    /// based on that buffer
-    /// </summary>
-    [SerializeField] int bufferSize = 10;
-
     Queue<Vector3> movementDirectionBuffer = new Queue<Vector3> ();
     Queue<Vector3> velocityBuffer = new Queue<Vector3> ();
     Vector3 prevPosition = Vector3.zero;
 
     const float MIN_SQRD_MAGNITUDE = 0.1f;
+
+    /// <summary>
+    /// Length of a buffer that contains consequent movement directions. Vector3 MovementDirectionAverage is calucalted
+    /// based on that buffer
+    /// </summary>
+    const int bufferSize = 10;
 
     public Vector3 MovementDirectionAverage
     {
