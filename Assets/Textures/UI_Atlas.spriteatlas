@@ -1,0 +1,74 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: UI_Atlas
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings: []
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 0
+      enableTightPacking: 0
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: 8335b00f3ce93b54a84985f1e6e5865d, type: 3}
+    totalSpriteSurfaceArea: 842356
+    bindAsDefault: 1
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: afd84971ebb23a742a916b43d5aabb4e, type: 3}
+  - {fileID: 21300000, guid: c0b05a72b3019a043ad36fe648c384f2, type: 3}
+  - {fileID: 21300000, guid: 5dad9a246f70ea742ab1b46942ec0d24, type: 3}
+  - {fileID: 21300000, guid: 3d749d343d53fb94ea1768e9f1940d03, type: 3}
+  - {fileID: 21300000, guid: a71795440f1831a41ada992aa0263892, type: 3}
+  - {fileID: 21300000, guid: 1ecb31e5e8068d04b86e25c4fd2ec740, type: 3}
+  - {fileID: 21300000, guid: 27a3ab7635cf35f4294ec2aa6a1d604f, type: 3}
+  - {fileID: 21300000, guid: a37ca4d60420c4342af4ac9bc4f35e68, type: 3}
+  - {fileID: 21300000, guid: d0ac2197ecd804a49a8562090bb3c853, type: 3}
+  - {fileID: 21300000, guid: 9d864e4897c3ad544aa6f5dbd820b805, type: 3}
+  - {fileID: 21300000, guid: 63527be9cad49ac4285847d0e487acd7, type: 3}
+  - {fileID: 21300000, guid: 2c25c25ae85aa9a4c93d345bb05a0fe7, type: 3}
+  - {fileID: 21300000, guid: c76ae47ba19023f4c8903ca9297b2c80, type: 3}
+  - {fileID: 21300000, guid: 0bff4b0e957402547a63b459f170bca2, type: 3}
+  - {fileID: 21300000, guid: 0cd38c5e68bbc464d9404af817ca97b0, type: 3}
+  - {fileID: 21300000, guid: 789c89be397a7e04b985e80c1f7d35bf, type: 3}
+  - {fileID: 21300000, guid: ab5d97fe827983749840be44a9d728b2, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - save_icon
+  - star
+  - exmark
+  - neuron_icon
+  - arrow_icon_02
+  - bracket
+  - panel_background
+  - back_button
+  - load_icon
+  - network_icon
+  - pause_icon
+  - arrow_icon
+  - bracket_wing
+  - edit_icon
+  - play_icon
+  - cross_mark
+  - bracket_center
+  m_Tag: UI_Atlas
+  m_IsVariant: 0
