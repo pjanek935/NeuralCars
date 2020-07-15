@@ -2,13 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Single ray cats shoot from front of the car.
+/// </summary>
 public class CarSensor : MonoBehaviour
 {
     [SerializeField] LineRenderer lineRenderer;
 
     public float Length
     {
-        get { return length; }
+        get;
+        private set;
     }
 
     public float Value
@@ -17,18 +21,10 @@ public class CarSensor : MonoBehaviour
         private set;
     }
 
-    [SerializeField] float length = 10f;
-    [SerializeField] float angle = 0f;
-
-    private void OnValidate ()
-    {
-        Init (length, angle);
-    }
-
     public void Init (float length, float angle)
     {
         SetAngle (angle);
-        this.length = length;
+        this.Length = length;
 
         if (lineRenderer != null)
         {
@@ -43,7 +39,7 @@ public class CarSensor : MonoBehaviour
 
     public void SetLength (float length)
     {
-        this.length = length;
+        this.Length = length;
     }
 
     public void SetAngle (float angle)
@@ -53,7 +49,7 @@ public class CarSensor : MonoBehaviour
 
     public void ShootRaycast ()
     {
-        int layerMask = LayerMask.GetMask ("Wall");
+        int layerMask = LayerMask.GetMask (GlobalConst.WALL_TAG);
 
         RaycastHit hit;
         Vector3 hitLocalPos = transform.position + transform.forward * Length;

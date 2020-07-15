@@ -63,7 +63,7 @@ public class FlagEditor : MonoBehaviour
     {
         if (transformToFollow != null && camera != null && ! IsHiding)
         {
-            float halfFlagHeight = StageConsts.FlagHeight / 2f;
+            float halfFlagHeight = GlobalConst.FLAG_HEIGHT / 2f;
             Vector3 center = camera.WorldToScreenPoint (transformToFollow.position);
             Vector3 upper = camera.WorldToScreenPoint (transformToFollow.position + new Vector3 (0, 0, halfFlagHeight));
             Vector3 lower = camera.WorldToScreenPoint (transformToFollow.position - new Vector3 (0, 0, halfFlagHeight));
@@ -117,17 +117,17 @@ public class FlagEditor : MonoBehaviour
         IsHiding = true;
         IsVisible = false;
 
-        LeanTween.value (deletButonContainer, 0, StageConsts.HiddenComponentYPos, StageConsts.ShowAndHideTime).setOnUpdate ((float val) =>
+        LeanTween.value (deletButonContainer, 0, GlobalConst.HiddenComponentYPos, GlobalConst.SHOW_AND_HIDE_TIME).setOnUpdate ((float val) =>
         {
             setAnchoredYPos (deletButonContainer, val);
         }).setEase (LeanTweenType.easeInBack);
 
-        LeanTween.value (widthControllerContainer, 0, -StageConsts.HiddenComponentYPos, StageConsts.ShowAndHideTime).setOnUpdate ((float val) =>
+        LeanTween.value (widthControllerContainer, 0, -GlobalConst.HiddenComponentYPos, GlobalConst.SHOW_AND_HIDE_TIME).setOnUpdate ((float val) =>
         {
             setAnchoredYPos (widthControllerContainer, val);
         }).setEase (LeanTweenType.easeInBack);
 
-        LeanTween.alphaCanvas (canvasGroup, 0f, StageConsts.ShowAndHideTime).setOnComplete (() =>
+        LeanTween.alphaCanvas (canvasGroup, 0f, GlobalConst.SHOW_AND_HIDE_TIME).setOnComplete (() =>
         {
             canvasGroup.blocksRaycasts = false;
             canvasGroup.interactable = false;
@@ -142,8 +142,8 @@ public class FlagEditor : MonoBehaviour
         IsVisible = true;
         canvasGroup.blocksRaycasts = true;
         canvasGroup.interactable = true;
-        float currentDeleteButtonContainerAnchoredYPos = StageConsts.HiddenComponentYPos;
-        float currentWidthControllerAchoredYPos = -StageConsts.HiddenComponentYPos;
+        float currentDeleteButtonContainerAnchoredYPos = GlobalConst.HiddenComponentYPos;
+        float currentWidthControllerAchoredYPos = -GlobalConst.HiddenComponentYPos;
 
         if (deletButonContainer != null)
         {
@@ -157,17 +157,17 @@ public class FlagEditor : MonoBehaviour
             currentWidthControllerAchoredYPos = rectTransform.anchoredPosition.y;
         }
 
-        LeanTween.value (deletButonContainer, currentDeleteButtonContainerAnchoredYPos, 0, StageConsts.ShowAndHideTime).setOnUpdate ((float val) =>
+        LeanTween.value (deletButonContainer, currentDeleteButtonContainerAnchoredYPos, 0, GlobalConst.SHOW_AND_HIDE_TIME).setOnUpdate ((float val) =>
         {
             setAnchoredYPos (deletButonContainer, val);
         }).setEase (LeanTweenType.easeOutBack);
 
-        LeanTween.value (widthControllerContainer, currentWidthControllerAchoredYPos, 0, StageConsts.ShowAndHideTime).setOnUpdate ((float val) =>
+        LeanTween.value (widthControllerContainer, currentWidthControllerAchoredYPos, 0, GlobalConst.SHOW_AND_HIDE_TIME).setOnUpdate ((float val) =>
         {
             setAnchoredYPos (widthControllerContainer, val);
         }).setEase (LeanTweenType.easeOutBack);
 
-        LeanTween.alphaCanvas (canvasGroup, 1f, StageConsts.ShowAndHideTime).setOnComplete (() =>
+        LeanTween.alphaCanvas (canvasGroup, 1f, GlobalConst.SHOW_AND_HIDE_TIME).setOnComplete (() =>
         {
             IsShowing = false;
             onComplete?.Invoke ();
@@ -181,7 +181,7 @@ public class FlagEditor : MonoBehaviour
             wdithText.text = width.ToString ();
         }
 
-        if (width >= StageConsts.MaxNodeWidth)
+        if (width >= GlobalConst.MAX_NODE_WIDTH)
         {
             widthUpButton.interactable = false;
         }
@@ -190,7 +190,7 @@ public class FlagEditor : MonoBehaviour
             widthUpButton.interactable = true;
         }
 
-        if (width <= StageConsts.MinNodeWidth)
+        if (width <= GlobalConst.MIN_NODE_WIDTH)
         {
             widthDownButton.interactable = false;
         }

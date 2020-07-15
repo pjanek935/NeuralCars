@@ -86,7 +86,7 @@ public class Flag : MonoBehaviour
                 Selected = false;
                 OnFlagReleased?.Invoke (this);
             }
-            else if (Vector3.Distance (prevMousePos, Input.mousePosition) > StageConsts.Epsilon)
+            else if (Vector3.Distance (prevMousePos, Input.mousePosition) > GlobalConst.EPSILON)
             {
                 Ray raycast = camera.ScreenPointToRay (Input.mousePosition);
                 RaycastHit hit;
@@ -106,7 +106,7 @@ public class Flag : MonoBehaviour
                         newPos.z = (float) (gridCellSize * (int) newPos.z);
                     }
 
-                    if (Vector3.Distance (newPos, this.transform.localPosition) > StageConsts.Epsilon)
+                    if (Vector3.Distance (newPos, this.transform.localPosition) > GlobalConst.EPSILON)
                     {
                         this.transform.localPosition = newPos;
                         OnFlagMoved?.Invoke (this);

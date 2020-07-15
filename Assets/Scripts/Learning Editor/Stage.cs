@@ -140,7 +140,7 @@ public class Stage : MonoBehaviour
                 direction.Normalize ();
                 float d = Vector3.Dot (direction, prevDirection);
 
-                if (Mathf.Abs (d - 1f) >= StageConsts.Epsilon)
+                if (Mathf.Abs (d - 1f) >= GlobalConst.EPSILON)
                 {
                     if (helpIndex >= walls.Count)
                     {

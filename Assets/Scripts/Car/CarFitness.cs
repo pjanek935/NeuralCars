@@ -47,9 +47,9 @@ public class CarFitness : MonoBehaviour
     {
         int result = 0;
 
-        if (gatesPassed > 5)
-        {
-            result = (int) (distanceTravelled + avgSpeed);
+        if (gatesPassed > 1)
+        {//even when car did not pass any gate distanceTravelled will contain value grater than zero, hence this condition
+            result = (int) (distanceTravelled * avgSpeed);
         }
 
         return result;
@@ -93,7 +93,7 @@ public class CarFitness : MonoBehaviour
             return;
         }
 
-        if (string.Equals (collision.transform.tag, "Wall"))
+        if (string.Equals (collision.transform.tag, GlobalConst.WALL_TAG))
         {
             OnWallHit?.Invoke ();
         }

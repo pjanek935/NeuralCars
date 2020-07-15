@@ -12,9 +12,17 @@ public class CarParticlesManager : MonoBehaviour
     [SerializeField] ParticleSystem frSmoke;
     [SerializeField] ParticleSystem flSmoke;
 
+    [SerializeField] float minTorqueChange = 0.5f; //Torque change which will relase smoke from under wheels of the car.
+    [SerializeField] float minAngleBetweenForwardVectorAndMovementDirection = 30f; //The bigger the value, the grater angle car has to slide to release smoke
+
     private void Update ()
     {
         updateParticles ();
+    }
+
+    private void OnValidate ()
+    {
+        minAngleBetweenForwardVectorAndMovementDirection = Mathf.Clamp (minAngleBetweenForwardVectorAndMovementDirection, 0f, 180f);
     }
 
     void updateParticles ()
@@ -22,11 +30,11 @@ public class CarParticlesManager : MonoBehaviour
         float alpha = carTelemetry.GetAngleBetweenForwardAndMovementDirection ();
         float torqueChange = carController.TorqueChange;
 
-        if (torqueChange > 0.5)
+        if (torqueChange > minTorqueChange)
         {
             StartSmoke ();
         }
-        else if (Mathf.Abs (alpha) > 30f && Mathf.Abs (alpha) < 170)
+        else if (Mathf.Abs (alpha) > minAngleBetweenForwardVectorAndMovementDirection && Mathf.Abs (alpha) < 180f)
         {
             StartSmoke ();
         }

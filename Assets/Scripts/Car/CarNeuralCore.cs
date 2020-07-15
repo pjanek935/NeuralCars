@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+/// <summary>
+/// This class is controlls the car based on neural network output.
+/// </summary>
 public class CarNeuralCore : MonoBehaviour, IPointerClickHandler
 {
     public delegate void CarNeuralCoreEventHandler (CarNeuralCore carNeuralCore);
@@ -20,9 +23,6 @@ public class CarNeuralCore : MonoBehaviour, IPointerClickHandler
     int lastPassedGateIndex = 0;
     float lastGatePassedTime = 0;
     NetworkTopologySimpleData networkTopology = new NetworkTopologySimpleData ();
-
-    const float TIME_TO_DISABLE = 2f;
-    const float MIN_AVG_VELOCITY = 2f;
 
     public bool DisableOnWallHit
     {
@@ -114,7 +114,7 @@ public class CarNeuralCore : MonoBehaviour, IPointerClickHandler
         if (networkTopology != null)
         {
             this.networkTopology = networkTopology.GetCopy ();
-            int outputCount = 1 + (this.networkTopology.TorqueOutput ? 1 : 0) + (this.networkTopology.HandbrakeOutput ? 1 : 0);
+            int outputCount = 1 + (this.networkTopology.TorqueOutput ? 1 : 0) + (this.networkTopology.HandbrakeOutput ? 1 : 0); //there is always one output - steer angle
             int additionalInputCount = (this.networkTopology.TorqueInput ? 1 : 0) + (this.networkTopology.VelocityInput ? 1 : 0) +
                 (this.networkTopology.SteerAngleInput ? 1 : 0) + (this.networkTopology.MovementAngleInput ? 1 : 0);
             neuralNetwork = new NeuralNetwork (networkTopology.SensorsCount + additionalInputCount, this.networkTopology.HiddenLayerNeuronsCount, outputCount);
@@ -187,7 +187,7 @@ public class CarNeuralCore : MonoBehaviour, IPointerClickHandler
         {
             float timeDiff = Time.time - lastGatePassedTime;
 
-            if (timeDiff > TIME_TO_DISABLE)
+            if (timeDiff > GlobalConst.TIME_BETWEEN_GATES_TO_DISABLE)
             {
                 disableCar ();
             }
@@ -206,7 +206,8 @@ public class CarNeuralCore : MonoBehaviour, IPointerClickHandler
     {
         OnGatePassed?.Invoke (this);
 
-        if (carFitness.GatesPassed > 5 && carFitness.AvgVelocity < MIN_AVG_VELOCITY)
+        if (carFitness.GatesPassed > GlobalConst.MIN_GATES_PASSED_WHEN_DISABLED_BASED_ON_AVG_VELOCITY
+            && carFitness.AvgVelocity < GlobalConst.MIN_CAR_AVG_VELOCITY)
         {
             disableCar ();
         }

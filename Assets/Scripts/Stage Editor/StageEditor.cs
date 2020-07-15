@@ -101,8 +101,8 @@ public class StageEditor : MonoBehaviour
 
     void onDefaultWidthDownClicked ()
     {
-        float newWidth = defaultWidth - StageConsts.NodeD;
-        newWidth = Mathf.Clamp (newWidth, StageConsts.MinNodeWidth, StageConsts.MaxNodeWidth);
+        float newWidth = defaultWidth - GlobalConst.NODE_D;
+        newWidth = Mathf.Clamp (newWidth, GlobalConst.MIN_NODE_WIDTH, GlobalConst.MAX_NODE_WIDTH);
         defaultWidth = newWidth;
 
         refreshViews ();
@@ -110,8 +110,8 @@ public class StageEditor : MonoBehaviour
 
     void onDefaultWidthUpClicked ()
     {
-        float newWidth = defaultWidth + StageConsts.NodeD;
-        newWidth = Mathf.Clamp (newWidth, StageConsts.MinNodeWidth, StageConsts.MaxNodeWidth);
+        float newWidth = defaultWidth + GlobalConst.NODE_D;
+        newWidth = Mathf.Clamp (newWidth, GlobalConst.MIN_NODE_WIDTH, GlobalConst.MAX_NODE_WIDTH);
         defaultWidth = newWidth;
 
         refreshViews ();
@@ -250,14 +250,14 @@ public class StageEditor : MonoBehaviour
     {
         if (CurrentSelectedFlag != null)
         {
-            float newWidth = CurrentSelectedFlag.Width - StageConsts.NodeD;
+            float newWidth = CurrentSelectedFlag.Width - GlobalConst.NODE_D;
 
-            if (newWidth < StageConsts.MinNodeWidth)
+            if (newWidth < GlobalConst.MIN_NODE_WIDTH)
             {
-                newWidth = StageConsts.MinNodeWidth;
+                newWidth = GlobalConst.MIN_NODE_WIDTH;
             }
 
-            if (Mathf.Abs (CurrentSelectedFlag.Width - newWidth) > StageConsts.Epsilon)
+            if (Mathf.Abs (CurrentSelectedFlag.Width - newWidth) > GlobalConst.EPSILON)
             {
                 float from = CurrentSelectedFlag.Width;
                 CurrentSelectedFlag.Width = newWidth;
@@ -270,14 +270,14 @@ public class StageEditor : MonoBehaviour
     {
         if (CurrentSelectedFlag != null)
         {
-            float newWidth = CurrentSelectedFlag.Width + StageConsts.NodeD;
+            float newWidth = CurrentSelectedFlag.Width + GlobalConst.NODE_D;
 
-            if (newWidth > StageConsts.MaxNodeWidth)
+            if (newWidth > GlobalConst.MAX_NODE_WIDTH)
             {
-                newWidth = StageConsts.MaxNodeWidth;
+                newWidth = GlobalConst.MAX_NODE_WIDTH;
             }
 
-            if (Mathf.Abs (CurrentSelectedFlag.Width - newWidth) > StageConsts.Epsilon)
+            if (Mathf.Abs (CurrentSelectedFlag.Width - newWidth) > GlobalConst.EPSILON)
             {
                 float from = CurrentSelectedFlag.Width;
                 CurrentSelectedFlag.Width = newWidth;

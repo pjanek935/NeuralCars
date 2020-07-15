@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Raycats shot from front of the car.
+/// </summary>
 public class CarRadar : MonoBehaviour
 {
     [SerializeField] GameObject sensorPrefab;

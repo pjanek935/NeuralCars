@@ -339,7 +339,7 @@ public class StageModel
             {
                 d = Vector3.Distance (points [i], points [j]);
 
-                if (d < StageConsts.Epsilon)
+                if (d < GlobalConst.EPSILON)
                 {
                     points.RemoveAt (i);
                 }
@@ -356,7 +356,7 @@ public class StageModel
                 Vector3 newPoint = list [list.Count - 1];
                 float d = Vector3.Distance (newPoint, point);
 
-                if (d > StageConsts.Epsilon)
+                if (d > GlobalConst.EPSILON)
                 {
                     list.Add (point);
                 }

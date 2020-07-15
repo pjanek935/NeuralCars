@@ -58,7 +58,7 @@ public class CarController : MonoBehaviour
 
     void Start ()
     {
-        GetComponent<Rigidbody> ().centerOfMass.Set (0, -0.9f, 0);
+        GetComponent<Rigidbody> ().centerOfMass.Set (0, GlobalConst.CAR_CENTER_OF_MASS_Y, 0);
     }
 
     void Update ()
@@ -136,7 +136,8 @@ public class CarController : MonoBehaviour
         }
         else
         {
-            fronWheelForwardFrictionCurve.stiffness = Mathf.Lerp (fronWheelForwardFrictionCurve.stiffness, defaultFrontWheelsForwardFriction, frictionChangeSmoothness * Time.deltaTime);
+            fronWheelForwardFrictionCurve.stiffness = Mathf.Lerp (fronWheelForwardFrictionCurve.stiffness,
+                defaultFrontWheelsForwardFriction, frictionChangeSmoothness * Time.deltaTime);
         }
 
         wheelColliderFR.forwardFriction = fronWheelForwardFrictionCurve;
@@ -153,7 +154,8 @@ public class CarController : MonoBehaviour
         }
         else
         {
-            fronWheelSidewaysFrictionCurve.stiffness = Mathf.Lerp (fronWheelSidewaysFrictionCurve.stiffness, defaultFrontWheelsSidewaysFriction, frictionChangeSmoothness * Time.deltaTime);
+            fronWheelSidewaysFrictionCurve.stiffness = Mathf.Lerp (fronWheelSidewaysFrictionCurve.stiffness,
+                defaultFrontWheelsSidewaysFriction, frictionChangeSmoothness * Time.deltaTime);
         }
 
         wheelColliderFR.sidewaysFriction = fronWheelSidewaysFrictionCurve;
@@ -170,7 +172,8 @@ public class CarController : MonoBehaviour
         }
         else
         {
-            rearWheelSidewaysFrictionCurve.stiffness = Mathf.Lerp (rearWheelSidewaysFrictionCurve.stiffness, defaultRearWheelSidewaysFriction, frictionChangeSmoothness * Time.deltaTime);
+            rearWheelSidewaysFrictionCurve.stiffness = Mathf.Lerp (rearWheelSidewaysFrictionCurve.stiffness,
+                defaultRearWheelSidewaysFriction, frictionChangeSmoothness * Time.deltaTime);
         }
 
         wheelColliderRR.sidewaysFriction = rearWheelSidewaysFrictionCurve;
@@ -187,7 +190,8 @@ public class CarController : MonoBehaviour
         }
         else
         {
-            rearWheelForwardFrictionCurve.stiffness = Mathf.Lerp (rearWheelForwardFrictionCurve.stiffness, defaultRearWheelForwardFriction, frictionChangeSmoothness * Time.deltaTime);
+            rearWheelForwardFrictionCurve.stiffness = Mathf.Lerp (rearWheelForwardFrictionCurve.stiffness,
+                defaultRearWheelForwardFriction, frictionChangeSmoothness * Time.deltaTime);
         }
 
         wheelColliderRR.forwardFriction = rearWheelForwardFrictionCurve;
@@ -198,8 +202,8 @@ public class CarController : MonoBehaviour
     {
         if (wheelCollider != null && wheelTransform != null)
         {
-            Vector3 pos = wheelTransform.position;
-            Quaternion quat = wheelTransform.rotation;
+            Vector3 pos;
+            Quaternion quat;
             wheelCollider.GetWorldPose (out pos, out quat);
             wheelTransform.position = pos;
             wheelTransform.rotation = quat;
