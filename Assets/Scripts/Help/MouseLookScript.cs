@@ -42,9 +42,6 @@ public class MouseLookScript : MonoBehaviour {
         else if (axes == RotationAxes.MouseX)
         {
             transform.Rotate(0, Input.GetAxis("Mouse X") * sensitivityX, 0);
-            //Vector3 eulerAngleVelocity = new Vector3(0, Input.GetAxis("Mouse X") * sensitivityX, 0);
-            //Quaternion deltaRotation = Quaternion.Euler(eulerAngleVelocity * Time.deltaTime);
-            //rb.MoveRotation(rb.rotation * deltaRotation);
 
         }
         else

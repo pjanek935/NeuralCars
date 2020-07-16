@@ -16701,8 +16701,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4594ee9b8445168478ad54b5b29a335d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxYPos: 100
+  minYPos: 20
   moveSpeed: 0.2
   scrollSpeed: 6
+  rotationSmoothingFactor: 5
   eventSystem: {fileID: 1052635490}
 --- !u!114 &1808783751
 MonoBehaviour:

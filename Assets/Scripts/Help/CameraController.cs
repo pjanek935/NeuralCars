@@ -11,12 +11,14 @@ public class CameraController : MonoBehaviour
         NONE, DRAGGING
     }
 
+    [SerializeField] float maxYPos = 0f;
+    [SerializeField] float minYPos = 100f;
     [SerializeField] float moveSpeed = 1f;
     [SerializeField] float scrollSpeed = 1f;
+    [SerializeField] float rotationSmoothingFactor = 5f; //The bigger the number the slower camera will rotate
     [SerializeField] EventSystem eventSystem;
 
     Vector3 prevPointerPos = Vector3.zero;
-    Vector3 prevRayHitPos = Vector3.zero;
     Quaternion defaultQuaternion;
 
     private void Start ()
@@ -65,7 +67,7 @@ public class CameraController : MonoBehaviour
 
     private void FixedUpdate ()
     {
-        transform.rotation = Quaternion.Slerp (transform.rotation, defaultQuaternion, 5 * Time.deltaTime);
+        transform.rotation = Quaternion.Slerp (transform.rotation, defaultQuaternion, rotationSmoothingFactor * Time.deltaTime);
     }
 
     void updateZooming ()
@@ -77,9 +79,15 @@ public class CameraController : MonoBehaviour
             float deltaY = -scrollDelta * scrollSpeed;
             float deltaZ = -Mathf.Cos (90f-this.transform.localRotation.eulerAngles.x) * deltaY;
             Vector3 newPos = this.transform.position;
+            float newY = newPos.y + deltaY;
             newPos.y += deltaY;
             newPos.z += deltaZ;
-            this.transform.position = newPos;
+            newPos.y = Mathf.Clamp (newPos.y, minYPos, maxYPos);
+
+            if (newPos.y != this.transform.position.y)
+            {
+                this.transform.position = newPos;
+            }
         }
     }
 
@@ -98,16 +106,6 @@ public class CameraController : MonoBehaviour
     void updateDragging ()
     {
         Vector3 currentMousePos = getCurrentMousePosition ();
-        Vector3 currentRayHitPos = Vector3.zero;
-        Camera camera = GetComponent<Camera> ();
-        Ray raycast = camera.ScreenPointToRay (Input.mousePosition);
-        RaycastHit hit;
-
-        if (Physics.Raycast (raycast, out hit))
-        {
-            currentRayHitPos = hit.point;
-        }
-
         Vector3 deltaPos = currentMousePos - prevPointerPos;
         deltaPos.y = 0;
         deltaPos *= moveSpeed;
@@ -120,14 +118,6 @@ public class CameraController : MonoBehaviour
     {
         CurrentState = CameraState.DRAGGING;
         prevPointerPos = getCurrentMousePosition ();
-        Camera camera = GetComponent<Camera> ();
-        Ray raycast = camera.ScreenPointToRay (Input.mousePosition);
-        RaycastHit hit;
-
-        if (Physics.Raycast (raycast, out hit))
-        {
-            prevRayHitPos = hit.point;
-        }
     }
 
     void stopDragging ()
