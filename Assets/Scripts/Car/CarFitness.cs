@@ -47,7 +47,7 @@ public class CarFitness : MonoBehaviour
     {
         int result = 0;
 
-        if (gatesPassed > 1)
+        if (gatesPassed > GlobalConst.MIN_GATES_PASSED_WHEN_DISABLED_BASED_ON_AVG_VELOCITY)
         {//even when car did not pass any gate distanceTravelled will contain value grater than zero, hence this condition
             result = (int) (distanceTravelled * avgSpeed);
         }
