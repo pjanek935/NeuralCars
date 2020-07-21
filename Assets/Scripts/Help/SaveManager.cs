@@ -111,7 +111,8 @@ public class SaveManager
             }
             else
             {
-                Debug.LogError ("File not found");
+                CurrentOpenedStageId = slotId;
+                Debug.Log ("File not found");
             }
         }
 

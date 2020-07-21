@@ -49,6 +49,11 @@ public class StageModel
     /// <returns></returns>
     public float GetDistanceFromBeginning (Vector3 pos)
     {
+        if (nodes == null || nodes.Count == 0)
+        {
+            return 0f;
+        }
+
         int closestNodeIndex = 0;
         float dist = float.MaxValue;
         Vector3 closestPoint = pos;

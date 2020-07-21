@@ -71,6 +71,13 @@ public class Stage : MonoBehaviour
             stageModel.RefreshPointsRightAndLeft ();
             RefreshGeometry ();
         }
+        else
+        {
+            stageModel = new StageModel ();
+            stageModel.BezierCurveFactor = bezierCurveFactor;
+            stageModel.RefreshPointsRightAndLeft ();
+            RefreshGeometry ();
+        }
     }
 
     public void SaveCurrentStage ()

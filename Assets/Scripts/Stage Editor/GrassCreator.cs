@@ -11,9 +11,14 @@ public class GrassCreator : MonoBehaviour
 
     private void OnEnable ()
     {
+        randomize ();
+    }
+
+    void randomize ()
+    {
         System.Random random = new System.Random ();
-        
-        for (int x = 0; x < size; x ++)
+
+        for (int x = 0; x < size; x++)
         {
             for (int y = 0; y < size; y++)
             {
@@ -26,7 +31,7 @@ public class GrassCreator : MonoBehaviour
                     GameObject newGameObject = Instantiate (grassPrefab);
                     newGameObject.transform.SetParent (this.transform, false);
                     newGameObject.SetActive (true);
-                    newGameObject.transform.position = new Vector3 (x - size / 2f +  (float)random.NextDouble (), 0, y - size / 2f + (float)random.NextDouble ());
+                    newGameObject.transform.position = new Vector3 (x - size / 2f + (float) random.NextDouble (), 0, y - size / 2f + (float) random.NextDouble ());
                 }
             }
         }

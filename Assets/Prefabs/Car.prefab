@@ -53,6 +53,8 @@ MonoBehaviour:
   rlSmoke: {fileID: 3139307131463607996}
   frSmoke: {fileID: 8434968531261081309}
   flSmoke: {fileID: 628672134994222285}
+  minTorqueChange: 0.5
+  minAngleBetweenForwardVectorAndMovementDirection: 30
 --- !u!1 &3424652128919679194
 GameObject:
   m_ObjectHideFlags: 0
@@ -14831,7 +14833,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -14875,8 +14877,8 @@ LineRenderer:
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 1, g: 1, b: 1, a: 1}
-      key1: {r: 1, g: 1, b: 1, a: 1}
+      key0: {r: 1, g: 0.5330188, b: 0.6236398, a: 1}
+      key1: {r: 1, g: 0, b: 0, a: 1}
       key2: {r: 0, g: 0, b: 0, a: 0}
       key3: {r: 0, g: 0, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}
@@ -14923,8 +14925,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lineRenderer: {fileID: 7662206465877828524}
-  length: 12.08
-  angle: 0
 --- !u!1 &7662206465935750226
 GameObject:
   m_ObjectHideFlags: 0
@@ -15100,7 +15100,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7662206466222359641
 Transform:
   m_ObjectHideFlags: 0
@@ -15133,7 +15133,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8a1a89a9afe26c4b8252429f5b89ba3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerControlled: 1
+  playerControlled: 0
   wheelColliderFL: {fileID: 7662206466443893177}
   wheelColliderFR: {fileID: 7662206465820325847}
   wheelColliderRL: {fileID: 7662206465935750231}
@@ -15153,7 +15153,6 @@ MonoBehaviour:
   driftRearWheelForwardFriction: 15
   driftRearWheelSidewaysdFriction: 1
   handBrakeFriction: 0.1
-  changeFriction: 1
   frictionChangeSmoothness: 2
 --- !u!114 &7662206466222359644
 MonoBehaviour:
@@ -15169,13 +15168,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   carRadar: {fileID: 7662206465267480811}
   carController: {fileID: 7662206466222359640}
-  carFitness: {fileID: 0}
+  carFitness: {fileID: 7662206466222359645}
   carTelemetry: {fileID: 4142239997908023143}
-  isActive: 0
-  neuronsInHiddenLayer: 5
-  sensorsCount: 7
-  angleBetweenSensors: 15
-  sensorsLength: 15
 --- !u!54 &7662206466222359642
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -15199,7 +15193,7 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7662206466222359719}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: e567fe95de5a73e48a8690d433a4fb68, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -15217,9 +15211,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85d2d5c3b665a8343b572da1123dde08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  carNeuralCore: {fileID: 7662206466222359644}
   carTelemetry: {fileID: 4142239997908023143}
-  GatesPassed: 0
+  carNeuralCore: {fileID: 7662206466222359644}
 --- !u!114 &4142239997908023143
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15232,7 +15225,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88615529e95c97742871091c58190f7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bufferSize: 10
 --- !u!1 &7662206466443893124
 GameObject:
   m_ObjectHideFlags: 0
