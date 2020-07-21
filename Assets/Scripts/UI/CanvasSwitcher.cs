@@ -18,6 +18,7 @@ public class CanvasSwitcher : MonoBehaviour
     [SerializeField] GeneticsManager geneticsManager;
     [SerializeField] NeuralNetworkTopologyController networkTopologyController;
     [SerializeField] GeneticsUIController geneticsUIController;
+    [SerializeField] ImageFader imageFader;
 
     bool wasPaused = false;
 
@@ -34,6 +35,11 @@ public class CanvasSwitcher : MonoBehaviour
 
     void onStageEditorButtonClicked ()
     {
+        imageFader.FadeIn (switchFromLearningWindowToStageEditor);
+    }
+
+    void switchFromLearningWindowToStageEditor ()
+    {
         stageEditor.EnableStageEditor ();
         stageEditorCanvas.SetActive (true);
         neuralNetworkCanvas.SetActive (false);
@@ -49,9 +55,16 @@ public class CanvasSwitcher : MonoBehaviour
             wasPaused = false;
             geneticsManager.gameObject.SetActive (false);
         }
+
+        imageFader.FadeOut ();
     }
 
     void onNeuralNetworkButtonClicked ()
+    {
+        imageFader.FadeIn (switchNetworkTopologyToLearningWindow);
+    }
+
+    void switchNetworkTopologyToLearningWindow ()
     {
         stageEditor.DisableStageEditor ();
         stageEditorCanvas.SetActive (false);
@@ -65,9 +78,16 @@ public class CanvasSwitcher : MonoBehaviour
         geneticsManager.gameObject.SetActive (true);
         geneticsManager.ResetCars ();
         geneticsManager.ActivateCars ();
+
+        imageFader.FadeOut ();
     }
 
     void onNetworkTopologyButtonClicked ()
+    {
+        imageFader.FadeIn (switchFromLearningWindowToNetworkTopology);
+    }
+
+    void switchFromLearningWindowToNetworkTopology ()
     {
         neuralNetworkCanvas.SetActive (false);
         networkTopologyCanvas.SetActive (true);
@@ -84,9 +104,16 @@ public class CanvasSwitcher : MonoBehaviour
             wasPaused = false;
             geneticsManager.gameObject.SetActive (false);
         }
+
+        imageFader.FadeOut ();
     }
 
     void backToNeural ()
+    {
+        imageFader.FadeIn (switchFromNetworkTopologyToLearningWindow);
+    }
+
+    void switchFromNetworkTopologyToLearningWindow ()
     {
         networkTopologyCanvas.SetActive (false);
         neuralNetworkCanvas.SetActive (true);
@@ -99,7 +126,7 @@ public class CanvasSwitcher : MonoBehaviour
         {
             geneticsManager.SetNetworkTopology (newTopology);
         }
-      
+
         if (wasPaused)
         {
             geneticsManager.Pause ();
@@ -118,5 +145,7 @@ public class CanvasSwitcher : MonoBehaviour
         }
 
         geneticsUIController.RefreshViews ();
+
+        imageFader.FadeOut ();
     }
 }
