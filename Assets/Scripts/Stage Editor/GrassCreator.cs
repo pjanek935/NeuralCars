@@ -8,6 +8,7 @@ public class GrassCreator : MonoBehaviour
     List<GameObject> grass = new List<GameObject> ();
     [SerializeField] float scale = 1f;
     [SerializeField] int size = 100;
+    [Range (0,1)] [SerializeField] float density = 0.1f;
 
     private void OnEnable ()
     {
@@ -24,7 +25,7 @@ public class GrassCreator : MonoBehaviour
             {
                 float perlin = Mathf.PerlinNoise (x * scale, y * scale);
 
-                if (perlin > 0.5)
+                if (perlin > 1f - density)
                 {
                     double r = random.NextDouble ();
 
