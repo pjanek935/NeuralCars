@@ -18,13 +18,16 @@ public class Tooltip : MonoBehaviour
     }
 
     [SerializeField] Text thisText;
+    [SerializeField] RectTransform thisInnerFrame;
+    [SerializeField] RectTransform resizerInnerFrame;
     [SerializeField] Text resizerText;
     [SerializeField] RectTransform resizerTransform;
     [SerializeField] CanvasGroup canvasGroup;
 
-    const float waitTime = 0.4f;
+    const float waitTime = 0.9f;
     float timer = 0f;
     float showRate = 3f;
+    const float offsetFromParent = 5f;
 
     public static Tooltip Instance
     {
@@ -127,28 +130,28 @@ public class Tooltip : MonoBehaviour
             case TooltipAnchorPosition.DOWN:
 
                 resizerTransform.pivot = new Vector2 (0.5f, 1f);
-                parentPosOffset.y -= parentHeight / 2f;
+                parentPosOffset.y -= (parentHeight / 2f + offsetFromParent);
 
                 break;
 
             case TooltipAnchorPosition.UP:
 
                 resizerTransform.pivot = new Vector2 (0.5f, 0f);
-                parentPosOffset.y += parentHeight / 2f;
+                parentPosOffset.y += (parentHeight / 2f + offsetFromParent);
 
                 break;
 
             case TooltipAnchorPosition.LEFT:
 
                 resizerTransform.pivot = new Vector2 (1f, 0.5f);
-                parentPosOffset.x -= parentWidth / 2f;
+                parentPosOffset.x -= (parentWidth / 2f + offsetFromParent);
 
                 break;
 
             case TooltipAnchorPosition.RIGHT:
 
                 resizerTransform.pivot = new Vector2 (0f, 0.5f);
-                parentPosOffset.x += parentWidth / 2f;
+                parentPosOffset.x += (parentWidth / 2f + offsetFromParent);
 
                 break;
         }
@@ -160,12 +163,14 @@ public class Tooltip : MonoBehaviour
         float height;
         Vector3 currentCenter = getRectTransformOffsetToCenter (resizerTransform, out height, out width);
         currentCenter = targetPos + currentCenter;
+        float innerFrameWidth = resizerInnerFrame.sizeDelta.x;
+        float innerFrameHeight = resizerInnerFrame.sizeDelta.y;
 
         //rect sides positions
-        float left = currentCenter.x - (width / 2f); 
-        float right = currentCenter.x + (width / 2f);
-        float up = currentCenter.y + (height / 2f);
-        float down = currentCenter.y - (height / 2f);
+        float left = currentCenter.x - (innerFrameWidth / 2f); 
+        float right = currentCenter.x + (innerFrameWidth / 2f);
+        float up = currentCenter.y + (innerFrameHeight / 2f);
+        float down = currentCenter.y - (innerFrameHeight / 2f);
 
         Vector3 offset = new Vector3 (); //the offset that rect must be moved to fit into a screen
 
@@ -187,6 +192,40 @@ public class Tooltip : MonoBehaviour
         if (down < 0)
         {
             offset.y = -down;
+        }
+
+        //float innerFrameWidth = resizerInnerFrame.sizeDelta.x;
+        //float innerFrameHeight = resizerInnerFrame.sizeDelta.y;
+        Vector2 sizeDiff = new Vector2 (width - innerFrameWidth, height - innerFrameHeight);
+
+        switch (anchorPosition)
+        {
+            case TooltipAnchorPosition.CENTER:
+                break;
+
+            case TooltipAnchorPosition.DOWN:
+
+                offset.y += sizeDiff.y / 2f;
+
+                break;
+
+            case TooltipAnchorPosition.UP:
+
+                offset.y -= sizeDiff.y / 2f;
+
+                break;
+
+            case TooltipAnchorPosition.LEFT:
+
+                offset.x += sizeDiff.x / 2f;
+
+                break;
+
+            case TooltipAnchorPosition.RIGHT:
+
+                offset.x -= sizeDiff.x / 2f;
+
+                break;
         }
 
         resizerTransform.position = resizerTransform.position + offset;
