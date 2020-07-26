@@ -73,7 +73,7 @@ public class CarInspectorController : MonoBehaviour
             {
                 cacheCarFitnessIfNeeded ();
                 float dist = stage.GetDistanceFromBeginning (carPos);
-                int fit = CarFitness.CalculateFitness (carFitness.GatesPassed, dist, carFitness.AvgVelocity);
+                int fit = CarFitness.CalculateFitness (carFitness.GatesPassed, dist, carFitness.AvgVelocity, carFitness.FitnessType);
 
                 distTravelled.text = (dist).ToString ("0.00");
                 avgSpeed.text = (carFitness.AvgVelocity).ToString ("0.00");

@@ -19,6 +19,7 @@ public class CanvasSwitcher : MonoBehaviour
     [SerializeField] NeuralNetworkTopologyController networkTopologyController;
     [SerializeField] GeneticsUIController geneticsUIController;
     [SerializeField] ImageFader imageFader;
+    [SerializeField] GameObject forceField;
 
     bool wasPaused = false;
 
@@ -31,6 +32,8 @@ public class CanvasSwitcher : MonoBehaviour
 
         onNeuralNetworkButtonClicked ();
         geneticsManager.Init ();
+
+        Application.runInBackground = true;
     }
 
     void onStageEditorButtonClicked ()
@@ -43,6 +46,7 @@ public class CanvasSwitcher : MonoBehaviour
         stageEditor.EnableStageEditor ();
         stageEditorCanvas.SetActive (true);
         neuralNetworkCanvas.SetActive (false);
+        forceField.SetActive (true);
 
         if (geneticsManager.IsPaused)
         {
@@ -69,6 +73,7 @@ public class CanvasSwitcher : MonoBehaviour
         stageEditor.DisableStageEditor ();
         stageEditorCanvas.SetActive (false);
         neuralNetworkCanvas.SetActive (true);
+        forceField.SetActive (false);
 
         if (wasPaused)
         {

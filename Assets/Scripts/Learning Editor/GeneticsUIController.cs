@@ -32,7 +32,7 @@ public class GeneticsUIController : MonoBehaviour
     const float MAX_SENSOR_LENGTH = 50f;
     const float MIN_SENSORS_LENGTH = 5f;
     const float SENSOR_LENGTH_D = 2.5f;
-    const float MAX_ANGLE_BETWEEN_SENSORS = 20f;
+    const float MAX_ANGLE_BETWEEN_SENSORS = 60f;
     const float MIN_ANGLE_BEETWEEN_SENSORS = 1f;
     const float ANGLE_D = 1f;
     const float MAX_MUTATION_PROBABILITY = 0.5f;

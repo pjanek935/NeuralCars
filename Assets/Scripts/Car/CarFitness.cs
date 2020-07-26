@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
+public enum FitnessType
+{
+    ONLY_DISTANCE, DIST_MUL_SPEED, DIST_ADD_SPEED,
+}
+
 public class CarFitness : MonoBehaviour
 {
     public UnityAction OnWallHit;
@@ -10,6 +15,12 @@ public class CarFitness : MonoBehaviour
 
     [SerializeField] CarTelemetry carTelemetry;
     [SerializeField] CarNeuralCore carNeuralCore;
+
+    public FitnessType FitnessType
+    {
+        get;
+        set;
+    }
 
     public int GatesPassed
     {
@@ -39,17 +50,41 @@ public class CarFitness : MonoBehaviour
     {
         get 
         {
-            return CalculateFitness (GatesPassed, DistanceTravelled, AvgVelocity);
+            return CalculateFitness (GatesPassed, DistanceTravelled, AvgVelocity, FitnessType);
         }
     }
 
-    public static int CalculateFitness (int gatesPassed, float distanceTravelled, float avgSpeed)
+    private void Awake ()
+    {
+        FitnessType = FitnessType.DIST_MUL_SPEED;
+    }
+
+    public static int CalculateFitness (int gatesPassed, float distanceTravelled, float avgSpeed, FitnessType fitnessType)
     {
         int result = 0;
 
         if (gatesPassed > GlobalConst.MIN_GATES_PASSED_WHEN_DISABLED_BASED_ON_AVG_VELOCITY)
         {//even when car did not pass any gate distanceTravelled will contain value grater than zero, hence this condition
-            result = (int) (distanceTravelled * avgSpeed);
+            switch (fitnessType)
+            {
+                case FitnessType.DIST_ADD_SPEED:
+
+                    result = (int) (distanceTravelled + avgSpeed);
+
+                    break;
+
+                case FitnessType.DIST_MUL_SPEED:
+
+                    result = (int) (distanceTravelled * avgSpeed);
+
+                    break;
+
+                case FitnessType.ONLY_DISTANCE:
+
+                    result = (int) distanceTravelled;
+
+                    break;
+            }
         }
 
         return result;
