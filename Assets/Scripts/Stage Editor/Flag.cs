@@ -16,6 +16,7 @@ public class Flag : MonoBehaviour
     [SerializeField] StageEditor stageEditor;
 
     Vector3 prevMousePos;
+    Vector3 prevFlagPosition;
 
     public float Width
     {
@@ -90,7 +91,7 @@ public class Flag : MonoBehaviour
             {
                 Ray raycast = camera.ScreenPointToRay (Input.mousePosition);
                 RaycastHit hit;
-                int layerMask = LayerMask.GetMask ("Floor");
+                int layerMask = LayerMask.GetMask (GlobalConst.FLOOR_TAG);
 
                 if (Physics.Raycast (raycast, out hit, 1000, layerMask))
                 {
@@ -108,8 +109,11 @@ public class Flag : MonoBehaviour
 
                     if (Vector3.Distance (newPos, this.transform.localPosition) > GlobalConst.EPSILON)
                     {
-                        this.transform.localPosition = newPos;
-                        OnFlagMoved?.Invoke (this);
+                        if (Vector3.Distance (Vector3.zero, newPos) < GlobalConst.STAGE_RADIUS)
+                        {
+                            this.transform.localPosition = newPos;
+                            OnFlagMoved?.Invoke (this);
+                        }
                     }
                 }
             }

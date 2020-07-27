@@ -11,6 +11,7 @@ public class CameraController : MonoBehaviour
         NONE, DRAGGING
     }
 
+    [SerializeField] float maxDistFromCenter = 250f;
     [SerializeField] float maxYPos = 0f;
     [SerializeField] float minYPos = 100f;
     [SerializeField] float moveSpeed = 1f;
@@ -86,7 +87,7 @@ public class CameraController : MonoBehaviour
 
             if (newPos.y != this.transform.position.y)
             {
-                this.transform.position = newPos;
+                updatePos (newPos);
             }
         }
     }
@@ -110,8 +111,22 @@ public class CameraController : MonoBehaviour
         deltaPos.y = 0;
         deltaPos *= moveSpeed;
         Vector3 newPos = this.transform.position - deltaPos;
-        this.transform.position = newPos;
+
+        updatePos (newPos);
         prevPointerPos = currentMousePos;
+    }
+
+    void updatePos (Vector3 newPos)
+    {
+        if (Vector3.Distance (Vector3.zero, newPos) > maxDistFromCenter)
+        {
+            Vector3 dirNorm = newPos.normalized;
+            float y = newPos.y;
+            newPos = dirNorm * maxDistFromCenter;
+            newPos.y = y;
+        }
+
+        this.transform.position = newPos;
     }
 
     void startDragging ()

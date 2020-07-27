@@ -15,7 +15,7 @@ public class StageFloor : MonoBehaviour
     {
         Ray raycast = camera.ScreenPointToRay (Input.mousePosition);
         RaycastHit hit;
-        int layerMask = LayerMask.GetMask ("Floor");
+        int layerMask = LayerMask.GetMask (GlobalConst.FLOOR_TAG);
 
         if (Physics.Raycast (raycast, out hit, 1000, layerMask))
         {
@@ -23,7 +23,11 @@ public class StageFloor : MonoBehaviour
             {
                 Vector3 pos = hit.point;
                 pos.y = 0;
-                OnFloorClicked?.Invoke (pos);
+
+                if (Vector3.Distance (Vector3.zero, pos) < GlobalConst.STAGE_RADIUS)
+                {
+                    OnFloorClicked?.Invoke (pos);
+                }
             }
         }
     }
