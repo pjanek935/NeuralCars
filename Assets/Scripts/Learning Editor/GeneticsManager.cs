@@ -15,6 +15,9 @@ public class GeneticsManager : MonoBehaviour
     [SerializeField] GameObject carPrefab;
     [SerializeField] Stage stage;
 
+    [SerializeField] GameObject lastBestGameObject;
+    [SerializeField] GameObject allTimeBest;
+
     [SerializeField] int carsCount = 10;
     [SerializeField] int newRandomCarsCount = 5;
     [SerializeField] int neuronsInHiddenLayer = 5;
@@ -29,7 +32,8 @@ public class GeneticsManager : MonoBehaviour
 
     List<CarNeuralCore> cars = new List<CarNeuralCore> ();
     Genetics genetics = new Genetics ();
-    CarSimpleData prevBestCar = new CarSimpleData ();
+    CarSimpleData prevCarWithHighestFitness = new CarSimpleData ();
+    CarSimpleData prevCarWithFarthestDistDravelled = new CarSimpleData ();
     bool isActivatingCars = false;
     Coroutine activatingCarsCoroutine;
     NetworkTopologySimpleData currentTopology = new NetworkTopologySimpleData ();
@@ -209,7 +213,9 @@ public class GeneticsManager : MonoBehaviour
     public void ResetSimulation  ()
     {
         Generation = 1;
-        prevBestCar = new CarSimpleData ();
+        prevCarWithHighestFitness = new CarSimpleData ();
+        lastBestGameObject.SetActive (false);
+        allTimeBest.SetActive (false);
         ResetCars ();
         createCars ();
     }
@@ -318,6 +324,7 @@ public class GeneticsManager : MonoBehaviour
     {
         CarFitness carFitness = carNeuralCore.GetComponent<CarFitness> ();
         carFitness.DistanceTravelled = stage.GetDistanceFromBeginning (carFitness.PosWhenDisabled);
+        carFitness.RotationWhenDisabled = carNeuralCore.transform.rotation;
 
         bool allDisabled = true;
 
@@ -337,12 +344,43 @@ public class GeneticsManager : MonoBehaviour
         }
     }
 
+    void refreshLastBestAndAllTimeBestPositions (List<CarNeuralCore> sortedCars)
+    {
+        if (sortedCars != null && sortedCars.Count > 0)
+        {
+            if (prevCarWithHighestFitness != null)
+            {
+                CarFitness carFitness = sortedCars [0].GetComponent<CarFitness> ();
+
+                if (carFitness.Fitness > prevCarWithHighestFitness.Fitness)
+                {
+                    lastBestGameObject.SetActive (false);
+                    allTimeBest.SetActive (true);
+                    allTimeBest.transform.position = carFitness.PosWhenDisabled;
+                    allTimeBest.transform.rotation = carFitness.RotationWhenDisabled;
+                }
+                else
+                {
+                    lastBestGameObject.SetActive (true);
+                    lastBestGameObject.transform.position = carFitness.PosWhenDisabled;
+                    lastBestGameObject.transform.rotation = carFitness.RotationWhenDisabled;
+                }
+            }
+        }
+        else
+        {
+            allTimeBest.SetActive (false);
+            lastBestGameObject.SetActive (false);
+        }
+    }
+
     void onAllCarsDisabled ()
     {
         Generation++;
         System.Random rnd = new System.Random ((int) DateTime.Now.Ticks);
 
-        List<CarNeuralCore> sortedCars = getSortedByFitnessCarsList ();
+        List<CarNeuralCore> sortedCars = getCarsSortedByFitness ();
+        refreshLastBestAndAllTimeBestPositions (sortedCars);
         double [] fitnesses = new double [sortedCars.Count];
         List<CarSimpleData> newGenCars = new List<CarSimpleData> ();
         newGenCars.Add (sortedCars [0].GetCarSimpleData ());
@@ -352,16 +390,16 @@ public class GeneticsManager : MonoBehaviour
             fitnesses [i] = sortedCars [i].GetComponent<CarFitness> ().Fitness;
         }
 
-        float prevBestFitness = (float) prevBestCar.Fitness;
+        float prevBestFitness = (float) prevCarWithHighestFitness.Fitness;
         float currentBestFitness = (float) fitnesses [0];
 
-        if (fitnesses [0] > prevBestCar.Fitness)
+        if (fitnesses [0] > prevCarWithHighestFitness.Fitness)
         {
-            prevBestCar = sortedCars [0].GetCarSimpleData ();
+            prevCarWithHighestFitness = sortedCars [0].GetCarSimpleData ();
         }
-        else if (prevBestCar.Weights != null)
+        else if (prevCarWithHighestFitness.Weights != null)
         {
-            newGenCars.Add (prevBestCar.GetCopy ());
+            newGenCars.Add (prevCarWithHighestFitness.GetCopy ());
         }
 
         if (AdaptiveMutationProbability)
@@ -473,9 +511,14 @@ public class GeneticsManager : MonoBehaviour
         ActivateCars ();
     }
 
-    List <CarNeuralCore> getSortedByFitnessCarsList ()
+    List <CarNeuralCore> getCarsSortedByFitness ()
     {
         return cars.OrderByDescending (c => c.GetComponent<CarFitness> ().Fitness).ToList ();
+    }
+
+    List<CarNeuralCore> getCarsSortedByDistTravelled ()
+    {
+        return cars.OrderByDescending (c => c.GetComponent<CarFitness> ().DistanceTravelled).ToList ();
     }
 
     void deleteLastCarObject ()

@@ -46,6 +46,12 @@ public class CarFitness : MonoBehaviour
         set;
     }
 
+    public Quaternion RotationWhenDisabled
+    {
+        get;
+        set;
+    }
+
     public int Fitness
     {
         get 
@@ -56,7 +62,7 @@ public class CarFitness : MonoBehaviour
 
     private void Awake ()
     {
-        FitnessType = FitnessType.DIST_MUL_SPEED;
+        FitnessType = FitnessType.DIST_ADD_SPEED;
     }
 
     public static int CalculateFitness (int gatesPassed, float distanceTravelled, float avgSpeed, FitnessType fitnessType)

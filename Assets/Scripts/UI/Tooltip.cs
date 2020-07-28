@@ -23,6 +23,8 @@ public class Tooltip : MonoBehaviour
     [SerializeField] Text resizerText;
     [SerializeField] RectTransform resizerTransform;
     [SerializeField] CanvasGroup canvasGroup;
+    [SerializeField] RectTransform helperTransform;
+    [SerializeField] Camera mainCamera;
 
     const float waitTime = 0.9f;
     float timer = 0f;
@@ -57,6 +59,12 @@ public class Tooltip : MonoBehaviour
     private void OnDestroy ()
     {
         Instance = null;
+    }
+
+    public void ShowFromScene (string message, Vector3 sceneWorldPosition, TooltipAnchorPosition anchorPosition)
+    {
+        helperTransform.position = mainCamera.WorldToScreenPoint (sceneWorldPosition);
+        Show (message, helperTransform, anchorPosition);
     }
 
     public void Show (string message, RectTransform rectTransform, TooltipAnchorPosition anchorPosition)

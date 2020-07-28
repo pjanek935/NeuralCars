@@ -220,6 +220,7 @@ public class CarNeuralCore : MonoBehaviour, IPointerClickHandler
         carController.SetSteerAngle (0);
         carController.SetBrake (false);
         carFitness.PosWhenDisabled = this.transform.position;
+        carFitness.RotationWhenDisabled = this.transform.rotation;
 
         OnCarDisabled?.Invoke (this);
     }
