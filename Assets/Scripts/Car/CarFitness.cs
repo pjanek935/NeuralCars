@@ -62,7 +62,7 @@ public class CarFitness : MonoBehaviour
 
     private void Awake ()
     {
-        FitnessType = FitnessType.DIST_ADD_SPEED;
+        FitnessType = FitnessType.DIST_MUL_SPEED;
     }
 
     public static int CalculateFitness (int gatesPassed, float distanceTravelled, float avgSpeed, FitnessType fitnessType)

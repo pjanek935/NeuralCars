@@ -7,7 +7,9 @@ using UnityEngine;
 public class SaveManager
 {
     public const int SLOTS_COUNT = 5;
+    public const int TOPOLOGIES_COUNT = 7;
     const string stageNameFormat = "STAGE_{0}.stg";
+    const string topologyNameFormat = "TOPOLOGY_{0}.tpg";
 
     static SaveManager instance;
 
@@ -117,5 +119,33 @@ public class SaveManager
         }
 
         return result;
+    }
+
+    public List <SavedTopologyData> GetSavedTopologies ()
+    {
+        List<SavedTopologyData> topologiesData = new List<SavedTopologyData> ();
+
+        for (int i = 0; i < TOPOLOGIES_COUNT; i++)
+        {
+            string fileName = string.Format (topologyNameFormat, i);
+            string path = Application.persistentDataPath + "/" + fileName;
+
+            if (File.Exists (path))
+            {
+                FileStream file = File.OpenRead (path);
+                BinaryFormatter bf = new BinaryFormatter ();
+                string json = (string) bf.Deserialize (file);
+                file.Close ();
+
+                SavedTopologyData topology = JsonUtility.FromJson<SavedTopologyData> (json);
+                topologiesData.Add (topology);
+            }
+            else
+            {
+                topologiesData.Add (null);
+            }
+        }
+
+        return topologiesData;
     }
 }

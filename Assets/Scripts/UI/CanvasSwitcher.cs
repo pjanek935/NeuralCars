@@ -9,10 +9,12 @@ public class CanvasSwitcher : MonoBehaviour
     [SerializeField] Button neuralNetowrkButton;
     [SerializeField] Button networkTopologyButton;
     [SerializeField] Button backToNeuralButton;
+    [SerializeField] Button saveOrLoadTopologyButton;
 
     [SerializeField] GameObject stageEditorCanvas;
     [SerializeField] GameObject neuralNetworkCanvas;
     [SerializeField] GameObject networkTopologyCanvas;
+    [SerializeField] SaveOrLoadTopologyPopup saveOrLoadTopologyPopup;
 
     [SerializeField] StageEditor stageEditor;
     [SerializeField] GeneticsManager geneticsManager;
@@ -29,6 +31,7 @@ public class CanvasSwitcher : MonoBehaviour
         neuralNetowrkButton.onClick.AddListener (() => onNeuralNetworkButtonClicked ());
         networkTopologyButton.onClick.AddListener (() => onNetworkTopologyButtonClicked ());
         backToNeuralButton.onClick.AddListener (() => backToNeural ());
+        saveOrLoadTopologyButton.onClick.AddListener (() => onSaveOrLoadTopologyButtonClicked ());
 
         onNeuralNetworkButtonClicked ();
         geneticsManager.Init ();
@@ -152,5 +155,11 @@ public class CanvasSwitcher : MonoBehaviour
         geneticsUIController.RefreshViews ();
 
         imageFader.FadeOut ();
+    }
+
+    void onSaveOrLoadTopologyButtonClicked ()
+    {
+        saveOrLoadTopologyPopup.Setup ();
+        saveOrLoadTopologyPopup.Show ();
     }
 }

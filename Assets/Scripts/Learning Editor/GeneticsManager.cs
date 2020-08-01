@@ -32,11 +32,12 @@ public class GeneticsManager : MonoBehaviour
 
     List<CarNeuralCore> cars = new List<CarNeuralCore> ();
     Genetics genetics = new Genetics ();
-    CarSimpleData prevCarWithHighestFitness = new CarSimpleData ();
-    CarSimpleData prevCarWithFarthestDistDravelled = new CarSimpleData ();
     bool isActivatingCars = false;
     Coroutine activatingCarsCoroutine;
     NetworkTopologySimpleData currentTopology = new NetworkTopologySimpleData ();
+    CarSimpleData prevCarWithHighestFitness = new CarSimpleData ();
+    CarSimpleData prevCarWithFurthestDistTravelled = new CarSimpleData (); //distance is usuall multiplied by speed in fitness function,
+    //so it's not identical to prevCarWithHighestFitness
 
     const float MAX_SENSOR_LENGTH = 50f; //if crossover sensors options enabled may exceed this value; used to calculate length for brand new cars
     const float MAX_ANGLE_BETWEEN_SENSORS = 15f; //if crossover sensors options enabled may exceed this value; used to calculate angle for brand new cars
@@ -214,6 +215,7 @@ public class GeneticsManager : MonoBehaviour
     {
         Generation = 1;
         prevCarWithHighestFitness = new CarSimpleData ();
+        prevCarWithFurthestDistTravelled = new CarSimpleData ();
         lastBestGameObject.SetActive (false);
         allTimeBest.SetActive (false);
         ResetCars ();
@@ -344,15 +346,15 @@ public class GeneticsManager : MonoBehaviour
         }
     }
 
-    void refreshLastBestAndAllTimeBestPositions (List<CarNeuralCore> sortedCars)
+    void refreshGhostCarsPositions (List<CarNeuralCore> sortedCars)
     {
         if (sortedCars != null && sortedCars.Count > 0)
         {
-            if (prevCarWithHighestFitness != null)
+            if (prevCarWithFurthestDistTravelled != null)
             {
                 CarFitness carFitness = sortedCars [0].GetComponent<CarFitness> ();
 
-                if (carFitness.Fitness > prevCarWithHighestFitness.Fitness)
+                if (carFitness.DistanceTravelled > prevCarWithFurthestDistTravelled.DistTravelled)
                 {
                     lastBestGameObject.SetActive (false);
                     allTimeBest.SetActive (true);
@@ -379,27 +381,40 @@ public class GeneticsManager : MonoBehaviour
         Generation++;
         System.Random rnd = new System.Random ((int) DateTime.Now.Ticks);
 
-        List<CarNeuralCore> sortedCars = getCarsSortedByFitness ();
-        refreshLastBestAndAllTimeBestPositions (sortedCars);
-        double [] fitnesses = new double [sortedCars.Count];
+        List<CarNeuralCore> sortedCarsByFitness = getCarsSortedByFitness ();
+        List<CarNeuralCore> sortedCarsByDistace = getCarsSortedByDistTravelled ();
+
+        refreshGhostCarsPositions (sortedCarsByDistace);
+        double [] fitnesses = new double [sortedCarsByFitness.Count];
         List<CarSimpleData> newGenCars = new List<CarSimpleData> ();
-        newGenCars.Add (sortedCars [0].GetCarSimpleData ());
+        newGenCars.Add (sortedCarsByFitness [0].GetCarSimpleData ());
         
-        for (int i = 0; i < sortedCars.Count; i ++)
+        for (int i = 0; i < sortedCarsByFitness.Count; i ++)
         {
-            fitnesses [i] = sortedCars [i].GetComponent<CarFitness> ().Fitness;
+            fitnesses [i] = sortedCarsByFitness [i].GetComponent<CarFitness> ().Fitness;
         }
 
+        float prevBestDistance = prevCarWithFurthestDistTravelled.DistTravelled;
         float prevBestFitness = (float) prevCarWithHighestFitness.Fitness;
         float currentBestFitness = (float) fitnesses [0];
+        float currentBestDistance = sortedCarsByDistace [0].GetComponent<CarFitness> ().DistanceTravelled;
 
-        if (fitnesses [0] > prevCarWithHighestFitness.Fitness)
+        if (currentBestFitness > prevCarWithHighestFitness.Fitness)
         {
-            prevCarWithHighestFitness = sortedCars [0].GetCarSimpleData ();
+            prevCarWithHighestFitness = sortedCarsByFitness [0].GetCarSimpleData ();
         }
         else if (prevCarWithHighestFitness.Weights != null)
         {
             newGenCars.Add (prevCarWithHighestFitness.GetCopy ());
+        }
+
+        if (currentBestDistance > prevCarWithFurthestDistTravelled.DistTravelled)
+        {
+            prevCarWithFurthestDistTravelled = sortedCarsByDistace [0].GetCarSimpleData ();
+        }
+        else if (sortedCarsByDistace [0] != sortedCarsByFitness [0] && prevCarWithFurthestDistTravelled.Weights != null)
+        {
+            newGenCars.Add (prevCarWithFurthestDistTravelled.GetCopy ());
         }
 
         if (AdaptiveMutationProbability)
@@ -440,7 +455,7 @@ public class GeneticsManager : MonoBehaviour
 
             CarSimpleData c1;
             CarSimpleData c2;
-            genetics.CrossoverCars (sortedCars [parent1index].GetCarSimpleData (), sortedCars [parent2index].GetCarSimpleData (), out c1, out c2, Genetics.CrossType.ARYTM);
+            genetics.CrossoverCars (sortedCarsByFitness [parent1index].GetCarSimpleData (), sortedCarsByFitness [parent2index].GetCarSimpleData (), out c1, out c2, Genetics.CrossType.ARYTM);
 
             newGenCars.Add (c1);
             newGenCars.Add (c2);
@@ -488,7 +503,7 @@ public class GeneticsManager : MonoBehaviour
         while (newGenCars.Count < carsCount)
         {
             CarSimpleData carSimpleData = new CarSimpleData ();
-            carSimpleData.Weights = sortedCars [0].GetRandomNeuralNetworkWeights ();
+            carSimpleData.Weights = sortedCarsByFitness [0].GetRandomNeuralNetworkWeights ();
             carSimpleData.AngleBetweenSensors = (float) rnd.NextDouble () * MAX_ANGLE_BETWEEN_SENSORS;
             carSimpleData.SensorsLength = (float) rnd.NextDouble () * MAX_SENSOR_LENGTH;
 

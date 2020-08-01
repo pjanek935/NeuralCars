@@ -50,7 +50,8 @@ public class CarNeuralCore : MonoBehaviour, IPointerClickHandler
 
     public CarSimpleData GetCarSimpleData ()
     {
-        return new CarSimpleData (GetWeights (), GetComponent< CarFitness> ().Fitness, SensorsLength, AngleBetweenSensors);
+        CarFitness carFitness = GetComponent<CarFitness> ();
+        return new CarSimpleData (GetWeights (), carFitness.Fitness, carFitness.DistanceTravelled, SensorsLength, AngleBetweenSensors);
     }
 
     private void Awake ()
