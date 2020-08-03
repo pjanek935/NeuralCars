@@ -16,34 +16,34 @@ public class Popup : MonoBehaviour
         private set;
     }
 
-    private void Awake ()
+    protected void Awake ()
     {
-        canvas.alpha = 0f;
-        canvas.blocksRaycasts = false;
         backgroundButton.onClick.AddListener (() => onBackgroundButtonClicked  ());
     }
 
     public void Show ()
     {
-        if (! IsVisible)
-        {
-            this.gameObject.SetActive (true);
-            IsVisible = true;
-            canvas.blocksRaycasts = true;
-            canvas.DOFade (1f, GlobalConst.SHOW_AND_HIDE_TIME);
-            mainFrame.DOScale (1f, GlobalConst.SHOW_AND_HIDE_TIME);
-        }
+        cancelAnimation ();
+        this.gameObject.SetActive (true);
+        IsVisible = true;
+        canvas.blocksRaycasts = true;
+        canvas.DOFade (1f, GlobalConst.SHOW_AND_HIDE_TIME);
+        mainFrame.DOScale (1f, GlobalConst.SHOW_AND_HIDE_TIME);
     }
 
     public void Hide ()
     {
-        if (IsVisible)
-        {
-            IsVisible = false;
-            canvas.blocksRaycasts = false;
-            canvas.DOFade (0f, GlobalConst.SHOW_AND_HIDE_TIME);
-            mainFrame.DOScale (0.3f, GlobalConst.SHOW_AND_HIDE_TIME).OnComplete (() => this.gameObject.SetActive (false));
-        }
+        cancelAnimation ();
+        IsVisible = false;
+        canvas.blocksRaycasts = false;
+        canvas.DOFade (0f, GlobalConst.SHOW_AND_HIDE_TIME);
+        mainFrame.DOScale (0.3f, GlobalConst.SHOW_AND_HIDE_TIME).OnComplete (() => this.gameObject.SetActive (false));
+    }
+
+    void cancelAnimation ()
+    {
+        DOTween.Kill (canvas);
+        DOTween.Kill (mainFrame);
     }
 
     void onBackgroundButtonClicked ()

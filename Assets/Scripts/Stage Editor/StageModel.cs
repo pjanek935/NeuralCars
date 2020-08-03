@@ -170,7 +170,7 @@ public class StageModel
 
         StageNode stageNode = new StageNode (createNodeAction.Position, createNodeAction.Width);
         
-        if (createNodeAction.IndexInList != -1)
+        if (createNodeAction.IndexInList != GlobalConst.INVALID_ID)
         {
             Nodes.Insert (createNodeAction.IndexInList, stageNode);
         }
@@ -189,7 +189,7 @@ public class StageModel
 
         StageNode stageNode = new StageNode (createNodeAction.Position, createNodeAction.Width);
 
-        if (createNodeAction.IndexInList != -1)
+        if (createNodeAction.IndexInList != GlobalConst.INVALID_ID)
         {
             nodes.RemoveAt (createNodeAction.IndexInList);
         }
@@ -218,7 +218,7 @@ public class StageModel
 
         StageNode stageNode = new StageNode (deleteNodeAction.Position, deleteNodeAction.Width);
 
-        if (deleteNodeAction.IndexInList != -1)
+        if (deleteNodeAction.IndexInList != GlobalConst.INVALID_ID)
         {
             nodes.Insert (deleteNodeAction.IndexInList, stageNode);
         }

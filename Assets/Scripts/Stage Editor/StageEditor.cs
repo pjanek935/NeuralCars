@@ -373,7 +373,7 @@ public class StageEditor : MonoBehaviour
             float dist;
             int startPointIndex = findClosestLineSegment (pos, out dist);
 
-            if (startPointIndex != -1)
+            if (startPointIndex != GlobalConst.INVALID_ID)
             {
                 if (dist > 4f) //MAGIC NUMBER TODO
                 {
@@ -381,7 +381,7 @@ public class StageEditor : MonoBehaviour
                 }
             }
             
-            if (startPointIndex == -1)
+            if (startPointIndex == GlobalConst.INVALID_ID)
             {//New flag should be added at end or beggining
                 bool addAtEnd = true;
 
@@ -400,7 +400,7 @@ public class StageEditor : MonoBehaviour
 
                 if (addAtEnd)
                 {
-                    startPointIndex = -1;
+                    startPointIndex = GlobalConst.INVALID_ID;
                     flags.Add (flag);
                 }
                 else
@@ -445,7 +445,7 @@ public class StageEditor : MonoBehaviour
     int findClosestLineSegment (Vector3 pos, out float distance)
     {
         distance = float.MaxValue;
-        int result = -1;
+        int result = GlobalConst.INVALID_ID;
 
         if (flags.Count >= 2)
         {

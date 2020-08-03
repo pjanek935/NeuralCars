@@ -32,6 +32,7 @@ public class CanvasSwitcher : MonoBehaviour
         networkTopologyButton.onClick.AddListener (() => onNetworkTopologyButtonClicked ());
         backToNeuralButton.onClick.AddListener (() => backToNeural ());
         saveOrLoadTopologyButton.onClick.AddListener (() => onSaveOrLoadTopologyButtonClicked ());
+        saveOrLoadTopologyPopup.OnNewTopologyLoaded += onNewTopologyLoaded;
 
         onNeuralNetworkButtonClicked ();
         geneticsManager.Init ();
@@ -71,6 +72,21 @@ public class CanvasSwitcher : MonoBehaviour
         imageFader.FadeIn (switchNetworkTopologyToLearningWindow);
     }
 
+    void onNewTopologyLoaded (SavedTopologyData savedTopologyData)
+    {
+        if (savedTopologyData != null && savedTopologyData.TopologyData != null && savedTopologyData.CarSimpleData != null)
+        {
+            NetworkTopologySimpleData newTopology = savedTopologyData.TopologyData;
+            geneticsManager.SetNetworkTopology (newTopology);
+            geneticsManager.ResetSimulation ();
+            geneticsManager.SetNewCars (savedTopologyData.CarSimpleData);
+            geneticsManager.ResetCars ();
+            geneticsManager.ActivateCars ();
+
+            geneticsUIController.RefreshViews ();
+        }
+    }
+
     void switchNetworkTopologyToLearningWindow ()
     {
         stageEditor.DisableStageEditor ();
@@ -86,7 +102,6 @@ public class CanvasSwitcher : MonoBehaviour
         geneticsManager.gameObject.SetActive (true);
         geneticsManager.ResetCars ();
         geneticsManager.ActivateCars ();
-
         imageFader.FadeOut ();
     }
 
@@ -153,13 +168,12 @@ public class CanvasSwitcher : MonoBehaviour
         }
 
         geneticsUIController.RefreshViews ();
-
         imageFader.FadeOut ();
     }
 
     void onSaveOrLoadTopologyButtonClicked ()
     {
-        saveOrLoadTopologyPopup.Setup ();
+        saveOrLoadTopologyPopup.Setup (geneticsManager.CurrentTopology, geneticsManager.GetCarSimpleData ());
         saveOrLoadTopologyPopup.Show ();
     }
 }

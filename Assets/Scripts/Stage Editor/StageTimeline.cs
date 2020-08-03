@@ -5,7 +5,7 @@ using UnityEngine;
 public class StageTimeline
 {
     List<StageAction> actions = new List<StageAction> ();
-    int lastActionIndex = -1;
+    int lastActionIndex = GlobalConst.INVALID_ID;
 
     public void AddAction (StageAction stageAction)
     {

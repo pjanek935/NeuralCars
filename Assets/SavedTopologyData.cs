@@ -1,27 +1,33 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class SavedTopologyData
 {
-    public CarSimpleData BestCar;
     public NetworkTopologySimpleData TopologyData;
     public string TopologyName;
+    public List<CarSimpleData> CarSimpleData = new List<CarSimpleData> ();
 
-    public SavedTopologyData (CarSimpleData bestCar, NetworkTopologySimpleData networkTopologySimpleData, string topologyName)
+    public SavedTopologyData (NetworkTopologySimpleData networkTopologySimpleData, List <CarSimpleData> cars, string topologyName)
     {
-        if (bestCar != null)
+        if (networkTopologySimpleData != null)
         {
-            this.BestCar = bestCar.GetCopy ();
+            this.TopologyData = networkTopologySimpleData.GetCopy ();
         }
         else
         {
             Debug.LogError ("Null parameter");
         }
 
-        if (networkTopologySimpleData != null)
+        if (cars != null)
         {
-            this.TopologyData = networkTopologySimpleData.GetCopy ();
+            CarSimpleData.Clear ();
+
+            foreach (CarSimpleData car in cars)
+            {
+                CarSimpleData.Add (car.GetCopy ());
+            }
         }
         else
         {

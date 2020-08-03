@@ -27,4 +27,5 @@ public static class GlobalConst
     //Other
     public const float SHOW_AND_HIDE_TIME = 0.2f; //used in ui compoments; duration in seconds when animating fade in/out etc.
     public const float EPSILON = 0.01f;
+    public const int INVALID_ID = -1;
 }

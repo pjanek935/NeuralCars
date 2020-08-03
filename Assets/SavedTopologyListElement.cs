@@ -24,6 +24,12 @@ public class SavedTopologyListElement : MonoBehaviour
 
     Color defaultBackgroundColor = Color.white;
     Color selectedBackgroundColor = new Color (242f/255f, 253/255f, 1f);
+    
+    public SavedTopologyData SavedTopologyData
+    {
+        get;
+        private set;
+    }
 
     public bool IsSelected
     {
@@ -54,24 +60,30 @@ public class SavedTopologyListElement : MonoBehaviour
     {
         if (savedTopologyData != null)
         {
+            SavedTopologyData = savedTopologyData;
             saveTopologContnet.SetActive (true);
             emptyListElementContent.SetActive (false);
             topologyName.text = savedTopologyData.TopologyName.ToUpper ();
-            sensors.text = savedTopologyData.TopologyData.SensorsCount.ToString ();
-            hiddenLayer.text = savedTopologyData.TopologyData.HiddenLayerNeuronsCount.ToString ();
 
-            int tmp = (savedTopologyData.TopologyData.MovementAngleInput ? 1 : 0) +
-                (savedTopologyData.TopologyData.SteerAngleInput ? 1 : 0) +
-                (savedTopologyData.TopologyData.TorqueInput ? 1 : 0) +
-                (savedTopologyData.TopologyData.VelocityInput ? 1 : 0);
-            additionalInputs.text = tmp.ToString ();
+            if (savedTopologyData.TopologyData != null)
+            {
+                sensors.text = savedTopologyData.TopologyData.SensorsCount.ToString ();
+                hiddenLayer.text = savedTopologyData.TopologyData.HiddenLayerNeuronsCount.ToString ();
 
-            tmp = (savedTopologyData.TopologyData.HandbrakeOutput ? 1 : 0) +
-                (savedTopologyData.TopologyData.TorqueOutput ? 1 : 0) + 1;
-            outputs.text = tmp.ToString ();
+                int tmp = (savedTopologyData.TopologyData.MovementAngleInput ? 1 : 0) +
+                    (savedTopologyData.TopologyData.SteerAngleInput ? 1 : 0) +
+                    (savedTopologyData.TopologyData.TorqueInput ? 1 : 0) +
+                    (savedTopologyData.TopologyData.VelocityInput ? 1 : 0);
+                additionalInputs.text = tmp.ToString ();
+
+                tmp = (savedTopologyData.TopologyData.HandbrakeOutput ? 1 : 0) +
+                    (savedTopologyData.TopologyData.TorqueOutput ? 1 : 0) + 1;
+                outputs.text = tmp.ToString ();
+            }
         }
         else
         {
+            SavedTopologyData = null;
             saveTopologContnet.SetActive (false);
             emptyListElementContent.SetActive (true);
         }

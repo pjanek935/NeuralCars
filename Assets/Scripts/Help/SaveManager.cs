@@ -148,4 +148,28 @@ public class SaveManager
 
         return topologiesData;
     }
+
+    public void SaveTopologyOnSlot (SavedTopologyData savedTopologyData, int slotId)
+    {
+        if (savedTopologyData != null && slotId >= 0 && slotId < TOPOLOGIES_COUNT)
+        {
+            string json = JsonUtility.ToJson (savedTopologyData);
+            string fileName = string.Format (topologyNameFormat, slotId);
+            string destination = Application.persistentDataPath + "/" + fileName;
+            FileStream file;
+
+            if (File.Exists (destination))
+            {
+                file = File.OpenWrite (destination);
+            }
+            else
+            {
+                file = File.Create (destination);
+            }
+
+            BinaryFormatter bf = new BinaryFormatter ();
+            bf.Serialize (file, json);
+            file.Close ();
+        }
+    }
 }

@@ -62,6 +62,38 @@ public class GeneticsManager : MonoBehaviour
         get { return currentTopology; }
     }
 
+    public List <CarSimpleData> GetCarSimpleData ()
+    {
+        List<CarSimpleData> result = new List<CarSimpleData> ();
+
+        for (int i = 0; i < cars.Count; i ++)
+        {
+            result.Add (cars [i].GetCarSimpleData ());
+        }
+
+        return result;
+    }
+
+    public void SetNewCars (List<CarSimpleData> carSimpleData)
+    {
+        if (carSimpleData != null)
+        {
+            this.carsCount = carSimpleData.Count;
+            createCars ();
+
+            for (int i = 0; i < cars.Count; i++)
+            {
+                cars [i].SetWeights (carSimpleData [i].Weights);
+
+                if (CrossbreedSensors)
+                {
+                    cars [i].SetSensorsLength (carSimpleData [i].SensorsLength);
+                    cars [i].SetAngleBetweenSensors (carSimpleData [i].AngleBetweenSensors);
+                }
+            }
+        }
+    }
+
     public bool DisableOnWallHit
     {
         get { return disableOnWallHit; }
