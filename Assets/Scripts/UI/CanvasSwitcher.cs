@@ -173,7 +173,7 @@ public class CanvasSwitcher : MonoBehaviour
 
     void onSaveOrLoadTopologyButtonClicked ()
     {
-        saveOrLoadTopologyPopup.Setup (geneticsManager.CurrentTopology, geneticsManager.GetCarSimpleData ());
         saveOrLoadTopologyPopup.Show ();
+        saveOrLoadTopologyPopup.Setup (geneticsManager.CurrentTopology, geneticsManager.GetCarSimpleData ());
     }
 }

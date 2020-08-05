@@ -269,9 +269,8 @@ namespace Assets
             {
                 ++epoch;
 
-                
-
                 Shuffle(sequence); // visit each training data in random order
+
                 for (int ii = 0; ii < trainData.Length; ++ii)
                 {
                     int idx = sequence[ii];

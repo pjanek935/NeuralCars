@@ -36,7 +36,11 @@ public class CarController : MonoBehaviour
     [SerializeField] float frictionChangeSmoothness = 10f;
 
     float prevTorque = 0;
-    bool isHandbrakeOn = false;
+    public bool IsHandbrakeOn
+    {
+        get;
+        private set;
+    }
 
     public float TorqueChange
     {
@@ -68,7 +72,7 @@ public class CarController : MonoBehaviour
             prevTorque = Torque;
             Torque = Input.GetAxis ("Vertical"); ;
             SteerAngle = Input.GetAxis ("Horizontal");
-            isHandbrakeOn = Input.GetKey (KeyCode.Space);
+            IsHandbrakeOn = Input.GetKey (KeyCode.Space);
             TorqueChange = Mathf.Abs ((prevTorque - Torque) * Time.deltaTime);
 
             //Debug.Log ("Torque: " + torque);
@@ -91,12 +95,12 @@ public class CarController : MonoBehaviour
 
     public void SetBrake (bool handBrake)
     {
-        this.isHandbrakeOn = handBrake;
+        this.IsHandbrakeOn = handBrake;
     }
 
     private void FixedUpdate ()
     {
-        if (! isHandbrakeOn)
+        if (! IsHandbrakeOn)
         {
             wheelColliderRR.motorTorque = maxTorque * Torque;
             wheelColliderRL.motorTorque = maxTorque * Torque;
@@ -130,7 +134,7 @@ public class CarController : MonoBehaviour
     {
         WheelFrictionCurve fronWheelForwardFrictionCurve = wheelColliderFR.forwardFriction;
 
-        if (isHandbrakeOn)
+        if (IsHandbrakeOn)
         {
             fronWheelForwardFrictionCurve.stiffness = driftFrontWheelsForwardFriction;
         }
@@ -148,7 +152,7 @@ public class CarController : MonoBehaviour
     {
         WheelFrictionCurve fronWheelSidewaysFrictionCurve = wheelColliderFR.sidewaysFriction;
 
-        if (isHandbrakeOn)
+        if (IsHandbrakeOn)
         {
             fronWheelSidewaysFrictionCurve.stiffness = driftFrontWheelsSidewaysFriction;
         }
@@ -166,7 +170,7 @@ public class CarController : MonoBehaviour
     {
         WheelFrictionCurve rearWheelSidewaysFrictionCurve = wheelColliderRR.sidewaysFriction;
 
-        if (isHandbrakeOn)
+        if (IsHandbrakeOn)
         {
             rearWheelSidewaysFrictionCurve.stiffness = driftRearWheelSidewaysdFriction;
         }
@@ -184,7 +188,7 @@ public class CarController : MonoBehaviour
     {
         WheelFrictionCurve rearWheelForwardFrictionCurve = wheelColliderRR.forwardFriction;
 
-        if (isHandbrakeOn)
+        if (IsHandbrakeOn)
         {
             rearWheelForwardFrictionCurve.stiffness = driftRearWheelForwardFriction;
         }

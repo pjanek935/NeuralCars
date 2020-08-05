@@ -16,6 +16,7 @@ public class SaveOrLoadTopologyPopup : Popup
     [SerializeField] Button saveButton;
     [SerializeField] Button loadButton;
     [SerializeField] Text saveButtonText;
+    [SerializeField] ScrollRect scrollRect;
 
     List<SavedTopologyListElement> topologies = new List<SavedTopologyListElement> ();
     SavedTopologyListElement currentSelected = null;
@@ -55,6 +56,7 @@ public class SaveOrLoadTopologyPopup : Popup
             currentSelected.SavedTopologyData.TopologyData != null)
         {
             OnNewTopologyLoaded?.Invoke (currentSelected.SavedTopologyData);
+            Hide ();
         }
     }
 
@@ -116,6 +118,14 @@ public class SaveOrLoadTopologyPopup : Popup
 
         currentSelected = null;
         refreshButtons ();
+
+        StartCoroutine (resetScrollRectVerticalNormalizedPosition ());
+    }
+
+    IEnumerator resetScrollRectVerticalNormalizedPosition ()
+    {
+        yield return new WaitForEndOfFrame ();
+        scrollRect.verticalNormalizedPosition = 1f;
     }
 
     void refreshButtons ()

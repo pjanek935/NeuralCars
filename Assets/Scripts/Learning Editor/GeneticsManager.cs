@@ -33,11 +33,13 @@ public class GeneticsManager : MonoBehaviour
     List<CarNeuralCore> cars = new List<CarNeuralCore> ();
     Genetics genetics = new Genetics ();
     bool isActivatingCars = false;
+    FitnessType fitnessType = FitnessType.DIST_MUL_SPEED;
     Coroutine activatingCarsCoroutine;
     NetworkTopologySimpleData currentTopology = new NetworkTopologySimpleData ();
     CarSimpleData prevCarWithHighestFitness = new CarSimpleData ();
     CarSimpleData prevCarWithFurthestDistTravelled = new CarSimpleData (); //distance is usuall multiplied by speed in fitness function,
     //so it's not identical to prevCarWithHighestFitness
+
 
     const float MAX_SENSOR_LENGTH = 50f; //if crossover sensors options enabled may exceed this value; used to calculate length for brand new cars
     const float MAX_ANGLE_BETWEEN_SENSORS = 15f; //if crossover sensors options enabled may exceed this value; used to calculate angle for brand new cars
@@ -55,6 +57,20 @@ public class GeneticsManager : MonoBehaviour
     {
         get;
         private set;
+    }
+
+    public FitnessType FitnessType
+    {
+        get
+        { 
+            return fitnessType;
+        }
+
+        set
+        {
+            fitnessType = value;
+            refreshCarsFitness ();
+        }
     }
 
     public NetworkTopologySimpleData CurrentTopology
@@ -262,6 +278,11 @@ public class GeneticsManager : MonoBehaviour
         }
     }
 
+    void refreshCarsFitness ()
+    {
+        cars.ForEach ((c) => c.GetComponent<CarFitness> ().FitnessType = this.FitnessType);
+    }
+
     void createCars ()
     {
         if (carsCount < 0)
@@ -343,6 +364,7 @@ public class GeneticsManager : MonoBehaviour
         GameObject newGameObject = Instantiate (carPrefab);
         newGameObject.SetActive (true);
         newGameObject.transform.SetParent (this.transform, false);
+        newGameObject.GetComponent<CarFitness> ().FitnessType = fitnessType;
         CarNeuralCore carNeuralCore = newGameObject.GetComponent<CarNeuralCore> ();
         carNeuralCore.OnCarDisabled += onCarDisabled;
         carNeuralCore.OnCarClicked += onCarClicked;
@@ -495,10 +517,13 @@ public class GeneticsManager : MonoBehaviour
 
         for (int i = 0; i < newGenCars.Count; i++)
         {
-            if (rnd.NextDouble () < mutationProbability)
-            {
-                genetics.Mutation (newGenCars [i].Weights, mutationProbability);
-            }
+            //different approach
+            //if (rnd.NextDouble () < mutationProbability)
+            //{
+            //    genetics.Mutation (newGenCars [i].Weights, mutationProbability);
+            //}
+
+            genetics.Mutation (newGenCars [i].Weights, mutationProbability);
         }
 
         if (CrossbreedSensors)

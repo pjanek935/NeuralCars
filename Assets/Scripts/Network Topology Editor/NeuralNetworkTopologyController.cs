@@ -9,8 +9,6 @@ public class NeuralNetworkTopologyController : MonoBehaviour
     [SerializeField] GameObject neuronPrefab;
     [SerializeField] GameObject linePrefab;
 
-    [SerializeField] Button resetButton;
-
     [SerializeField] ValueController sensorsCountController;
     [SerializeField] ValueController hiddenLayerNeuronsCountController;
 

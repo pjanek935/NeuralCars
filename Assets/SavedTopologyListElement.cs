@@ -17,6 +17,7 @@ public class SavedTopologyListElement : MonoBehaviour
     [SerializeField] Text additionalInputs;
     [SerializeField] Text hiddenLayer;
     [SerializeField] Text outputs;
+    [SerializeField] Text carsCount;
 
     [SerializeField] Button button;
     [SerializeField] Image background;
@@ -79,6 +80,11 @@ public class SavedTopologyListElement : MonoBehaviour
                 tmp = (savedTopologyData.TopologyData.HandbrakeOutput ? 1 : 0) +
                     (savedTopologyData.TopologyData.TorqueOutput ? 1 : 0) + 1;
                 outputs.text = tmp.ToString ();
+            }
+
+            if (savedTopologyData.CarSimpleData != null)
+            {
+                carsCount.text = savedTopologyData.CarSimpleData.Count.ToString ();
             }
         }
         else

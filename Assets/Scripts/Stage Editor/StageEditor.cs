@@ -18,6 +18,7 @@ public class StageEditor : MonoBehaviour
     [SerializeField] bool snapToGrid = false;
     [SerializeField] float gridCellSize = 0.5f;
     [SerializeField] float defaultWidth = 8f;
+    [SerializeField] float lineRendererHeight = 0f;
 
     List<Flag> flags = new List<Flag> ();
     bool editorEnabled = true;
@@ -334,6 +335,12 @@ public class StageEditor : MonoBehaviour
         }
 
         Vector3 [] pos = GetFlagsPositions ();
+
+        for (int i = 0; i < pos.Length; i ++)
+        {
+            pos [i] += new Vector3 (0f, lineRendererHeight, 0f);
+        }
+
         lineRenderer.positionCount = flags.Count;
         lineRenderer.SetPositions (pos);
     }

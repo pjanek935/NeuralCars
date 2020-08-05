@@ -10,8 +10,6 @@ public class GeneticsUIController : MonoBehaviour
     [SerializeField] Text generationText;
     [SerializeField] CarInspectorController carInspector;
 
-    [SerializeField] Button pauseButton;
-    [SerializeField] Button playButton;
     [SerializeField] Button resetCarsPositions;
     [SerializeField] Button resetAllCars;
 
@@ -19,6 +17,7 @@ public class GeneticsUIController : MonoBehaviour
     [SerializeField] Toggle crossbreedSensorsToggle;
     [SerializeField] Toggle disableCarsOnWallHit;
     [SerializeField] Toggle adaptiveMutationProbabilityToggle;
+    [SerializeField] Toggle multiplyDistanceByVelocity;
 
     [SerializeField] ValueController sensorsLengthController;
     [SerializeField] ValueController angleBetweenSensorsController;
@@ -46,8 +45,6 @@ public class GeneticsUIController : MonoBehaviour
 
         cameraFollow.OnDrag += onCameraFollowDrag;
 
-        pauseButton.onClick.AddListener (() => onPauseButtonClicked ());
-        playButton.onClick.AddListener (() => onPlayButtonClicked ());
         resetCarsPositions.onClick.AddListener (() => onResetCarsPositionsButtonClicked ());
         resetAllCars.onClick.AddListener (() => onResetAllCarsClicked ());
 
@@ -55,6 +52,7 @@ public class GeneticsUIController : MonoBehaviour
         crossbreedSensorsToggle.onValueChanged.AddListener ((value) => onCrossbreedSensorsToggleValueChanged (value));
         disableCarsOnWallHit.onValueChanged.AddListener ((value) => onDisableCarsOnWallHitValueChanged (value));
         adaptiveMutationProbabilityToggle.onValueChanged.AddListener ((value) => onAdaptiveMutationProbabilityToggleValueChanged (value));
+        multiplyDistanceByVelocity.onValueChanged.AddListener ((value) => onMultiplyDistanceByVelocityValueChanged (value));
 
         sensorsLengthController.OnValueChanged += onSensorLengthValueChanged;
         angleBetweenSensorsController.OnValueChanged += onAngleBetweenSensorsValueChanged;
@@ -67,7 +65,8 @@ public class GeneticsUIController : MonoBehaviour
         mutationProbabilityController.Setup (MAX_MUTATION_PROBABILITY, MIN_MUTATION_PROBABILITY, MUTATION_PROBABILITY_D);
         totalCarsCountController.Setup (100, 10, 1);
         newRandomCarsEveryGenController.Setup (10, 0, 1);
-      
+
+        multiplyDistanceByVelocity.isOn = geneticsManager.FitnessType == FitnessType.DIST_MUL_SPEED;
         crossbreedSensorsToggle.isOn = geneticsManager.CrossbreedSensors;
         sensorsLengthController.SetValue (geneticsManager.SensorsLength);
         angleBetweenSensorsController.SetValue (geneticsManager.AngleBetweenSensors);
@@ -122,22 +121,6 @@ public class GeneticsUIController : MonoBehaviour
         mutationProbabilityController.SetValue (geneticsManager.MutationProbability);
     }
 
-    void onPlayButtonClicked ()
-    {
-        playButton.gameObject.SetActive (false);
-        pauseButton.gameObject.SetActive (true);
-
-        geneticsManager.Resume ();
-    }
-
-    void onPauseButtonClicked ()
-    {
-        playButton.gameObject.SetActive (true);
-        pauseButton.gameObject.SetActive (false);
-
-        geneticsManager.Pause ();
-    }
-
     void onShowSensorValueChanged (bool value)
     {
         geneticsManager.SetSensorsVisible (value);
@@ -157,6 +140,11 @@ public class GeneticsUIController : MonoBehaviour
         }
 
         geneticsManager.CrossbreedSensors = value;
+    }
+
+    void onMultiplyDistanceByVelocityValueChanged (bool value)
+    {
+        geneticsManager.FitnessType = value ? FitnessType.DIST_MUL_SPEED : FitnessType.ONLY_DISTANCE;
     }
 
     void onAdaptiveMutationProbabilityToggleValueChanged (bool value)

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
 [RequireComponent (typeof (Camera))]
@@ -10,6 +11,8 @@ public class CameraController : MonoBehaviour
     {
         NONE, DRAGGING
     }
+
+    public UnityAction OnPositionUpdated;
 
     [SerializeField] float maxDistFromCenter = 250f;
     [SerializeField] float maxYPos = 0f;
@@ -21,6 +24,16 @@ public class CameraController : MonoBehaviour
 
     Vector3 prevPointerPos = Vector3.zero;
     Quaternion defaultQuaternion;
+
+    public float MaxYPos
+    {
+        get { return maxYPos; }
+    }
+
+    public float MinYPos
+    {
+        get { return minYPos; }
+    }
 
     private void Start ()
     {
@@ -127,6 +140,7 @@ public class CameraController : MonoBehaviour
         }
 
         this.transform.position = newPos;
+        OnPositionUpdated?.Invoke ();
     }
 
     void startDragging ()
