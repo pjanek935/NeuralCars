@@ -5,6 +5,7 @@ using UnityEngine;
 public class Stage : MonoBehaviour
 {
     [SerializeField] MeshFilter roadMeshFilter;
+    [SerializeField] MeshCollider meshCollider;
     [SerializeField] GameObject wallPrefab;
     [SerializeField] GameObject gatePrefab;
 
@@ -315,6 +316,7 @@ public class Stage : MonoBehaviour
         msh.RecalculateBounds ();
 
         roadMeshFilter.mesh = msh;
+        meshCollider.sharedMesh = msh;
     }
 
     void refreshTrackBeginningPosition ()

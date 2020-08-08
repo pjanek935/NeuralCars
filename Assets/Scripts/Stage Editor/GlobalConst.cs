@@ -23,6 +23,7 @@ public static class GlobalConst
     //Tags
     public const string WALL_TAG = "Wall";
     public const string FLOOR_TAG = "Floor";
+    public const string ROAD_LAYER = "Road";
 
     //Other
     public const float SHOW_AND_HIDE_TIME = 0.2f; //used in ui compoments; duration in seconds when animating fade in/out etc.

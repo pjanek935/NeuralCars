@@ -90,7 +90,7 @@ GameObject:
   - component: {fileID: 6080755878270944971}
   - component: {fileID: 6080755878270944969}
   m_Layer: 5
-  m_Name: Torque Output
+  m_Name: Output Neuron With Toggle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -526,7 +526,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: Toggle
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8936672506507469580, guid: d19e732a0c15b444381de2fc69613528, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: d19e732a0c15b444381de2fc69613528, type: 3}
 --- !u!224 &2911118708735544357 stripped
 RectTransform:
