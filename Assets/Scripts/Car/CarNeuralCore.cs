@@ -9,6 +9,8 @@ using UnityEngine.EventSystems;
 /// </summary>
 public class CarNeuralCore : MonoBehaviour, IPointerClickHandler
 {
+    static System.Random rand = new System.Random ();
+
     public delegate void CarNeuralCoreEventHandler (CarNeuralCore carNeuralCore);
     public event CarNeuralCoreEventHandler OnCarDisabled;
     public event CarNeuralCoreEventHandler OnGatePassed;
@@ -23,6 +25,7 @@ public class CarNeuralCore : MonoBehaviour, IPointerClickHandler
     int lastPassedGateIndex = 0;
     float lastGatePassedTime = 0;
     NetworkTopologySimpleData networkTopology = new NetworkTopologySimpleData ();
+    int parity = 0; //not all cars refresh their state in the same frame (performance reasons). Car refreshes state if Time.frameCount % 2 == partity;
 
     public bool DisableOnWallHit
     {
@@ -58,6 +61,11 @@ public class CarNeuralCore : MonoBehaviour, IPointerClickHandler
     {
         carFitness.OnWallHit += onWallHit;
         carFitness.OnGatePassed += onGatePassed;
+    }
+
+    private void OnEnable ()
+    {
+        parity = rand.NextDouble () > 0.5 ? 1 : 0;
     }
 
     public void Init (NetworkTopologySimpleData networkTopology)
@@ -124,6 +132,7 @@ public class CarNeuralCore : MonoBehaviour, IPointerClickHandler
 
     void steerCarBasedOnNeuralNetworkOutput ()
     {
+        carRadar.ShootRayCasts ();
         List<double> inputList = carRadar.GetValues ();
 
         if (networkTopology.MovementAngleInput)
@@ -172,7 +181,11 @@ public class CarNeuralCore : MonoBehaviour, IPointerClickHandler
     {
         if (IsActive)
         {
-            steerCarBasedOnNeuralNetworkOutput ();
+            if (Time.frameCount % 2 == parity)
+            {
+                steerCarBasedOnNeuralNetworkOutput ();
+            }
+            
             checkIfCarShouldBeDisabled ();
         }
     }
@@ -222,6 +235,7 @@ public class CarNeuralCore : MonoBehaviour, IPointerClickHandler
         carController.SetBrake (false);
         carFitness.PosWhenDisabled = this.transform.position;
         carFitness.RotationWhenDisabled = this.transform.rotation;
+        carRadar.Disable ();
 
         OnCarDisabled?.Invoke (this);
     }

@@ -1,10 +1,12 @@
 ﻿using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
+using System.Xml.Serialization;
 using UnityEngine;
 
 public class GrassCreator : MonoBehaviour
 {
+    [SerializeField] CameraController cameraController;
     [SerializeField] MeshCollider roadMeshCollider;
     [SerializeField] GameObject grassPrefab;
     List<GameObject> grass = new List<GameObject> ();
@@ -13,13 +15,69 @@ public class GrassCreator : MonoBehaviour
     [SerializeField] float range = 250f;
     [Range (0,1)] [SerializeField] float density = 0.1f;
 
-    private void OnEnable ()
+    [SerializeField] int planesCount = 5;
+
+    List<Transform> planes = new List<Transform> ();
+
+    bool grassCreated = false;
+
+    private void Awake ()
     {
-        randomize ();
-        disableGrassOnRoad ();
+        cameraController.OnZoomUpdated += OnCameraZoomUpdated;
+
+        CreateGrassIfNeeded ();
+        DisableGrassOnRoad ();
     }
 
-    void disableGrassOnRoad ()
+    public void CreateGrassIfNeeded ()
+    {
+        if (! grassCreated)
+        {
+            grassCreated = true;
+            refreshPlanes ();
+            randomize ();
+        }
+    }
+
+    public void OnCameraZoomUpdated ()
+    {
+        float cameraY = cameraController.transform.position.y;
+        float normalizedY = (cameraY - cameraController.MinYPos) / (cameraController.MaxYPos - 10 - cameraController.MinYPos);
+        int activePlanesCount = (int) ((1f - normalizedY) * planes.Count);
+
+        for (int i = 0; i < planes.Count; i ++)
+        {
+            planes [i].gameObject.SetActive (i < activePlanesCount);
+        }
+    }
+
+    void refreshPlanes ()
+    {
+        int diff = planesCount - planes.Count;
+
+        if (diff > 0)
+        {
+            for (int i = 0; i < diff; i ++)
+            {
+                GameObject newGameObject = new GameObject ();
+                newGameObject.transform.SetParent (this.transform, false);
+                planes.Add (newGameObject.transform);
+            }
+        }
+        else if (diff < 0)
+        {
+            diff = Mathf.Abs (diff);
+
+            for (int i = 0; i < diff; i ++)
+            {
+                GameObject tmp = planes [planes.Count - 1].gameObject;
+                planes.RemoveAt (planes.Count - 1);
+                Destroy (tmp);
+            }
+        }
+    }
+
+    public void DisableGrassOnRoad ()
     {
         for (int i = 0; i < grass.Count; i ++)
         {
@@ -74,13 +132,26 @@ public class GrassCreator : MonoBehaviour
 
                     if (add)
                     {
+                        r = random.NextDouble ();
+                        float step = 1f / planesCount;
+                        Transform parent = planes [0];
+
+                        for (int i = planes.Count - 1; i >= 0; i --)
+                        {
+                            if (r >= i * step)
+                            {
+                                parent = planes [i];
+
+                                break;
+                            }
+                        }
+
                         GameObject newGameObject = Instantiate (grassPrefab);
-                        newGameObject.transform.SetParent (this.transform, false);
+                        newGameObject.transform.SetParent (parent, false);
                         newGameObject.SetActive (true);
                         newGameObject.transform.position = pos;
                         grass.Add (newGameObject);
                     }
-                    
                 }
             }
         }

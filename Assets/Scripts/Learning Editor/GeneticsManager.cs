@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Jobs;
 using UnityEngine.UI;
 
 public class GeneticsManager : MonoBehaviour
@@ -359,7 +360,7 @@ public class GeneticsManager : MonoBehaviour
         isActivatingCars = false;
     }
 
-    void createNewCarObject ()
+    CarNeuralCore createNewCarObject ()
     {
         GameObject newGameObject = Instantiate (carPrefab);
         newGameObject.SetActive (true);
@@ -369,6 +370,8 @@ public class GeneticsManager : MonoBehaviour
         carNeuralCore.OnCarDisabled += onCarDisabled;
         carNeuralCore.OnCarClicked += onCarClicked;
         cars.Add (carNeuralCore);
+
+        return carNeuralCore;
     }
 
     void onCarClicked (CarNeuralCore carNeuralCore)
@@ -567,7 +570,18 @@ public class GeneticsManager : MonoBehaviour
             newGenCars.Add (carSimpleData);
         }
 
-        for (int i = 0; i < cars.Count; i ++)
+        int diff = newGenCars.Count - cars.Count;
+
+        if (diff > 0)
+        {
+            for (int i = 0; i < diff; i ++)
+            {
+                CarNeuralCore carNeuralCore = createNewCarObject ();
+                carNeuralCore.Init (currentTopology);
+            }
+        }
+
+        for (int i = 0; i < newGenCars.Count; i ++)
         {
             cars [i].SetWeights (newGenCars [i].Weights);
 
@@ -575,6 +589,16 @@ public class GeneticsManager : MonoBehaviour
             {
                 cars [i].SetSensorsLength (newGenCars [i].SensorsLength);
                 cars [i].SetAngleBetweenSensors (newGenCars [i].AngleBetweenSensors);
+            }
+        }
+
+        diff = cars.Count - newGenCars.Count;
+
+        if (diff > 0)
+        {
+            for (int i = 0; i < diff; i ++)
+            {
+                deleteLastCarObject ();
             }
         }
 

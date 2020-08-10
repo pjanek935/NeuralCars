@@ -881,6 +881,7 @@ MonoBehaviour:
   wallsContainer: {fileID: 527663334}
   gatesContainer: {fileID: 1289489524}
   trackBeginning: {fileID: 143923353}
+  grassCreator: {fileID: 1433017428}
 --- !u!4 &95786313
 Transform:
   m_ObjectHideFlags: 0
@@ -5603,8 +5604,8 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 4294967295
-  m_IsActive: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!4 &608217941
 Transform:
   m_ObjectHideFlags: 0
@@ -7833,7 +7834,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 4294967294
+  m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!4 &761241069
 Transform:
@@ -17140,8 +17141,8 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 4294967295
-  m_IsActive: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!4 &1433017427
 Transform:
   m_ObjectHideFlags: 0
@@ -17168,12 +17169,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2037161c17fd55840ac1f5e5f098ba39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cameraController: {fileID: 1808783750}
   roadMeshCollider: {fileID: 1616486977}
   grassPrefab: {fileID: 608217940}
   scale: 0.03
   size: 500
   range: 150
-  density: 0.332
+  density: 0.385
+  planesCount: 10
 --- !u!1 &1442935708
 GameObject:
   m_ObjectHideFlags: 0

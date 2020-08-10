@@ -13,6 +13,7 @@ public class Stage : MonoBehaviour
     [SerializeField] Transform gatesContainer;
 
     [SerializeField] Transform trackBeginning;
+    [SerializeField] GrassCreator grassCreator;
 
     List<GameObject> wallsRight = new List<GameObject> ();
     List<GameObject> wallsLeft = new List<GameObject> ();
@@ -68,17 +69,15 @@ public class Stage : MonoBehaviour
         if (newStageModel != null)
         {
             stageModel = newStageModel;
-            stageModel.BezierCurveFactor = bezierCurveFactor;
-            stageModel.RefreshPointsRightAndLeft ();
-            RefreshGeometry ();
         }
         else
         {
             stageModel = new StageModel ();
-            stageModel.BezierCurveFactor = bezierCurveFactor;
-            stageModel.RefreshPointsRightAndLeft ();
-            RefreshGeometry ();
         }
+
+        stageModel.BezierCurveFactor = bezierCurveFactor;
+        stageModel.RefreshPointsRightAndLeft ();
+        RefreshGeometry ();
     }
 
     public void SaveCurrentStage ()
@@ -124,6 +123,8 @@ public class Stage : MonoBehaviour
         createGates ();
         createRoadMesh ();
         refreshTrackBeginningPosition ();
+        grassCreator.DisableGrassOnRoad ();
+        grassCreator.OnCameraZoomUpdated ();
     }
 
     void createWalls ()

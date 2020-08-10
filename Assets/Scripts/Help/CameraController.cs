@@ -13,6 +13,7 @@ public class CameraController : MonoBehaviour
     }
 
     public UnityAction OnPositionUpdated;
+    public UnityAction OnZoomUpdated;
 
     [SerializeField] float maxDistFromCenter = 250f;
     [SerializeField] float maxYPos = 0f;
@@ -101,6 +102,7 @@ public class CameraController : MonoBehaviour
             if (newPos.y != this.transform.position.y)
             {
                 updatePos (newPos);
+                OnZoomUpdated?.Invoke ();
             }
         }
     }

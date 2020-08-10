@@ -9,6 +9,8 @@ public class CarSensor : MonoBehaviour
 {
     [SerializeField] LineRenderer lineRenderer;
 
+    int layerMask;
+
     public float Length
     {
         get;
@@ -19,6 +21,11 @@ public class CarSensor : MonoBehaviour
     {
         get;
         private set;
+    }
+
+    private void OnEnable ()
+    {
+        layerMask = LayerMask.GetMask (GlobalConst.WALL_TAG);
     }
 
     public void Init (float length, float angle)
@@ -47,29 +54,34 @@ public class CarSensor : MonoBehaviour
         transform.localEulerAngles = new Vector3 (0f, angle, 0f);
     }
 
+    public void Disable ()
+    {
+        Value = 1f;
+        lineRenderer.SetPositions (new Vector3 [2] { transform.position, transform.position });
+    }
+
+    private void FixedUpdate ()
+    {
+        if (lineRenderer.enabled)
+        {
+            Vector3 endPoint = transform.TransformDirection (Vector3.forward) * Length * (1f - Value);
+            endPoint = transform.position + endPoint;
+            lineRenderer.SetPositions (new Vector3 [2] { transform.position, endPoint });
+        }
+    }
+
     public void ShootRaycast ()
     {
-        int layerMask = LayerMask.GetMask (GlobalConst.WALL_TAG);
-
         RaycastHit hit;
-        Vector3 hitLocalPos = transform.position + transform.forward * Length;
 
         if (Physics.Raycast (transform.position, transform.TransformDirection (Vector3.forward), out hit, Length, layerMask))
         {
             Value = hit.distance / Length;
             Value = 1f - Value;
-            hitLocalPos = hit.point;
-
-            Debug.DrawLine (transform.position, hit.point, Color.red);
         }
         else
         {
             Value = 0f;
-        }
-
-        if (lineRenderer != null)
-        {
-            lineRenderer.SetPositions (new Vector3 [2] { transform.position, hitLocalPos});
         }
     }
 }

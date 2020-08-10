@@ -62,6 +62,11 @@ public class CarRadar : MonoBehaviour
         }
     }
 
+    public void Disable ()
+    {
+        sensors.ForEach ((s) => s.Disable ());
+    }
+
     public void SetAngleBetweenSensors (float angleBetweenSensors)
     {
         float angle = -((sensors.Count * angleBetweenSensors) / 2f); //init start angle
@@ -92,11 +97,19 @@ public class CarRadar : MonoBehaviour
         }
     }
 
-    private void FixedUpdate ()
+    public void ShootRayCasts ()
     {
-        for (int i = 0; i < sensors.Count; i ++)
+        for (int i = 0; i < sensors.Count; i++)
         {
             sensors [i].ShootRaycast ();
         }
     }
+
+    //private void FixedUpdate ()
+    //{
+    //    for (int i = 0; i < sensors.Count; i ++)
+    //    {
+    //        sensors [i].ShootRaycast ();
+    //    }
+    //}
 }
