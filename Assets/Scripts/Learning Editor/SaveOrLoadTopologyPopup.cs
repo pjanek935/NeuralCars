@@ -39,11 +39,42 @@ public class SaveOrLoadTopologyPopup : Popup
             currentTopologyData != null &&
             carsData != null)
         {
-            //TODO add a confirmation popup
-            //TODO add a name input popup
+            if (currentSelected.SavedTopologyData == null)
+            {
+                PopupWithInputField.Instance.Show ("TYPE NAME FOR SAVED GENERATION", onNameChoosen);
+            }
+            else
+            {
+                PopupWithMessage.Instance.Show ("ARE YOU SURE WANT TO OVERRIDE <i>"
+                    + currentSelected.SavedTopologyData.TopologyName + "</i>?", true, true, onOverrideConfirmed);
+            }
+        }
+    }
 
+    void onNameChoosen (bool confirm, string name)
+    {
+        if (confirm)
+        {
+            saveCurrentTopologyOnSelectedSlot (name);
+        }
+    }
+
+    void onOverrideConfirmed (bool confirmed)
+    {
+        if (confirmed)
+        {
+            PopupWithInputField.Instance.Show ("TYPE NAME FOR SAVED GENERATION", onNameChoosen);
+        }
+    }
+
+    void saveCurrentTopologyOnSelectedSlot (string name)
+    {
+        int currentSelectedIndex = getCurrentSelectedIndex ();
+
+        if (currentSelectedIndex != GlobalConst.INVALID_ID)
+        {
             SavedTopologyData savedTopologyData = new SavedTopologyData (currentTopologyData,
-                carsData, "topology " + currentSelectedIndex);
+                carsData, name);
             SaveManager.Instance.SaveTopologyOnSlot (savedTopologyData, currentSelectedIndex);
             refresh ();
         }
@@ -173,7 +204,7 @@ public class SaveOrLoadTopologyPopup : Popup
     {
         GameObject newGameObject = Instantiate (listElementPrefab);
         newGameObject.SetActive (true);
-        newGameObject.transform.SetParent (listElementContainer);
+        newGameObject.transform.SetParent (listElementContainer, false);
         SavedTopologyListElement savedTopologyListElement = newGameObject.GetComponent<SavedTopologyListElement> ();
         savedTopologyListElement.OnClick += onListElementClicked;
         topologies.Add (savedTopologyListElement);

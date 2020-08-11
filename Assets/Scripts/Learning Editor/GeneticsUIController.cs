@@ -84,9 +84,17 @@ public class GeneticsUIController : MonoBehaviour
 
     void onResetAllCarsClicked ()
     {
-        geneticsManager.ResetSimulation ();
-        geneticsManager.ActivateCars ();
-        RefreshViews ();
+        PopupWithMessage.Instance.Show ("ARE YOU SURE WANT TO RESET?", true, true, onResetAllCarsConfirmed);
+    }
+
+    void onResetAllCarsConfirmed (bool confirmed)
+    {
+        if (confirmed)
+        {
+            geneticsManager.ResetSimulation ();
+            geneticsManager.ActivateCars ();
+            RefreshViews ();
+        }
     }
 
     void onResetCarsPositionsButtonClicked ()

@@ -27,6 +27,7 @@ public class Popup : MonoBehaviour
         this.gameObject.SetActive (true);
         IsVisible = true;
         canvas.blocksRaycasts = true;
+        canvas.interactable = true;
         canvas.DOFade (1f, GlobalConst.SHOW_AND_HIDE_TIME);
         mainFrame.DOScale (1f, GlobalConst.SHOW_AND_HIDE_TIME);
     }
@@ -46,7 +47,7 @@ public class Popup : MonoBehaviour
         DOTween.Kill (mainFrame);
     }
 
-    void onBackgroundButtonClicked ()
+    protected virtual void onBackgroundButtonClicked ()
     {
         Hide ();
     }
