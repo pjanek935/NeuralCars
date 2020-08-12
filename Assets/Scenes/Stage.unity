@@ -18904,7 +18904,8 @@ MonoBehaviour:
   scale: 0.03
   size: 500
   range: 150
-  density: 0.385
+  fillValue: 0.429
+  density: 0.34
   planesCount: 10
 --- !u!1 &1442935708
 GameObject:

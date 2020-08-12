@@ -13,7 +13,8 @@ public class GrassCreator : MonoBehaviour
     [SerializeField] float scale = 1f;
     [SerializeField] int size = 100;
     [SerializeField] float range = 250f;
-    [Range (0,1)] [SerializeField] float density = 0.1f;
+    [Range (0,1)] [SerializeField] float fillValue = 0.1f;
+    [Range (0, 1)] [SerializeField] float density = 0.1f;
 
     [SerializeField] int planesCount = 5;
 
@@ -42,7 +43,7 @@ public class GrassCreator : MonoBehaviour
     public void OnCameraZoomUpdated ()
     {
         float cameraY = cameraController.transform.position.y;
-        float normalizedY = (cameraY - cameraController.MinYPos) / (cameraController.MaxYPos - 10 - cameraController.MinYPos);
+        float normalizedY = (cameraY - cameraController.MinYPos) / (cameraController.MaxYPos - 100 - cameraController.MinYPos);
         int activePlanesCount = (int) ((1f - normalizedY) * planes.Count);
 
         for (int i = 0; i < planes.Count; i ++)
@@ -105,52 +106,57 @@ public class GrassCreator : MonoBehaviour
             {
                 float perlin = Mathf.PerlinNoise (x * scale, y * scale);
 
-                if (perlin > 1f - density)
+                if (perlin > 1f - fillValue)
                 {
                     double r = random.NextDouble ();
-                    Vector3 pos = new Vector3 (x - size / 2f + (float) random.NextDouble (),
-                        0, y - size / 2f + (float) random.NextDouble ());
-                    float d = Vector3.Distance (pos, Vector3.zero);
-                    bool add = false;
 
-                    if (d < range)
+                    if (r < density)
                     {
-                        add = true;
-                    }
-                    else
-                    {
-                        float diff = (d - range) / 100f;
-                        diff = Mathf.Clamp01 (diff);
-
                         r = random.NextDouble ();
+                        Vector3 pos = new Vector3 (x - size / 2f + (float) random.NextDouble (),
+                            0, y - size / 2f + (float) random.NextDouble ());
+                        float d = Vector3.Distance (pos, Vector3.zero);
+                        bool add = false;
 
-                        if (r > diff)
+                        if (d < range)
                         {
                             add = true;
                         }
-                    }
-
-                    if (add)
-                    {
-                        r = random.NextDouble ();
-                        float step = 1f / planesCount;
-                        Transform parent = planes [0];
-
-                        for (int i = planes.Count - 1; i >= 0; i --)
+                        else
                         {
-                            if (r >= i * step)
-                            {
-                                parent = planes [i];
+                            float diff = (d - range) / 100f;
+                            diff = Mathf.Clamp01 (diff);
 
-                                break;
+                            r = random.NextDouble ();
+
+                            if (r > diff)
+                            {
+                                add = true;
                             }
                         }
 
-                        GameObject newGameObject = Instantiate (grassPrefab);
-                        newGameObject.transform.SetParent (parent, false);
-                        newGameObject.SetActive (true);
-                        newGameObject.transform.position = pos;
-                        grass.Add (newGameObject);
+                        if (add)
+                        {
+                            r = random.NextDouble ();
+                            float step = 1f / planesCount;
+                            Transform parent = planes [0];
+
+                            for (int i = planes.Count - 1; i >= 0; i--)
+                            {
+                                if (r >= i * step)
+                                {
+                                    parent = planes [i];
+
+                                    break;
+                                }
+                            }
+
+                            GameObject newGameObject = Instantiate (grassPrefab);
+                            newGameObject.transform.SetParent (parent, false);
+                            newGameObject.SetActive (true);
+                            newGameObject.transform.position = pos;
+                            grass.Add (newGameObject);
+                        }
                     }
                 }
             }
