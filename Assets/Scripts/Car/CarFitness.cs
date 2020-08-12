@@ -10,11 +10,13 @@ public enum FitnessType
 
 public class CarFitness : MonoBehaviour
 {
+    public delegate void OnGatePassedEventHandler (int gateIndex);
+
     public UnityAction OnWallHit;
-    public UnityAction OnGatePassed;
+    public event OnGatePassedEventHandler OnGatePassed;
 
     [SerializeField] CarTelemetry carTelemetry;
-    [SerializeField] CarNeuralCore carNeuralCore;
+    [SerializeField] CarNeuralCoreBase carNeuralCore;
 
     public FitnessType FitnessType
     {
@@ -123,6 +125,7 @@ public class CarFitness : MonoBehaviour
 
                 AvgVelocity += carTelemetry.VelocityAverage.magnitude;
                 AvgVelocity *= 0.5f;
+                OnGatePassed?.Invoke (gate.Index);
             }
         } 
     }

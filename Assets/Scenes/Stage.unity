@@ -35949,13 +35949,14 @@ GameObject:
   - component: {fileID: 7222126257958717390}
   - component: {fileID: 7037281475740914440}
   - component: {fileID: 3968714616040387599}
+  - component: {fileID: 3968714616040387600}
   m_Layer: 8
   m_Name: Player Controlled Car
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &3968714616040387599
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -35971,6 +35972,22 @@ MonoBehaviour:
   carTelemetry: {fileID: 7222126257958717390}
   carRadar: {fileID: 3968714617196529730}
   carController: {fileID: 3968714616040387825}
+  carFitness: {fileID: 3968714616040387600}
+  stage: {fileID: 95786310}
+--- !u!114 &3968714616040387600
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3968714616040387598}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85d2d5c3b665a8343b572da1123dde08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  carTelemetry: {fileID: 7222126257958717390}
+  carNeuralCore: {fileID: 3968714616040387599}
 --- !u!4 &3968714616040387824
 Transform:
   m_ObjectHideFlags: 0

@@ -10,7 +10,7 @@ using UnityEngine.UI;
 public class GeneticsManager : MonoBehaviour
 {
     public UnityAction OnNewGenCreated;
-    public event CarNeuralCore.CarNeuralCoreEventHandler OnCarClicked;
+    public event CarNeuralCoreBase.CarNeuralCoreEventHandler OnCarClicked;
 
     [SerializeField] Transform startPosition;
     [SerializeField] GameObject carPrefab;
@@ -374,32 +374,36 @@ public class GeneticsManager : MonoBehaviour
         return carNeuralCore;
     }
 
-    void onCarClicked (CarNeuralCore carNeuralCore)
+    void onCarClicked (CarNeuralCoreBase carNeuralCoreBase)
     {
-        OnCarClicked?.Invoke (carNeuralCore);
+        OnCarClicked?.Invoke (carNeuralCoreBase);
     }
 
-    void onCarDisabled (CarNeuralCore carNeuralCore)
+    void onCarDisabled (CarNeuralCoreBase carNeuralCoreBase)
     {
-        CarFitness carFitness = carNeuralCore.GetComponent<CarFitness> ();
-        carFitness.DistanceTravelled = stage.GetDistanceFromBeginning (carFitness.PosWhenDisabled);
-        carFitness.RotationWhenDisabled = carNeuralCore.transform.rotation;
+        CarFitness carFitness = carNeuralCoreBase.GetComponent<CarFitness> ();
 
-        bool allDisabled = true;
-
-        for (int i = 0; i < cars.Count; i ++)
+        if (carFitness != null)
         {
-            if (cars [i].IsActive)
+            carFitness.DistanceTravelled = stage.GetDistanceFromBeginning (carFitness.PosWhenDisabled);
+            carFitness.RotationWhenDisabled = carNeuralCoreBase.transform.rotation;
+
+            bool allDisabled = true;
+
+            for (int i = 0; i < cars.Count; i++)
             {
-                allDisabled = false;
+                if (cars [i].IsActive)
+                {
+                    allDisabled = false;
 
-                break;
+                    break;
+                }
             }
-        }
 
-        if (allDisabled && ! isActivatingCars)
-        {
-            onAllCarsDisabled ();
+            if (allDisabled && !isActivatingCars)
+            {
+                onAllCarsDisabled ();
+            }
         }
     }
 

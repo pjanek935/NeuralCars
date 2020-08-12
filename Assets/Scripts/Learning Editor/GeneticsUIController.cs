@@ -115,12 +115,12 @@ public class GeneticsUIController : MonoBehaviour
         cameraController.enabled = true;
     }
 
-    void onCarClicked (CarNeuralCore carNeuralCore)
+    void onCarClicked (CarNeuralCoreBase carNeuralCoreBase)
     {
-        carInspector.SetCarToFollow (carNeuralCore);
+        carInspector.SetCarToFollow (carNeuralCoreBase);
         cameraFollow.enabled = true;
         cameraController.enabled = false;
-        cameraFollow.SetTarget (carNeuralCore.transform);
+        cameraFollow.SetTarget (carNeuralCoreBase.transform);
     }
 
     public void RefreshViews ()

@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Assets
 {
-    class NeuralNetwork
+    public class NeuralNetwork
     {
         //Struktura sieci
         private int inputNeuronsCount; 

@@ -20,6 +20,11 @@ public class Stage : MonoBehaviour
     List<Gate> gates = new List<Gate> ();
     StageModel stageModel = new StageModel ();
 
+    public int GetLastGateIndex ()
+    {
+        return gates [gates.Count - 1].Index;
+    }
+
     public List <StageNode> GetStageNodes ()
     {
         return stageModel.Nodes;

@@ -7,24 +7,15 @@ using UnityEngine.EventSystems;
 /// <summary>
 /// This class is controlls the car based on neural network output.
 /// </summary>
-public class CarNeuralCore : MonoBehaviour, IPointerClickHandler
+public class CarNeuralCore : CarNeuralCoreBase
 {
     static System.Random rand = new System.Random ();
 
-    public delegate void CarNeuralCoreEventHandler (CarNeuralCore carNeuralCore);
     public event CarNeuralCoreEventHandler OnCarDisabled;
     public event CarNeuralCoreEventHandler OnGatePassed;
-    public event CarNeuralCoreEventHandler OnCarClicked;
 
-    [SerializeField] CarRadar carRadar;
-    [SerializeField] CarController carController;
-    [SerializeField] CarFitness carFitness;
-    [SerializeField] CarTelemetry carTelemetry;
-
-    NeuralNetwork neuralNetwork;
     int lastPassedGateIndex = 0;
     float lastGatePassedTime = 0;
-    NetworkTopologySimpleData networkTopology = new NetworkTopologySimpleData ();
     int parity = 0; //not all cars refresh their state in the same frame (performance reasons). Car refreshes state if Time.frameCount % 2 == partity;
 
     public bool DisableOnWallHit
@@ -33,49 +24,9 @@ public class CarNeuralCore : MonoBehaviour, IPointerClickHandler
         set;
     }
 
-    public bool IsActive
-    {
-        get;
-        set;
-    }
-
-    public float AngleBetweenSensors
-    {
-        get;
-        set;
-    }
-
-    public float SensorsLength
-    {
-        get;
-        set;
-    }
-
-    public CarSimpleData GetCarSimpleData ()
-    {
-        CarFitness carFitness = GetComponent<CarFitness> ();
-        return new CarSimpleData (GetWeights (), carFitness.Fitness, carFitness.DistanceTravelled, SensorsLength, AngleBetweenSensors);
-    }
-
-    private void Awake ()
-    {
-        carFitness.OnWallHit += onWallHit;
-        carFitness.OnGatePassed += onGatePassed;
-    }
-
     private void OnEnable ()
     {
         parity = rand.NextDouble () > 0.5 ? 1 : 0;
-    }
-
-    public void Init (NetworkTopologySimpleData networkTopology)
-    {
-        if (networkTopology != null)
-        {
-            initNeuralNetwork (networkTopology);
-            carRadar.Init (networkTopology.SensorsCount, AngleBetweenSensors, SensorsLength);
-            IsActive = false;
-        }
     }
 
     public void Reset ()
@@ -86,48 +37,15 @@ public class CarNeuralCore : MonoBehaviour, IPointerClickHandler
         carFitness.Reset ();
     }
 
-    public double [] GetWeights ()
+    public override void Init (NetworkTopologySimpleData networkTopology)
     {
-        return neuralNetwork.GetWeights ();
-    }
-
-    public void SetWeights (double [] weights)
-    {
-        neuralNetwork.SetWeights (weights);
-    }
-
-    public void SetSensorsVisible (bool visible)
-    {
-        carRadar.SetSensorsVisible (visible);
-    }
-
-    public void SetSensorsLength (float length)
-    {
-        this.SensorsLength = length;
-        carRadar.SetSensorsLength (length);
-    }
-
-    public void SetAngleBetweenSensors (float angle)
-    {
-        this.AngleBetweenSensors = angle;
-        carRadar.SetAngleBetweenSensors (angle);
+        base.Init (networkTopology);
+        IsActive = false;
     }
 
     public double [] GetRandomNeuralNetworkWeights ()
     {
         return neuralNetwork.GetRandomWeights ();
-    }
-
-    void initNeuralNetwork (NetworkTopologySimpleData networkTopology)
-    {
-        if (networkTopology != null)
-        {
-            this.networkTopology = networkTopology.GetCopy ();
-            int outputCount = 1 + (this.networkTopology.TorqueOutput ? 1 : 0) + (this.networkTopology.HandbrakeOutput ? 1 : 0); //there is always one output - steer angle
-            int additionalInputCount = (this.networkTopology.TorqueInput ? 1 : 0) + (this.networkTopology.VelocityInput ? 1 : 0) +
-                (this.networkTopology.SteerAngleInput ? 1 : 0) + (this.networkTopology.MovementAngleInput ? 1 : 0);
-            neuralNetwork = new NeuralNetwork (networkTopology.SensorsCount + additionalInputCount, this.networkTopology.HiddenLayerNeuronsCount, outputCount);
-        }
     }
 
     void steerCarBasedOnNeuralNetworkOutput ()
@@ -208,7 +126,7 @@ public class CarNeuralCore : MonoBehaviour, IPointerClickHandler
         }
     }
 
-    void onWallHit ()
+    protected override void onWallHit ()
     {
         if (DisableOnWallHit)
         {
@@ -216,15 +134,15 @@ public class CarNeuralCore : MonoBehaviour, IPointerClickHandler
         }
     }
 
-    void onGatePassed ()
+    protected override void onGatePassed (int gateIndex)
     {
-        OnGatePassed?.Invoke (this);
+        //OnGatePassed?.Invoke (this);
 
-        if (carFitness.GatesPassed > GlobalConst.MIN_GATES_PASSED_WHEN_DISABLED_BASED_ON_AVG_VELOCITY
-            && carFitness.AvgVelocity < GlobalConst.MIN_CAR_AVG_VELOCITY)
-        {
-            disableCar ();
-        }
+        //if (carFitness.GatesPassed > GlobalConst.MIN_GATES_PASSED_WHEN_DISABLED_BASED_ON_AVG_VELOCITY
+        //    && carFitness.AvgVelocity < GlobalConst.MIN_CAR_AVG_VELOCITY)
+        //{
+        //    disableCar ();
+        //}
     }
 
     void disableCar ()
@@ -238,10 +156,5 @@ public class CarNeuralCore : MonoBehaviour, IPointerClickHandler
         carRadar.Disable ();
 
         OnCarDisabled?.Invoke (this);
-    }
-
-    public void OnPointerClick (PointerEventData eventData)
-    {
-        OnCarClicked?.Invoke (this);
     }
 }

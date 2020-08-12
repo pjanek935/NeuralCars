@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class CarInspectorController : MonoBehaviour
 {
     [SerializeField] new Camera camera;
-    [SerializeField] CarNeuralCore carToFollow;
+    [SerializeField] CarNeuralCoreBase carToFollow;
     [SerializeField] Stage stage;
 
     [SerializeField] Text distTravelled;
@@ -22,7 +22,7 @@ public class CarInspectorController : MonoBehaviour
         private set;
     }
 
-    public void SetCarToFollow (CarNeuralCore carToFollow)
+    public void SetCarToFollow (CarNeuralCoreBase carToFollow)
     {
         this.carToFollow = carToFollow;
 
