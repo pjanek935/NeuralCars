@@ -437,6 +437,23 @@ public class GeneticsManager : MonoBehaviour
         }
     }
 
+    double getAverage (double [] fitnesses)
+    {
+        double result = 0f;
+
+        if (fitnesses != null)
+        {
+            for (int i = 0; i < fitnesses.Length; i ++)
+            {
+                result += fitnesses [i];
+            }
+
+            result /= fitnesses.Length;
+        }
+
+        return result;
+    }
+
     void onAllCarsDisabled ()
     {
         Generation++;
@@ -449,16 +466,29 @@ public class GeneticsManager : MonoBehaviour
         double [] fitnesses = new double [sortedCarsByFitness.Count];
         List<CarSimpleData> newGenCars = new List<CarSimpleData> ();
         newGenCars.Add (sortedCarsByFitness [0].GetCarSimpleData ());
-        
-        for (int i = 0; i < sortedCarsByFitness.Count; i ++)
+
+        for (int i = 0; i < sortedCarsByFitness.Count; i++)
         {
             fitnesses [i] = sortedCarsByFitness [i].GetComponent<CarFitness> ().Fitness;
+        }
+
+        double avgFitness = getAverage (fitnesses);
+
+        if (avgFitness < GlobalConst.MIN_AVG_FITNESS)
+        {
+            ResetSimulation ();
+            ActivateCars ();
+            OnNewGenCreated?.Invoke ();
+
+            return;
         }
 
         float prevBestDistance = prevCarWithFurthestDistTravelled.DistTravelled;
         float prevBestFitness = (float) prevCarWithHighestFitness.Fitness;
         float currentBestFitness = (float) fitnesses [0];
         float currentBestDistance = sortedCarsByDistace [0].GetComponent<CarFitness> ().DistanceTravelled;
+
+        Debug.Log ("Avg fitness: " + avgFitness);
 
         if (currentBestFitness > prevCarWithHighestFitness.Fitness)
         {

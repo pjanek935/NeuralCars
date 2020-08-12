@@ -15,6 +15,7 @@ public class GrassCreator : MonoBehaviour
     [SerializeField] float range = 250f;
     [Range (0,1)] [SerializeField] float fillValue = 0.1f;
     [Range (0, 1)] [SerializeField] float density = 0.1f;
+    [SerializeField] int offsetFromMaxCameraHeight = 150;
 
     [SerializeField] int planesCount = 5;
 
@@ -43,7 +44,7 @@ public class GrassCreator : MonoBehaviour
     public void OnCameraZoomUpdated ()
     {
         float cameraY = cameraController.transform.position.y;
-        float normalizedY = (cameraY - cameraController.MinYPos) / (cameraController.MaxYPos - 100 - cameraController.MinYPos);
+        float normalizedY = (cameraY - cameraController.MinYPos) / (cameraController.MaxYPos - offsetFromMaxCameraHeight - cameraController.MinYPos);
         int activePlanesCount = (int) ((1f - normalizedY) * planes.Count);
 
         for (int i = 0; i < planes.Count; i ++)

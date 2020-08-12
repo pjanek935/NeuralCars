@@ -10,10 +10,13 @@ public class CanvasSwitcher : MonoBehaviour
     [SerializeField] Button networkTopologyButton;
     [SerializeField] Button backToNeuralButton;
     [SerializeField] Button saveOrLoadTopologyButton;
+    [SerializeField] Button backFromLearningWithAdvisor;
+    [SerializeField] Button learningWithAdvisorButton;
 
     [SerializeField] GameObject stageEditorCanvas;
     [SerializeField] GameObject neuralNetworkCanvas;
     [SerializeField] GameObject networkTopologyCanvas;
+    [SerializeField] GameObject learningWithAdvisorCanvas;
     [SerializeField] SaveOrLoadTopologyPopup saveOrLoadTopologyPopup;
 
     [SerializeField] StageEditor stageEditor;
@@ -32,12 +35,45 @@ public class CanvasSwitcher : MonoBehaviour
         networkTopologyButton.onClick.AddListener (() => onNetworkTopologyButtonClicked ());
         backToNeuralButton.onClick.AddListener (() => backToNeural ());
         saveOrLoadTopologyButton.onClick.AddListener (() => onSaveOrLoadTopologyButtonClicked ());
+        backFromLearningWithAdvisor.onClick.AddListener (() => onBackFromLearningWithAdvisorClicked ());
+        learningWithAdvisorButton.onClick.AddListener (() => onLearningWithAdvisorButtonClicked ());
+
         saveOrLoadTopologyPopup.OnNewTopologyLoaded += onNewTopologyLoaded;
 
         onNeuralNetworkButtonClicked ();
         geneticsManager.Init ();
 
         Application.runInBackground = true;
+    }
+
+    void onBackFromLearningWithAdvisorClicked ()
+    {
+        imageFader.FadeIn (switchToGeneticsLearningFromLearningWithAdvisor);
+    }
+
+    void onLearningWithAdvisorButtonClicked ()
+    {
+        imageFader.FadeIn (switchToLearningWithAdvisor);
+    }
+
+    void switchToGeneticsLearningFromLearningWithAdvisor ()
+    {
+        learningWithAdvisorCanvas.SetActive (false);
+        neuralNetworkCanvas.SetActive (true);
+        forceField.SetActive (false);
+        geneticsManager.gameObject.SetActive (true);
+        geneticsManager.ResetCars ();
+        geneticsManager.ActivateCars ();
+        imageFader.FadeOut ();
+    }
+
+    void switchToLearningWithAdvisor ()
+    {
+        learningWithAdvisorCanvas.SetActive (true);
+        neuralNetworkCanvas.SetActive (false);
+        forceField.SetActive (true);
+        geneticsManager.gameObject.SetActive (false);
+        imageFader.FadeOut ();
     }
 
     void onStageEditorButtonClicked ()
