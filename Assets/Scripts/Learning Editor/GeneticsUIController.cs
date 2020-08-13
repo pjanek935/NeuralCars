@@ -38,13 +38,22 @@ public class GeneticsUIController : MonoBehaviour
     const float MIN_MUTATION_PROBABILITY = 0.025f;
     const float MUTATION_PROBABILITY_D = 0.025f;
 
-    private void Awake ()
+    private void OnEnable ()
     {
         geneticsManager.OnNewGenCreated += onNewGenCreated;
         geneticsManager.OnCarClicked += onCarClicked;
-
         cameraFollow.OnDrag += onCameraFollowDrag;
+    }
 
+    private void OnDisable ()
+    {
+        geneticsManager.OnNewGenCreated -= onNewGenCreated;
+        geneticsManager.OnCarClicked -= onCarClicked;
+        cameraFollow.OnDrag -= onCameraFollowDrag;
+    }
+
+    private void Awake ()
+    {
         resetCarsPositions.onClick.AddListener (() => onResetCarsPositionsButtonClicked ());
         resetAllCars.onClick.AddListener (() => onResetAllCarsClicked ());
 

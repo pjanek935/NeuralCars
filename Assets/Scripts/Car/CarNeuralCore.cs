@@ -134,17 +134,6 @@ public class CarNeuralCore : CarNeuralCoreBase
         }
     }
 
-    protected override void onGatePassed (int gateIndex)
-    {
-        //OnGatePassed?.Invoke (this);
-
-        //if (carFitness.GatesPassed > GlobalConst.MIN_GATES_PASSED_WHEN_DISABLED_BASED_ON_AVG_VELOCITY
-        //    && carFitness.AvgVelocity < GlobalConst.MIN_CAR_AVG_VELOCITY)
-        //{
-        //    disableCar ();
-        //}
-    }
-
     void disableCar ()
     {
         IsActive = false;

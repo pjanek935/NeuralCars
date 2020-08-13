@@ -31,10 +31,7 @@ public class CameraFollow : MonoBehaviour
 
         if (Input.GetMouseButtonDown (0) || Input.GetMouseButtonDown (1))
         {
-            if (Vector2.Distance (pointerPos, Input.mousePosition) * Time.deltaTime > 0.1f)
-            {
-                OnDrag?.Invoke ();
-            }
+            OnDrag?.Invoke ();
         }
 
         pointerPos = Input.mousePosition;

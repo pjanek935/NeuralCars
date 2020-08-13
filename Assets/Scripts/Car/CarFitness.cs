@@ -107,17 +107,18 @@ public class CarFitness : MonoBehaviour
 
     private void OnTriggerEnter (Collider other)
     {
-        if (! carNeuralCore.IsActive)
-        {
-            return;
-        }
-
         if (other.transform.parent != null)
         {
             Gate gate = other.transform.GetComponent<Gate> ();
 
             if (gate != null)
             {
+                if (!carNeuralCore.IsActive)
+                {
+                    OnGatePassed?.Invoke (gate.Index);
+                    return;
+                }
+
                 if (gate.Index > GatesPassed)
                 {
                     GatesPassed = gate.Index;

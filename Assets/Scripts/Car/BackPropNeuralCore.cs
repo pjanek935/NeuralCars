@@ -12,33 +12,48 @@ public class BackPropNeuralCore : CarNeuralCoreBase
 
     List<double []> trainingData = new List<double []> ();
 
+    public void Reset ()
+    {
+        trainingData.Clear ();
+        GetComponent<CarFitness> ().Reset ();
+        IsActive = false;
+    }
+
     private void FixedUpdate ()
     {
         if (IsActive)
         {
-            double [] input = getInputForNeuralNetwork ();
+            carRadar.ShootRayCasts ();
             double [] output = getCurrentOutput ();
-            double [] data = new double [input.Length + output.Length];
-
-            for (int i = 0; i < input.Length; i ++)
-            {
-                data [i] = input [i];
-            }
+            bool isAnyOutputActive = false;
 
             for (int i = 0; i < output.Length; i ++)
             {
-                data [input.Length + i] = output [i];
+                if (Mathf.Abs ((float) output [i]) >= 0.01f)
+                {
+                    isAnyOutputActive = true;
+
+                    break;
+                }
             }
 
-            trainingData.Add (data);
-        }
-    }
+            if (isAnyOutputActive)
+            {
+                double [] input = getInputForNeuralNetwork ();
+                double [] data = new double [input.Length + output.Length];
 
-    private void Update ()
-    {
-        if (Input.GetKeyDown (KeyCode.KeypadEnter))
-        {
-            IsActive = ! IsActive;
+                for (int i = 0; i < input.Length; i++)
+                {
+                    data [i] = input [i];
+                }
+
+                for (int i = 0; i < output.Length; i++)
+                {
+                    data [input.Length + i] = output [i];
+                }
+
+                trainingData.Add (data);
+            }
         }
     }
 

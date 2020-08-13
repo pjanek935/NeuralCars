@@ -2596,6 +2596,7 @@ GameObject:
   - component: {fileID: 231350148}
   - component: {fileID: 231350147}
   - component: {fileID: 231350146}
+  - component: {fileID: 231350149}
   m_Layer: 5
   m_Name: Learning With Advisor Canvas
   m_TagString: Untagged
@@ -2683,6 +2684,24 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!114 &231350149
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 231350144}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77b5eccde3df7a4429ab0045c86cbc0a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  car: {fileID: 3968714616040387599}
+  stage: {fileID: 95786310}
+  cameraController: {fileID: 1808783750}
+  cameraFollow: {fileID: 1808783749}
+  startPosition: {fileID: 143923353}
+  geneticsManager: {fileID: 455268757}
 --- !u!1001 &235629830
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4596,6 +4615,7 @@ MonoBehaviour:
   geneticsManager: {fileID: 455268757}
   networkTopologyController: {fileID: 1834901944}
   geneticsUIController: {fileID: 455268759}
+  learningWithAdvisor: {fileID: 231350149}
   imageFader: {fileID: 454982585}
   forceField: {fileID: 500842273}
 --- !u!4 &447254915

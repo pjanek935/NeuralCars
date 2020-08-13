@@ -23,6 +23,7 @@ public class CanvasSwitcher : MonoBehaviour
     [SerializeField] GeneticsManager geneticsManager;
     [SerializeField] NeuralNetworkTopologyController networkTopologyController;
     [SerializeField] GeneticsUIController geneticsUIController;
+    [SerializeField] LearningWithAdvisor learningWithAdvisor;
     [SerializeField] ImageFader imageFader;
     [SerializeField] GameObject forceField;
 
@@ -58,6 +59,7 @@ public class CanvasSwitcher : MonoBehaviour
 
     void switchToGeneticsLearningFromLearningWithAdvisor ()
     {
+        learningWithAdvisor.Exit ();
         learningWithAdvisorCanvas.SetActive (false);
         neuralNetworkCanvas.SetActive (true);
         forceField.SetActive (false);
@@ -69,6 +71,7 @@ public class CanvasSwitcher : MonoBehaviour
 
     void switchToLearningWithAdvisor ()
     {
+        learningWithAdvisor.Enter ();
         learningWithAdvisorCanvas.SetActive (true);
         neuralNetworkCanvas.SetActive (false);
         forceField.SetActive (true);
