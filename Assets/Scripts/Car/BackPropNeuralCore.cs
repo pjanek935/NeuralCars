@@ -12,11 +12,32 @@ public class BackPropNeuralCore : CarNeuralCoreBase
 
     List<double []> trainingData = new List<double []> ();
 
+    public List <double []> TrainingData
+    {
+        get { return trainingData; }
+    }
+
     public void Reset ()
     {
         trainingData.Clear ();
         GetComponent<CarFitness> ().Reset ();
         IsActive = false;
+    }
+
+    public void Train (List <double []> trainDataList)
+    {
+        if (trainDataList != null)
+        {
+            double[][] trainData = new double [trainDataList.Count] [];
+
+            for (int i = 0; i < trainDataList.Count; i ++)
+            {
+                trainData [i] = trainDataList [i];
+            }
+
+            neuralNetwork.SetWeights (neuralNetwork.GetRandomWeights ());
+            double [] weights = neuralNetwork.Train (trainData, 1, 0.2f, 0f);
+        }
     }
 
     private void FixedUpdate ()

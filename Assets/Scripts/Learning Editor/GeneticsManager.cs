@@ -326,8 +326,6 @@ public class GeneticsManager : MonoBehaviour
                 deleteLastCarObject ();
             }
         }
-
-        ActivateCars ();
     }
 
     public void ActivateCars ()
