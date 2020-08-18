@@ -21,7 +21,7 @@ public class Popup : MonoBehaviour
         backgroundButton.onClick.AddListener (() => onBackgroundButtonClicked  ());
     }
 
-    public void Show ()
+    public virtual void Show ()
     {
         cancelAnimation ();
         this.gameObject.SetActive (true);
@@ -32,7 +32,7 @@ public class Popup : MonoBehaviour
         mainFrame.DOScale (1f, GlobalConst.SHOW_AND_HIDE_TIME);
     }
 
-    public void Hide ()
+    public virtual void Hide ()
     {
         cancelAnimation ();
         IsVisible = false;

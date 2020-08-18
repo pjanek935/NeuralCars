@@ -20,6 +20,11 @@ public class Stage : MonoBehaviour
     List<Gate> gates = new List<Gate> ();
     StageModel stageModel = new StageModel ();
 
+    public StageModel StageModel
+    {
+        get { return stageModel; }
+    }
+
     public int GetLastGateIndex ()
     {
         return gates [gates.Count - 1].Index;
@@ -80,6 +85,26 @@ public class Stage : MonoBehaviour
             stageModel = new StageModel ();
         }
 
+        stageModel.BezierCurveFactor = bezierCurveFactor;
+        stageModel.RefreshPointsRightAndLeft ();
+        RefreshGeometry ();
+    }
+
+    public void LoadStage (StageModel newStageModel)
+    {
+        if (newStageModel == null)
+        {
+            return;
+        }
+
+        float bezierCurveFactor = 3.5f;
+
+        if (stageModel != null)
+        {
+            bezierCurveFactor = stageModel.BezierCurveFactor;
+        }
+
+        stageModel = newStageModel;
         stageModel.BezierCurveFactor = bezierCurveFactor;
         stageModel.RefreshPointsRightAndLeft ();
         RefreshGeometry ();

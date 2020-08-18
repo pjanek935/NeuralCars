@@ -5,8 +5,7 @@ using UnityEngine.UI;
 
 public class TopPanelController : MonoBehaviour
 {
-    public delegate void OnLoadRequestedEventHandler (int slotId);
-    public event OnLoadRequestedEventHandler OnLoadClicked;
+    public event SaveOrLoadStagePopup.OnLoadStageClickedEventHandler OnLoadClicked;
 
     public delegate void TopPanelControllerEventHandler ();
     public event TopPanelControllerEventHandler OnSaveClicked;
@@ -18,35 +17,32 @@ public class TopPanelController : MonoBehaviour
     public delegate void OnSnapToGridToggleClickedEventHandler (bool value);
     public event OnSnapToGridToggleClickedEventHandler OnSnapToGridToggleClicked;
 
+    [SerializeField] Stage stage;
     [SerializeField] StageEditor stageEditor;
     [SerializeField] Button saveButton;
-    [SerializeField] Button loadButton;
-    [SerializeField] SaveList loadList;
     [SerializeField] Text stageName;
     [SerializeField] Button resetStageButton;
     [SerializeField] Button clearStageButton;
-    [SerializeField] GameObject saveStar;
     [SerializeField] Toggle snapToGridToggle;
     [SerializeField] Text defaultWidthText;
     [SerializeField] Button defaultWidthUpButton;
     [SerializeField] Button defaultWdithDownButton;
+    [SerializeField] SaveOrLoadStagePopup saveOrLoadStagePopup;
 
     private void Awake ()
     {
         saveButton.onClick.AddListener (() => onSaveButtonClicked ());
-        loadButton.onClick.AddListener (() => onLoadButtonClicked ());
-        loadList.OnElementOnListClicked += onElementOnListClicekd;
         resetStageButton.onClick.AddListener (() => OnResetClicked?.Invoke ());
         clearStageButton.onClick.AddListener (() => OnClearClicked?.Invoke ());
         snapToGridToggle.onValueChanged.AddListener ((val) => OnSnapToGridToggleClicked?.Invoke (val));
         defaultWdithDownButton.onClick.AddListener (() => OnDefaultWidthDownClicked?.Invoke ());
         defaultWidthUpButton.onClick.AddListener (() => OnDefaultWidthUpClicked?.Invoke ());
+        saveOrLoadStagePopup.OnLoadStageClicked += onLoadStageClicked;
     }
 
     public void Refresh ()
     {
         stageName.text = "STAGE 0" + SaveManager.Instance.CurrentOpenedStageId;
-        loadList.Refresh ();
         defaultWidthText.text = stageEditor.DefaultWidth.ToString ();
     }
 
@@ -57,30 +53,21 @@ public class TopPanelController : MonoBehaviour
             bool canUndoLastAction = stage.CanUndoLastAction ();
             resetStageButton.interactable = canUndoLastAction;
             clearStageButton.interactable = stage.GetStageNodes ().Count > 0;
-            saveStar.gameObject.SetActive (canUndoLastAction);
         }
 
         Refresh ();
     }
 
-    void onElementOnListClicekd (SaveList list, int slotId)
-    {
-        if (list == loadList)
-        {
-            OnLoadClicked?.Invoke (slotId);
-        }
-
-        Refresh ();
-    }
 
     void onSaveButtonClicked ()
     {
-        loadList.gameObject.SetActive (false);
-        OnSaveClicked?.Invoke ();
+        saveOrLoadStagePopup.Setup (stage.StageModel);
+        saveOrLoadStagePopup.Show ();
     }
 
-    void onLoadButtonClicked ()
+    void onLoadStageClicked (StageModel stageModel)
     {
-        loadList.gameObject.SetActive (!loadList.gameObject.activeSelf);
+        OnLoadClicked?.Invoke (stageModel);
+        saveOrLoadStagePopup.Hide ();
     }
 }

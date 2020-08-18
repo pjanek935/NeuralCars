@@ -21,7 +21,7 @@ public class SaveList : MonoBehaviour
         List<bool> saves = new List<bool> ();
         SaveManager saveManager = SaveManager.Instance;
 
-        for (int i = 0; i < SaveManager.SLOTS_COUNT; i ++)
+        for (int i = 0; i < SaveManager.STAGES_COUNT; i ++)
         {
             saves.Add (saveManager.IsSlotEmpty (i));
         }

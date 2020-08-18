@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Policy;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 [Serializable]
 public class StageModel
 {
     [SerializeField] List<StageNode> nodes;
+    public string StageName;
 
     public List <StageNode> Nodes
     {
@@ -81,6 +84,19 @@ public class StageModel
         dist += Vector3.Distance (nodes [closestNodeIndex].Position, closestPoint);
 
         return dist;
+    }
+
+    public float GetTotalStageLength ()
+    {
+        float result = 0;
+
+        if (nodes != null && nodes.Count >= 2)
+        {
+            Vector3 lastNodePos = nodes [nodes.Count - 1].Position;
+            result = GetDistanceFromBeginning (lastNodePos);
+        }
+
+        return result;
     }
 
     public void MakeAndAddAction (StageAction stageAction)

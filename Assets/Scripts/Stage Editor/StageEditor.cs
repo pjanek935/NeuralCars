@@ -83,7 +83,7 @@ public class StageEditor : MonoBehaviour
             topPanelController.OnDefaultWidthUpClicked += onDefaultWidthUpClicked;
         }
 
-        onLoadStageClicked (SaveManager.Instance.CurrentOpenedStageId);
+        onLoadStageClicked (SaveManager.Instance.LoadStage (SaveManager.Instance.CurrentOpenedStageId));
     }
 
     public void DisableStageEditor ()
@@ -120,7 +120,7 @@ public class StageEditor : MonoBehaviour
 
     void onResetStageClicked ()
     {
-        onLoadStageClicked (SaveManager.Instance.CurrentOpenedStageId);
+        onLoadStageClicked (SaveManager.Instance.LoadStage (SaveManager.Instance.CurrentOpenedStageId));
     }
 
     void onSnapToGridClicked (bool value)
@@ -135,10 +135,10 @@ public class StageEditor : MonoBehaviour
         refreshViews ();
     }
 
-    void onLoadStageClicked (int stageId)
+    void onLoadStageClicked (StageModel stageModel)
     {
         stage.SetBeizerCurverFactor (bezierDistanceFactor);
-        stage.LoadStageWithId (stageId);
+        stage.LoadStage (stageModel);
         synchornizeFlagsWithModel ();
         refreshViews ();
     }

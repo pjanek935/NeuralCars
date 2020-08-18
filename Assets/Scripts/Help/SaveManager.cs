@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class SaveManager
 {
-    public const int SLOTS_COUNT = 5;
+    public const int STAGES_COUNT = 5;
     public const int TOPOLOGIES_COUNT = 7;
     const string stageNameFormat = "STAGE_{0}.stg";
     const string topologyNameFormat = "TOPOLOGY_{0}.tpg";
@@ -46,7 +46,7 @@ public class SaveManager
     {
         bool result = false;
 
-        if (slotId >= 0 && slotId < SLOTS_COUNT)
+        if (slotId >= 0 && slotId < STAGES_COUNT)
         {
             string fileName = string.Format (stageNameFormat, slotId);
             string destination = Application.persistentDataPath + "/" + fileName;
@@ -62,7 +62,7 @@ public class SaveManager
 
     public void SaveStage (StageModel stageModel, int slotId)
     {
-        if (slotId >= 0 && slotId < SLOTS_COUNT)
+        if (slotId >= 0 && slotId < STAGES_COUNT)
         {
             if (stageModel != null)
             {
@@ -91,7 +91,7 @@ public class SaveManager
     {
         StageModel result = null;
 
-        if (slotId >= 0 && slotId < SLOTS_COUNT)
+        if (slotId >= 0 && slotId < STAGES_COUNT)
         {
             string fileName = string.Format (stageNameFormat, slotId);
             string destination = Application.persistentDataPath + "/" + fileName;
@@ -119,6 +119,34 @@ public class SaveManager
         }
 
         return result;
+    }
+
+    public List <StageModel> GetSavedStages ()
+    {
+        List<StageModel> stages = new List<StageModel> ();
+
+        for (int i = 0; i < STAGES_COUNT; i ++)
+        {
+            string fileName = string.Format (stageNameFormat, i);
+            string path = Application.persistentDataPath + "/" + fileName;
+
+            if (File.Exists (path))
+            {
+                FileStream file = File.OpenRead (path);
+                BinaryFormatter bf = new BinaryFormatter ();
+                string json = (string) bf.Deserialize (file);
+                file.Close ();
+
+                StageModel stageModel = JsonUtility.FromJson<StageModel> (json);
+                stages.Add (stageModel);
+            }
+            else
+            {
+                stages.Add (null);
+            }
+        }
+
+        return stages;
     }
 
     public List <SavedTopologyData> GetSavedTopologies ()
