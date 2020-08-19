@@ -26,6 +26,7 @@ public class CanvasSwitcher : MonoBehaviour
     [SerializeField] LearningWithAdvisor learningWithAdvisor;
     [SerializeField] ImageFader imageFader;
     [SerializeField] GameObject forceField;
+    [SerializeField] Stage stage;
 
     bool wasPaused = false;
 
@@ -108,7 +109,7 @@ public class CanvasSwitcher : MonoBehaviour
 
     void onNeuralNetworkButtonClicked ()
     {
-        imageFader.FadeIn (switchNetworkTopologyToLearningWindow);
+        imageFader.FadeIn (switchStageEditorToLearningWindow);
     }
 
     void onNewTopologyLoaded (SavedTopologyData savedTopologyData)
@@ -126,11 +127,12 @@ public class CanvasSwitcher : MonoBehaviour
         }
     }
 
-    void switchNetworkTopologyToLearningWindow ()
+    void switchStageEditorToLearningWindow ()
     {
         stageEditor.DisableStageEditor ();
         stageEditorCanvas.SetActive (false);
         neuralNetworkCanvas.SetActive (true);
+        stage.PrepareStage ();
         forceField.SetActive (false);
 
         if (wasPaused)

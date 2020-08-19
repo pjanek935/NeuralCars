@@ -171,6 +171,8 @@ public class StageEditor : MonoBehaviour
 
     void onBackClicked ()
     {
+        flagEditor.Setup (null);
+
         if (stage.UndoLastAction ())
         {
             synchornizeFlagsWithModel ();
@@ -179,6 +181,8 @@ public class StageEditor : MonoBehaviour
 
     void onForwardClicked ()
     {
+        flagEditor.Setup (null);
+
         if (stage.MakeStepForward ())
         {
             synchornizeFlagsWithModel ();
@@ -230,6 +234,7 @@ public class StageEditor : MonoBehaviour
             }
         }
 
+        stage.RefreshGeometry ();
         refreshViews ();
         refreshLineRenderer ();
     }
@@ -439,6 +444,15 @@ public class StageEditor : MonoBehaviour
 
     void onFlagReleased (Flag flag)
     {
+        Vector3 from = flag.PrevFlagPosition;
+        Vector3 to = flag.transform.position;
+
+        if (Vector3.Distance (from, to) > GlobalConst.EPSILON)
+        {
+            StageAction stageAction = new MoveNodeAction (flags.IndexOf (flag), from, to);
+            stage.AddAction (stageAction);
+        }
+
         refreshLineRenderer ();
         synchronizeModelWithFlags ();
     }

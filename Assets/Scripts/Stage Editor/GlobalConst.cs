@@ -22,7 +22,7 @@ public static class GlobalConst
 
     //Tags
     public const string WALL_TAG = "Wall";
-    public const string FLOOR_TAG = "Floor";
+    public const string FLOOR_LAYER = "Floor";
     public const string ROAD_LAYER = "Road";
 
     //Other

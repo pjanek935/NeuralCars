@@ -10,12 +10,41 @@ public class StageFloor : MonoBehaviour
 
     [SerializeField] new Camera camera;
     [SerializeField] CameraController cameraController;
+    [SerializeField] List<OnMouseEventListener> listeners = new List<OnMouseEventListener> ();
 
-    private void OnMouseDown ()
+    private void OnEnable ()
+    {
+        if (listeners != null)
+        {
+            for (int i = 0; i < listeners.Count; i++)
+            {
+                if (listeners [i] != null)
+                {
+                    listeners [i].OnDown += shootRaycast;
+                }
+            }
+        }
+    }
+
+    private void OnDisable ()
+    {
+        if (listeners != null)
+        {
+            for (int i = 0; i < listeners.Count; i++)
+            {
+                if (listeners [i] != null)
+                {
+                    listeners [i].OnDown -= shootRaycast;
+                }
+            }
+        }
+    }
+
+    void shootRaycast ()
     {
         Ray raycast = camera.ScreenPointToRay (Input.mousePosition);
         RaycastHit hit;
-        int layerMask = LayerMask.GetMask (GlobalConst.FLOOR_TAG);
+        int layerMask = LayerMask.GetMask (GlobalConst.FLOOR_LAYER, GlobalConst.ROAD_LAYER);
 
         if (Physics.Raycast (raycast, out hit, 1000, layerMask))
         {
@@ -30,5 +59,10 @@ public class StageFloor : MonoBehaviour
                 }
             }
         }
+    }
+
+    private void OnMouseDown ()
+    {
+        shootRaycast ();
     }
 }

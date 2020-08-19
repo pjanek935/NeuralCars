@@ -16,7 +16,12 @@ public class Flag : MonoBehaviour
     [SerializeField] StageEditor stageEditor;
 
     Vector3 prevMousePos;
-    Vector3 prevFlagPosition;
+
+    public Vector3 PrevFlagPosition
+    {
+        get;
+        set;
+    }
 
     public float Width
     {
@@ -42,6 +47,7 @@ public class Flag : MonoBehaviour
         if (stageEditor != null)
         {
             width = stageEditor.DefaultWidth;
+            PrevFlagPosition = this.transform.position;
         }
     }
 
@@ -49,6 +55,11 @@ public class Flag : MonoBehaviour
     {
         if (cameraController != null && ! cameraController.IsPointerOverGUI ())
         {
+            if (! Selected)
+            {
+                PrevFlagPosition = this.transform.position;
+            }
+
             Selected = true;
             OnFlagMoved?.Invoke (this);
         }
@@ -82,7 +93,7 @@ public class Flag : MonoBehaviour
     {
         if (Selected)
         {
-            if (Input.GetMouseButtonUp (0))
+            if (Input.GetMouseButtonUp (0) && Selected)
             {
                 Selected = false;
                 OnFlagReleased?.Invoke (this);
@@ -91,7 +102,7 @@ public class Flag : MonoBehaviour
             {
                 Ray raycast = camera.ScreenPointToRay (Input.mousePosition);
                 RaycastHit hit;
-                int layerMask = LayerMask.GetMask (GlobalConst.FLOOR_TAG);
+                int layerMask = LayerMask.GetMask (GlobalConst.FLOOR_LAYER);
 
                 if (Physics.Raycast (raycast, out hit, 1000, layerMask))
                 {

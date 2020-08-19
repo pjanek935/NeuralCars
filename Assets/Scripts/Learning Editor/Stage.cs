@@ -55,6 +55,11 @@ public class Stage : MonoBehaviour
         stageModel.MakeAndAddAction (stageAction);
     }
 
+    public void AddAction (StageAction stageAction)
+    {
+        stageModel.AddAction (stageAction);
+    }
+
     public bool CanUndoLastAction ()
     {
         return stageModel.CanUndoLastAction ();
@@ -150,9 +155,13 @@ public class Stage : MonoBehaviour
     public void RefreshGeometry ()
     {
         createWalls ();
-        createGates ();
         createRoadMesh ();
         refreshTrackBeginningPosition ();
+    }
+
+    public void PrepareStage ()
+    {
+        createGates ();
         grassCreator.DisableGrassOnRoad ();
         grassCreator.OnCameraZoomUpdated ();
     }

@@ -4037,6 +4037,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   camera: {fileID: 1808783747}
   cameraController: {fileID: 1808783750}
+  listeners:
+  - {fileID: 1616486978}
 --- !u!1 &380038499
 GameObject:
   m_ObjectHideFlags: 0
@@ -5094,6 +5096,7 @@ MonoBehaviour:
   learningWithAdvisor: {fileID: 231350149}
   imageFader: {fileID: 454982585}
   forceField: {fileID: 500842273}
+  stage: {fileID: 95786310}
 --- !u!4 &447254915
 Transform:
   m_ObjectHideFlags: 0
@@ -22080,6 +22083,7 @@ GameObject:
   - component: {fileID: 1616486976}
   - component: {fileID: 1616486975}
   - component: {fileID: 1616486977}
+  - component: {fileID: 1616486978}
   m_Layer: 13
   m_Name: Road
   m_TagString: Untagged
@@ -22162,6 +22166,18 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
+--- !u!114 &1616486978
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1616486973}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0754f2f3de69e9f47bc8996392b3b6fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1617779959
 GameObject:
   m_ObjectHideFlags: 0
