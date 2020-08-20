@@ -15,6 +15,8 @@ public class NeuralNetworkTopologyController : MonoBehaviour
     [SerializeField] Transform sensorsContainer;
     [SerializeField] Transform hiddenLayerNeuronsContainer;
     [SerializeField] Transform linesContainer;
+    [SerializeField] GameObject exclemationMark;
+    [SerializeField] Button resetButton;
 
     List<GameObject> sensorNeurons = new List<GameObject> ();
     List<GameObject> hiddenLayerNeurons = new List<GameObject> ();
@@ -34,7 +36,7 @@ public class NeuralNetworkTopologyController : MonoBehaviour
 
     private void Awake ()
     {
-        //resetButton.onClick.AddListener (() => onResetClicked ());
+        resetButton.onClick.AddListener (() => onResetClicked ());
 
         sensorsCountController.Setup (20, 2, 1);
         sensorsCountController.SetValue (1);
@@ -92,29 +94,41 @@ public class NeuralNetworkTopologyController : MonoBehaviour
             createNeurons (networkTopologySimpleData.SensorsCount, sensorNeurons, sensorsContainer);
             createNeurons (networkTopologySimpleData.HiddenLayerNeuronsCount, hiddenLayerNeurons, hiddenLayerNeuronsContainer);
             startNewRefreshLinesCoroutine ();
+            refreshButtons ();
         }
     }
 
     void onToggleValueChanged (NeuronToggle sender, bool isOn)
     {
         refreshLines ();
+        refreshButtons ();
     }
 
     void onSensorsCountValueChanged (float newVal)
     {
         createNeurons ((int) newVal, sensorNeurons, sensorsContainer);
         startNewRefreshLinesCoroutine ();
+        refreshButtons ();
     }
 
     void hiddenLayerNeuronsCountValueChanged (float newVal)
     {
         createNeurons ((int) newVal, hiddenLayerNeurons, hiddenLayerNeuronsContainer);
         startNewRefreshLinesCoroutine ();
+        refreshButtons ();
     }
 
     void onResetClicked ()
     {
         Init (defaultTopology);
+    }
+
+    void refreshButtons ()
+    {
+        NetworkTopologySimpleData currentTopology = GetNetworkTopologySimpleData ();
+        bool isDifferent = currentTopology.IsDifferent (defaultTopology);
+        exclemationMark.SetActive (isDifferent);
+        resetButton.interactable = isDifferent;
     }
 
     void createNeurons (int count, List <GameObject> list, Transform container)
