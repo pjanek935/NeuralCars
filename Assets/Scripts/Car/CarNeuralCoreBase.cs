@@ -11,6 +11,7 @@ public class CarNeuralCoreBase : MonoBehaviour, IPointerClickHandler
     [SerializeField] protected CarRadar carRadar;
     [SerializeField] protected CarController carController;
     [SerializeField] protected CarFitness carFitness;
+    [SerializeField] protected CarParticlesManager carParticlesManager;
 
     protected NeuralNetwork neuralNetwork;
     protected NetworkTopologySimpleData networkTopology = new NetworkTopologySimpleData ();
@@ -28,6 +29,12 @@ public class CarNeuralCoreBase : MonoBehaviour, IPointerClickHandler
     }
 
     public bool IsActive
+    {
+        get;
+        set;
+    }
+
+    public bool ExplodeOnDisable
     {
         get;
         set;
@@ -79,6 +86,11 @@ public class CarNeuralCoreBase : MonoBehaviour, IPointerClickHandler
             initNeuralNetwork (networkTopology);
             carRadar.Init (networkTopology.SensorsCount, AngleBetweenSensors, SensorsLength);
         }
+    }
+
+    protected void explode ()
+    {
+        carParticlesManager.Explode ();
     }
 
     void initNeuralNetwork (NetworkTopologySimpleData networkTopology)

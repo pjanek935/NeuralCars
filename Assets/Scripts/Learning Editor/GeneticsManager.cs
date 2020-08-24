@@ -30,6 +30,7 @@ public class GeneticsManager : MonoBehaviour
     [SerializeField] float mutationProbabilityD = 0.2f;
     [SerializeField] bool adaptiveMutationProbability = true;
     [SerializeField] bool disableOnWallHit = true;
+    [SerializeField] bool explosions = false;
 
     List<CarNeuralCore> cars = new List<CarNeuralCore> ();
     Genetics genetics = new Genetics ();
@@ -49,12 +50,6 @@ public class GeneticsManager : MonoBehaviour
     const float DEFAULT_MUTATION_PROBABILITY = 0.1f;
 
     public int Generation
-    {
-        get;
-        private set;
-    }
-
-    public bool IsPaused
     {
         get;
         private set;
@@ -123,6 +118,17 @@ public class GeneticsManager : MonoBehaviour
             {
                 car.DisableOnWallHit = value;
             }
+        }
+    }
+
+    public bool Explosions
+    {
+        get { return explosions; }
+
+        set
+        {
+            explosions = value;
+            cars.ForEach (c => c.ExplodeOnDisable = value);
         }
     }
 
@@ -235,16 +241,6 @@ public class GeneticsManager : MonoBehaviour
     {
         SetDefaultNetworkTopology ();
         createCars ();
-    }
-
-    public void Pause ()
-    {
-        IsPaused = true;
-    }
-
-    public void Resume ()
-    {
-        IsPaused = false;
     }
 
     public void ResetCars ()
@@ -367,6 +363,7 @@ public class GeneticsManager : MonoBehaviour
         CarNeuralCore carNeuralCore = newGameObject.GetComponent<CarNeuralCore> ();
         carNeuralCore.OnCarDisabled += onCarDisabled;
         carNeuralCore.OnCarClicked += onCarClicked;
+        carNeuralCore.ExplodeOnDisable = explosions;
         cars.Add (carNeuralCore);
 
         return carNeuralCore;
@@ -486,7 +483,7 @@ public class GeneticsManager : MonoBehaviour
         float currentBestFitness = (float) fitnesses [0];
         float currentBestDistance = sortedCarsByDistace [0].GetComponent<CarFitness> ().DistanceTravelled;
 
-        Debug.Log ("Avg fitness: " + avgFitness);
+        //Debug.Log ("Avg fitness: " + avgFitness);
 
         if (currentBestFitness > prevCarWithHighestFitness.Fitness)
         {

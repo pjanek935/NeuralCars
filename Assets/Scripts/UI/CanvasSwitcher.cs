@@ -28,8 +28,6 @@ public class CanvasSwitcher : MonoBehaviour
     [SerializeField] GameObject forceField;
     [SerializeField] Stage stage;
 
-    bool wasPaused = false;
-
     private void Awake ()
     {
         stageEditorButton.onClick.AddListener (() => onStageEditorButtonClicked ());
@@ -91,18 +89,7 @@ public class CanvasSwitcher : MonoBehaviour
         stageEditorCanvas.SetActive (true);
         neuralNetworkCanvas.SetActive (false);
         forceField.SetActive (true);
-
-        if (geneticsManager.IsPaused)
-        {
-            wasPaused = true;
-            geneticsManager.Resume ();
-            geneticsManager.gameObject.SetActive (false);
-        }
-        else
-        {
-            wasPaused = false;
-            geneticsManager.gameObject.SetActive (false);
-        }
+        geneticsManager.gameObject.SetActive (false);
 
         imageFader.FadeOut ();
     }
@@ -134,12 +121,6 @@ public class CanvasSwitcher : MonoBehaviour
         neuralNetworkCanvas.SetActive (true);
         stage.PrepareStage ();
         forceField.SetActive (false);
-
-        if (wasPaused)
-        {
-            geneticsManager.Pause ();
-        }
-
         geneticsManager.gameObject.SetActive (true);
         geneticsManager.ResetCars ();
         geneticsManager.ActivateCars ();
@@ -156,18 +137,7 @@ public class CanvasSwitcher : MonoBehaviour
         neuralNetworkCanvas.SetActive (false);
         networkTopologyCanvas.SetActive (true);
         networkTopologyController.Init (geneticsManager.CurrentTopology);
-
-        if (geneticsManager.IsPaused)
-        {
-            wasPaused = true;
-            geneticsManager.Resume ();
-            geneticsManager.gameObject.SetActive (false);
-        }
-        else
-        {
-            wasPaused = false;
-            geneticsManager.gameObject.SetActive (false);
-        }
+        geneticsManager.gameObject.SetActive (false);
 
         imageFader.FadeOut ();
     }
@@ -189,11 +159,6 @@ public class CanvasSwitcher : MonoBehaviour
         if (isTpologyDifferent)
         {
             geneticsManager.SetNetworkTopology (newTopology);
-        }
-
-        if (wasPaused)
-        {
-            geneticsManager.Pause ();
         }
 
         geneticsManager.gameObject.SetActive (true);

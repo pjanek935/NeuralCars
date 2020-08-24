@@ -18,6 +18,7 @@ public class GeneticsUIController : MonoBehaviour
     [SerializeField] Toggle disableCarsOnWallHit;
     [SerializeField] Toggle adaptiveMutationProbabilityToggle;
     [SerializeField] Toggle multiplyDistanceByVelocity;
+    [SerializeField] Toggle explosionsToggle;
 
     [SerializeField] ValueController sensorsLengthController;
     [SerializeField] ValueController angleBetweenSensorsController;
@@ -62,6 +63,7 @@ public class GeneticsUIController : MonoBehaviour
         disableCarsOnWallHit.onValueChanged.AddListener ((value) => onDisableCarsOnWallHitValueChanged (value));
         adaptiveMutationProbabilityToggle.onValueChanged.AddListener ((value) => onAdaptiveMutationProbabilityToggleValueChanged (value));
         multiplyDistanceByVelocity.onValueChanged.AddListener ((value) => onMultiplyDistanceByVelocityValueChanged (value));
+        explosionsToggle.onValueChanged.AddListener ((value) => onExpolosionsToggleValueChanged (value));
 
         sensorsLengthController.OnValueChanged += onSensorLengthValueChanged;
         angleBetweenSensorsController.OnValueChanged += onAngleBetweenSensorsValueChanged;
@@ -85,6 +87,7 @@ public class GeneticsUIController : MonoBehaviour
         onAdaptiveMutationProbabilityToggleValueChanged (geneticsManager.AdaptiveMutationProbability);
         newRandomCarsEveryGenController.SetValue (geneticsManager.NewRandomCarsCount);
         totalCarsCountController.SetValue (geneticsManager.CarsCount);
+        explosionsToggle.isOn = geneticsManager.Explosions;
 
         mutationProbabilityController.Format = "0.00";
 
@@ -157,6 +160,11 @@ public class GeneticsUIController : MonoBehaviour
         }
 
         geneticsManager.CrossbreedSensors = value;
+    }
+
+    void onExpolosionsToggleValueChanged (bool value)
+    {
+        geneticsManager.Explosions = value;
     }
 
     void onMultiplyDistanceByVelocityValueChanged (bool value)

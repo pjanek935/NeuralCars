@@ -40,6 +40,14 @@ public class BackPropNeuralCore : CarNeuralCoreBase
         }
     }
 
+    private void Update ()
+    {
+        if (Input.GetKeyDown (KeyCode.Space))
+        {
+            carParticlesManager.Explode ();
+        }
+    }
+
     private void FixedUpdate ()
     {
         if (IsActive)

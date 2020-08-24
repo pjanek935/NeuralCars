@@ -144,6 +144,11 @@ public class CarNeuralCore : CarNeuralCoreBase
         carFitness.RotationWhenDisabled = this.transform.rotation;
         carRadar.Disable ();
 
+        if (ExplodeOnDisable)
+        {
+            explode ();
+        }
+
         OnCarDisabled?.Invoke (this);
     }
 }
