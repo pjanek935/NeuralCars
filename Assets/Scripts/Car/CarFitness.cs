@@ -113,9 +113,10 @@ public class CarFitness : MonoBehaviour
 
             if (gate != null)
             {
-                if (!carNeuralCore.IsActive)
+                if (! carNeuralCore.IsActive)
                 {
                     OnGatePassed?.Invoke (gate.Index);
+
                     return;
                 }
 

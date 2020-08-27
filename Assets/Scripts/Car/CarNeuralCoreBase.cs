@@ -6,12 +6,15 @@ public class CarNeuralCoreBase : MonoBehaviour, IPointerClickHandler
 {
     public delegate void CarNeuralCoreEventHandler (CarNeuralCoreBase carNeuralCore);
     public event CarNeuralCoreEventHandler OnCarClicked;
+    public event CarNeuralCoreEventHandler OnExplode;
 
     [SerializeField] protected CarTelemetry carTelemetry;
     [SerializeField] protected CarRadar carRadar;
     [SerializeField] protected CarController carController;
     [SerializeField] protected CarFitness carFitness;
     [SerializeField] protected CarParticlesManager carParticlesManager;
+    [SerializeField] protected new Rigidbody rigidbody;
+    [SerializeField] protected Explosion explosion;
 
     protected NeuralNetwork neuralNetwork;
     protected NetworkTopologySimpleData networkTopology = new NetworkTopologySimpleData ();
@@ -90,7 +93,8 @@ public class CarNeuralCoreBase : MonoBehaviour, IPointerClickHandler
 
     protected void explode ()
     {
-        carParticlesManager.Explode ();
+        explosion.Explode ();
+        OnExplode?.Invoke (this);
     }
 
     void initNeuralNetwork (NetworkTopologySimpleData networkTopology)

@@ -11,8 +11,8 @@ public class Flag : MonoBehaviour
     [SerializeField] float width = 5f;
     [SerializeField] new Camera camera;
     [SerializeField] CameraController cameraController;
-    [SerializeField] Animation animation;
-    [SerializeField] ParticleSystem particleSystem;
+    [SerializeField] new Animation animation;
+    [SerializeField] new ParticleSystem particleSystem;
     [SerializeField] StageEditor stageEditor;
 
     Vector3 prevMousePos;

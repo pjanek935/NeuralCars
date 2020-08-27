@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
-[RequireComponent (typeof (Camera))]
 public class CameraController : MonoBehaviour
 {
     public enum CameraState

@@ -53,9 +53,6 @@ MonoBehaviour:
   rlSmoke: {fileID: 3139307131463607996}
   frSmoke: {fileID: 8434968531261081309}
   flSmoke: {fileID: 628672134994222285}
-  explosionSmoke: {fileID: 6641256905242896161}
-  explosionDebris: {fileID: 1868522367866572999}
-  explosionFlash: {fileID: 4251828913877511222}
   minTorqueChange: 0.5
   minAngleBetweenForwardVectorAndMovementDirection: 30
 --- !u!1 &3424652128919679194
@@ -15176,6 +15173,8 @@ MonoBehaviour:
   carController: {fileID: 7662206466222359640}
   carFitness: {fileID: 7662206466222359645}
   carParticlesManager: {fileID: 5340290572683975485}
+  rigidbody: {fileID: 7662206466222359642}
+  explosion: {fileID: 461947216335123702}
 --- !u!54 &7662206466222359642
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -20169,6 +20168,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1151749213149747737, guid: fc3134e41b7c08c49a7e414987696cd1,
+        type: 3}
+      propertyPath: rigidbody
+      value: 
+      objectReference: {fileID: 7662206466222359642}
+    - target: {fileID: 1151749213149747737, guid: fc3134e41b7c08c49a7e414987696cd1,
+        type: 3}
+      propertyPath: carController
+      value: 
+      objectReference: {fileID: 7662206466222359640}
+    - target: {fileID: 1151749213149747737, guid: fc3134e41b7c08c49a7e414987696cd1,
+        type: 3}
+      propertyPath: maxOffset
+      value: 15000
+      objectReference: {fileID: 0}
+    - target: {fileID: 1151749213149747737, guid: fc3134e41b7c08c49a7e414987696cd1,
+        type: 3}
+      propertyPath: wheelModels
+      value: 
+      objectReference: {fileID: 7662206464802910243}
     - target: {fileID: 1948048408355106735, guid: fc3134e41b7c08c49a7e414987696cd1,
         type: 3}
       propertyPath: m_Name
@@ -20182,24 +20201,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 689894365136613103}
   m_PrefabAsset: {fileID: 0}
---- !u!198 &6641256905242896161 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 6176832793232673230, guid: fc3134e41b7c08c49a7e414987696cd1,
+--- !u!114 &461947216335123702 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1151749213149747737, guid: fc3134e41b7c08c49a7e414987696cd1,
     type: 3}
   m_PrefabInstance: {fileID: 689894365136613103}
   m_PrefabAsset: {fileID: 0}
---- !u!198 &1868522367866572999 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 1188014018100330024, guid: fc3134e41b7c08c49a7e414987696cd1,
-    type: 3}
-  m_PrefabInstance: {fileID: 689894365136613103}
-  m_PrefabAsset: {fileID: 0}
---- !u!198 &4251828913877511222 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 3644389133539181273, guid: fc3134e41b7c08c49a7e414987696cd1,
-    type: 3}
-  m_PrefabInstance: {fileID: 689894365136613103}
-  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8106925acb3b6a843bc04865650ef20c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &7662206465764047187
 PrefabInstance:
   m_ObjectHideFlags: 0

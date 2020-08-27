@@ -31,10 +31,15 @@ public class CarNeuralCore : CarNeuralCoreBase
 
     public void Reset ()
     {
+        explosion.Reset ();
         lastPassedGateIndex = 0;
         lastGatePassedTime = Time.time;
         IsActive = false;
         carFitness.Reset ();
+        carController.ConstaintRotation = true;
+        rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+        rigidbody.velocity = Vector3.zero;
+        rigidbody.angularVelocity = Vector3.zero;
     }
 
     public override void Init (NetworkTopologySimpleData networkTopology)
@@ -136,6 +141,11 @@ public class CarNeuralCore : CarNeuralCoreBase
 
     void disableCar ()
     {
+        if (ExplodeOnDisable && IsActive)
+        {
+            explode ();
+        }
+
         IsActive = false;
         carController.SetTorque (0);
         carController.SetSteerAngle (0);
@@ -143,11 +153,6 @@ public class CarNeuralCore : CarNeuralCoreBase
         carFitness.PosWhenDisabled = this.transform.position;
         carFitness.RotationWhenDisabled = this.transform.rotation;
         carRadar.Disable ();
-
-        if (ExplodeOnDisable)
-        {
-            explode ();
-        }
 
         OnCarDisabled?.Invoke (this);
     }

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace Assets
 {
@@ -25,7 +26,7 @@ namespace Assets
         private double[] outputs;
 
         //Zmienna rand do inicjalizacji wag
-        private Random rnd;
+        private System.Random rnd;
 
         public NeuralNetwork(int inputNeuronsCount, int hiddenNeuronsCount, int outputNeuronsCount)
         {
@@ -44,7 +45,7 @@ namespace Assets
             hiddenOutputs = new double[hiddenNeuronsCount];
             outputs = new double[outputNeuronsCount];
 
-            rnd = new Random((int)DateTime.Now.Ticks);
+            rnd = new System.Random((int)DateTime.Now.Ticks);
 
             InitWeights(); //Przypisanie losowych wag sieci
         }
@@ -219,6 +220,7 @@ namespace Assets
             for (int i = 0; i < outputNeuronsCount; ++i)
             {
                 outputSums[i] += outputBiases[i];
+                outputSums [i] = (double) Mathf.Clamp ((float)outputSums [i], -1f, 1f);
             }
 
             Array.Copy(outputSums, outputs, outputSums.Length);
@@ -279,7 +281,6 @@ namespace Assets
                     GetOutput(xValues); // copy xValues in, compute outputs 
 
                     // indices: i = inputs, j = hiddens, k = outputs
-
                     // 1. compute output node signals (assumes softmax)
                     for (int k = 0; k < outputNeuronsCount; ++k)
                     {
@@ -290,33 +291,47 @@ namespace Assets
 
                     // 2. compute hidden-to-output weight gradients using output signals
                     for (int j = 0; j < hiddenNeuronsCount; ++j)
+                    {
                         for (int k = 0; k < outputNeuronsCount; ++k)
-                            hoGrads[j][k] = oSignals[k] * hiddenOutputs[j];
+                        {
+                            hoGrads [j] [k] = oSignals [k] * hiddenOutputs [j];
+                        }
+                    }     
 
                     // 2b. compute output bias gradients using output signals
                     for (int k = 0; k < outputNeuronsCount; ++k)
-                        obGrads[k] = oSignals[k] * 1.0; // dummy assoc. input value
+                    {
+                        obGrads [k] = oSignals [k] * 1.0; // dummy assoc. input value
+                    }
 
                     // 3. compute hidden node signals
                     for (int j = 0; j < hiddenNeuronsCount; ++j)
                     {
                         derivative = (1 + hiddenOutputs[j]) * (1 - hiddenOutputs[j]); // for tanh
                         double sum = 0.0; // need sums of output signals times hidden-to-output weights
+
                         for (int k = 0; k < outputNeuronsCount; ++k)
                         {
                             sum += oSignals[k] * hidden2outputWeights[j][k]; // represents error signal
                         }
+
                         hSignals[j] = derivative * sum;
                     }
 
                     // 4. compute input-hidden weight gradients
                     for (int i = 0; i < inputNeuronsCount; ++i)
+                    {
                         for (int j = 0; j < hiddenNeuronsCount; ++j)
-                            ihGrads[i][j] = hSignals[j] * input[i];
+                        {
+                            ihGrads [i] [j] = hSignals [j] * input [i];
+                        }
+                    }    
 
                     // 4b. compute hidden node bias gradients
                     for (int j = 0; j < hiddenNeuronsCount; ++j)
-                        hbGrads[j] = hSignals[j] * 1.0; // dummy 1.0 input
+                    {
+                        hbGrads [j] = hSignals [j] * 1.0; // dummy 1.0 input
+                    } 
 
                     // == update weights and biases
 
@@ -361,13 +376,33 @@ namespace Assets
                         outputBiases[k] += oPrevBiasesDelta[k] * momentum;
                         oPrevBiasesDelta[k] = delta;
                     }
-
                 } // each training item
 
             } // while
+
             double[] bestWts = GetWeights();
             return bestWts;
         } 
+
+        bool isAnythinNaN (double [] arr)
+        {
+            bool result = false;
+
+            if (arr != null)
+            {
+                for (int i = 0; i < arr.Length; i ++)
+                {
+                    if (double.IsNaN (arr [i]))
+                    {
+                        result = true;
+
+                        break;
+                    }
+                }
+            }
+
+            return result;
+        }
 
         private void Shuffle(int[] sequence)
         {

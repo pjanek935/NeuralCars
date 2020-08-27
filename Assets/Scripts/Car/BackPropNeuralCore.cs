@@ -11,6 +11,7 @@ public class BackPropNeuralCore : CarNeuralCoreBase
     [SerializeField] Stage stage;
 
     List<double []> trainingData = new List<double []> ();
+    bool trained = false;
 
     public List <double []> TrainingData
     {
@@ -19,6 +20,7 @@ public class BackPropNeuralCore : CarNeuralCoreBase
 
     public void Reset ()
     {
+        trained = false;
         trainingData.Clear ();
         GetComponent<CarFitness> ().Reset ();
         IsActive = false;
@@ -36,7 +38,8 @@ public class BackPropNeuralCore : CarNeuralCoreBase
             }
 
             neuralNetwork.SetWeights (neuralNetwork.GetRandomWeights ());
-            double [] weights = neuralNetwork.Train (trainData, 1, 0.2f, 0f);
+            double [] weights = neuralNetwork.Train (trainData, 100, 0.02f, 0.01f);
+            trained = true;
         }
     }
 
@@ -44,7 +47,7 @@ public class BackPropNeuralCore : CarNeuralCoreBase
     {
         if (Input.GetKeyDown (KeyCode.Space))
         {
-            carParticlesManager.Explode ();
+            explode ();
         }
     }
 
@@ -133,15 +136,18 @@ public class BackPropNeuralCore : CarNeuralCoreBase
 
     protected override void onGatePassed (int gateIndex)
     {
-        if (!IsActive)
+        if (! trained)
         {
-            IsActive = true;
+            if (!IsActive)
+            {
+                IsActive = true;
+            }
+            else if (IsActive && gateIndex == stage.GetLastGateIndex ())
+            {
+                OnLastGatePassed?.Invoke ();
+                IsActive = false;
+            }
         }
-        else if (IsActive && gateIndex == stage.GetLastGateIndex ())
-        {
-            IsActive = false;
-
-            OnLastGatePassed?.Invoke ();
-        }
+        
     }
 }

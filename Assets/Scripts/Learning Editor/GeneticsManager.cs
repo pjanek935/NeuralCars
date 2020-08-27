@@ -18,6 +18,7 @@ public class GeneticsManager : MonoBehaviour
 
     [SerializeField] GameObject lastBestGameObject;
     [SerializeField] GameObject allTimeBest;
+    [SerializeField] ShakeEffect shakeEffect;
 
     [SerializeField] int carsCount = 10;
     [SerializeField] int newRandomCarsCount = 5;
@@ -41,7 +42,6 @@ public class GeneticsManager : MonoBehaviour
     CarSimpleData prevCarWithHighestFitness = new CarSimpleData ();
     CarSimpleData prevCarWithFurthestDistTravelled = new CarSimpleData (); //distance is usuall multiplied by speed in fitness function,
     //so it's not identical to prevCarWithHighestFitness
-
 
     const float MAX_SENSOR_LENGTH = 50f; //if crossover sensors options enabled may exceed this value; used to calculate length for brand new cars
     const float MAX_ANGLE_BETWEEN_SENSORS = 15f; //if crossover sensors options enabled may exceed this value; used to calculate angle for brand new cars
@@ -223,6 +223,7 @@ public class GeneticsManager : MonoBehaviour
     private void Awake ()
     {
         DisableOnWallHit = disableOnWallHit;
+        SetSensorsVisible (false);
     }
 
     public void SetDefaultNetworkTopology ()
@@ -348,6 +349,7 @@ public class GeneticsManager : MonoBehaviour
         {
             yield return new WaitForSeconds (0.1f);
 
+            cars [i].Reset ();
             cars [i].IsActive = true;
         }
 
@@ -363,6 +365,7 @@ public class GeneticsManager : MonoBehaviour
         CarNeuralCore carNeuralCore = newGameObject.GetComponent<CarNeuralCore> ();
         carNeuralCore.OnCarDisabled += onCarDisabled;
         carNeuralCore.OnCarClicked += onCarClicked;
+        carNeuralCore.OnExplode += onCarExplode;
         carNeuralCore.ExplodeOnDisable = explosions;
         cars.Add (carNeuralCore);
 
@@ -372,6 +375,11 @@ public class GeneticsManager : MonoBehaviour
     void onCarClicked (CarNeuralCoreBase carNeuralCoreBase)
     {
         OnCarClicked?.Invoke (carNeuralCoreBase);
+    }
+
+    void onCarExplode (CarNeuralCoreBase carNeuralCoreBase)
+    {
+        shakeEffect.Shake (carNeuralCoreBase.transform.position);
     }
 
     void onCarDisabled (CarNeuralCoreBase carNeuralCoreBase)

@@ -12,10 +12,6 @@ public class CarParticlesManager : MonoBehaviour
     [SerializeField] ParticleSystem frSmoke;
     [SerializeField] ParticleSystem flSmoke;
 
-    [SerializeField] ParticleSystem explosionSmoke;
-    [SerializeField] ParticleSystem explosionDebris;
-    [SerializeField] ParticleSystem explosionFlash;
-
     [SerializeField] float minTorqueChange = 0.5f; //Torque change which will relase smoke from under wheels of the car.
     [SerializeField] float minAngleBetweenForwardVectorAndMovementDirection = 30f; //The bigger the value, the grater angle car has to slide to release smoke
 
@@ -70,12 +66,5 @@ public class CarParticlesManager : MonoBehaviour
         emmision.enabled = false;
         emmision = flSmoke.emission;
         emmision.enabled = false;
-    }
-
-    public void Explode ()
-    {
-        explosionDebris.Play ();
-        explosionSmoke.Play ();
-        explosionFlash.Play ();
     }
 }

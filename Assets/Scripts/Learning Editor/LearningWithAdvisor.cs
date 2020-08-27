@@ -23,13 +23,16 @@ public class LearningWithAdvisor : MonoBehaviour
 
     void onLastGatePassed ()
     {
-        List<double []> trainingData = car.TrainingData;
-
-        if (trainingData != null && trainingData.Count > 0)
+        if (car.IsActive)
         {
-            car.Train (trainingData);
+            List<double []> trainingData = car.TrainingData;
 
-            PopupWithMessage.Instance.Show ("Training finished. Use trained data?", true, true, onTrainingFinishedPopupClosed);
+            if (trainingData != null && trainingData.Count > 0)
+            {
+                car.Train (trainingData);
+
+                PopupWithMessage.Instance.Show ("Training finished. Use trained data?", true, true, onTrainingFinishedPopupClosed);
+            }
         }
     }
 

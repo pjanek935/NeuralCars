@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Experimental.XR.Interaction;
 
 public class CarController : MonoBehaviour
 {
@@ -60,6 +61,12 @@ public class CarController : MonoBehaviour
         private set;
     }
 
+    public bool ConstaintRotation
+    {
+        get;
+        set;
+    }
+
     void Start ()
     {
         GetComponent<Rigidbody> ().centerOfMass.Set (0, GlobalConst.CAR_CENTER_OF_MASS_Y, 0);
@@ -115,7 +122,11 @@ public class CarController : MonoBehaviour
         wheelColliderFL.steerAngle = maxSteerAngle * SteerAngle;
         wheelColliderFR.steerAngle = maxSteerAngle * SteerAngle;
 
-        transform.eulerAngles = new Vector3 (0f, transform.eulerAngles.y, 0f);
+        if (ConstaintRotation)
+        {
+            transform.eulerAngles = new Vector3 (0f, transform.eulerAngles.y, 0f);
+        }
+        
         changeFriction ();
     }
 
