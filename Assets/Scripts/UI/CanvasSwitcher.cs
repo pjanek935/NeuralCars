@@ -12,12 +12,14 @@ public class CanvasSwitcher : MonoBehaviour
     [SerializeField] Button saveOrLoadTopologyButton;
     [SerializeField] Button backFromLearningWithAdvisor;
     [SerializeField] Button learningWithAdvisorButton;
+    [SerializeField] Button optionsButton;
 
     [SerializeField] GameObject stageEditorCanvas;
     [SerializeField] GameObject neuralNetworkCanvas;
     [SerializeField] GameObject networkTopologyCanvas;
     [SerializeField] GameObject learningWithAdvisorCanvas;
     [SerializeField] SaveOrLoadTopologyPopup saveOrLoadTopologyPopup;
+    [SerializeField] OptionsWindow optionsWindow;
 
     [SerializeField] StageEditor stageEditor;
     [SerializeField] GeneticsManager geneticsManager;
@@ -37,6 +39,7 @@ public class CanvasSwitcher : MonoBehaviour
         saveOrLoadTopologyButton.onClick.AddListener (() => onSaveOrLoadTopologyButtonClicked ());
         backFromLearningWithAdvisor.onClick.AddListener (() => onBackFromLearningWithAdvisorClicked ());
         learningWithAdvisorButton.onClick.AddListener (() => onLearningWithAdvisorButtonClicked ());
+        optionsButton.onClick.AddListener (() => onOptionsButtonClicked ());
 
         saveOrLoadTopologyPopup.OnNewTopologyLoaded += onNewTopologyLoaded;
 
@@ -44,6 +47,31 @@ public class CanvasSwitcher : MonoBehaviour
         geneticsManager.Init ();
 
         Application.runInBackground = true;
+    }
+
+    private void Update ()
+    {
+        if (Input.GetKeyDown (KeyCode.Escape))
+        {
+            showOrHideOptionsWindow ();
+        }
+    }
+
+    void showOrHideOptionsWindow ()
+    {
+        if (optionsWindow.IsVisible)
+        {
+            optionsWindow.Hide ();
+        }
+        else
+        {
+            optionsWindow.Show ();
+        }
+    }
+
+    void onOptionsButtonClicked ()
+    {
+        showOrHideOptionsWindow ();
     }
 
     void onBackFromLearningWithAdvisorClicked ()
@@ -155,23 +183,16 @@ public class CanvasSwitcher : MonoBehaviour
         NetworkTopologySimpleData currentTopology = geneticsManager.CurrentTopology;
         NetworkTopologySimpleData newTopology = networkTopologyController.GetNetworkTopologySimpleData ();
         bool isTpologyDifferent = currentTopology.IsDifferent (newTopology);
-
-        if (isTpologyDifferent)
-        {
-            geneticsManager.SetNetworkTopology (newTopology);
-        }
-
         geneticsManager.gameObject.SetActive (true);
 
         if (isTpologyDifferent)
         {
+            geneticsManager.SetNetworkTopology (newTopology);
             geneticsManager.ResetSimulation ();
         }
-        else
-        {
-            geneticsManager.ResetCars ();
-            geneticsManager.ActivateCars ();
-        }
+
+        geneticsManager.ResetCars ();
+        geneticsManager.ActivateCars ();
 
         geneticsUIController.RefreshViews ();
         imageFader.FadeOut ();
