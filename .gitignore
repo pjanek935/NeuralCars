@@ -1,7 +1,5 @@
 Library/
 Temp/
-ProjectSettings/
 obj/
 Logs/
-*.csproj
 .vs/
