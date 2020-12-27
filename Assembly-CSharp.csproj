@@ -202,6 +202,7 @@
     <None Include="Assets\LeanTween\ReadMe.txt" />
     <None Include="Assets\LeanTween\License.txt" />
     <None Include="Assets\LeanTween\Examples\Archived\2dUnlitWithFade.shader" />
+    <None Include="Assets\Resources\DefaultStage.txt" />
     <None Include="Assets\Demigiant\DOTween\readme.txt" />
     <None Include="Assets\Shaders\ScreenTransition.shader" />
     <Reference Include="UnityEngine">

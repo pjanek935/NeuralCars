@@ -83,7 +83,14 @@ public class StageEditor : MonoBehaviour
             topPanelController.OnDefaultWidthUpClicked += onDefaultWidthUpClicked;
         }
 
-        onLoadStageClicked (SaveManager.Instance.LoadStage (SaveManager.Instance.CurrentOpenedStageId));
+        StageModel stageModel = SaveManager.Instance.LoadStage (SaveManager.Instance.CurrentOpenedStageId);
+
+        if (stageModel == null)
+        {
+            stageModel = SaveManager.Instance.LoadDefaultStage ();
+        }
+
+        onLoadStageClicked (stageModel);
     }
 
     public void DisableStageEditor ()

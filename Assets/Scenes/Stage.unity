@@ -14820,7 +14820,6 @@ GameObject:
   - component: {fileID: 1003618906}
   - component: {fileID: 1003618905}
   - component: {fileID: 1003618904}
-  - component: {fileID: 1003618903}
   - component: {fileID: 1003618902}
   - component: {fileID: 1003618901}
   m_Layer: 0
@@ -14863,22 +14862,6 @@ MonoBehaviour:
   blendDistance: 0
   weight: 1
   sharedProfile: {fileID: 11400000, guid: dbda6001c9e27ed4787bd21b869f07b1, type: 2}
---- !u!114 &1003618903
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1003618900}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c49b4cc203aa6414fae5c798d1d0e7d6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_EventMask:
-    serializedVersion: 2
-    m_Bits: 4352
-  m_MaxRayIntersections: 0
 --- !u!114 &1003618904
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15305,7 +15288,7 @@ MonoBehaviour:
   m_CancelButton: Cancel
   m_InputActionsPerSecond: 10
   m_RepeatDelay: 0.5
-  m_ForceModuleActive: 0
+  m_ForceModuleActive: 1
 --- !u!114 &1052635490
 MonoBehaviour:
   m_ObjectHideFlags: 0

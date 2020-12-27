@@ -10,6 +10,7 @@ public class SaveManager
     public const int TOPOLOGIES_COUNT = 7;
     const string stageNameFormat = "STAGE_{0}.stg";
     const string topologyNameFormat = "TOPOLOGY_{0}.tpg";
+    const string defaultStagePath = "DefaultStage";
 
     static SaveManager instance;
 
@@ -85,6 +86,19 @@ public class SaveManager
                 file.Close ();
             }
         }
+    }
+
+    public StageModel LoadDefaultStage ()
+    {
+        StageModel result = null;
+        TextAsset textAsset = Resources.Load<TextAsset> (defaultStagePath);
+
+        if (textAsset != null)
+        {
+            result = JsonUtility.FromJson<StageModel> (textAsset.text);
+        }
+
+        return result;
     }
 
     public StageModel LoadStage (int slotId)

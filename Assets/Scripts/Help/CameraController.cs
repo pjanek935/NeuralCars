@@ -57,8 +57,7 @@ public class CameraController : MonoBehaviour
 
         if (eventSystem != null)
         {
-            result = EventSystem.current.IsPointerOverGameObject ();
-            GameObject gameObject = eventSystem.currentSelectedGameObject;
+            result = eventSystem.IsPointerOverGameObject ();
         }
 
         return result;
