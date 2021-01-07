@@ -301,6 +301,7 @@ public class Stage : MonoBehaviour
             Vector3 scale = gates [i].transform.localScale;
             gates [i].transform.localScale = new Vector3 (widths [i] * 2f, scale.y, scale.z);
             gates [i].Index = i + 1;
+            gates [i].MaxPossibleIndex = positions.Count;
         }
 
         int diff = gates.Count - positions.Count;

@@ -199,6 +199,8 @@
     <Compile Include="Assets\Scripts\UI\TooltipTriggerCollider.cs" />
     <Compile Include="Assets\Scripts\UI\UILineRenderer.cs" />
     <Compile Include="Assets\Scripts\UI\ValueController.cs" />
+    <Compile Include="Assets\ScrollbarValueController.cs" />
+    <Compile Include="Assets\TimeScaleController.cs" />
     <None Include="Assets\LeanTween\ReadMe.txt" />
     <None Include="Assets\LeanTween\License.txt" />
     <None Include="Assets\LeanTween\Examples\Archived\2dUnlitWithFade.shader" />

@@ -26,6 +26,8 @@ public class GeneticsUIController : MonoBehaviour
     [SerializeField] ValueController totalCarsCountController;
     [SerializeField] ValueController newRandomCarsEveryGenController;
 
+    [SerializeField] ScrollbarValueController timeScaleController;
+
     [SerializeField] CameraController cameraController;
     [SerializeField] CameraFollow cameraFollow;
 
@@ -90,6 +92,9 @@ public class GeneticsUIController : MonoBehaviour
         explosionsToggle.isOn = geneticsManager.Explosions;
 
         mutationProbabilityController.Format = "0.00";
+
+        timeScaleController.OnValueChanged += onTimeScaleValueChanged;
+        timeScaleController.SetValue (PlayerPrefs.GetFloat (TimeScaleController.TimeScaleKey, 1f));
 
         RefreshViews ();
     }
@@ -214,5 +219,10 @@ public class GeneticsUIController : MonoBehaviour
     void newRandomCarsValueChanged (float newValue)
     {
         geneticsManager.NewRandomCarsCount = (int) newValue;
+    }
+
+    void onTimeScaleValueChanged (float value)
+    {
+        TimeScaleController.SetTimeScale (value);
     }
 }

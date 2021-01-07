@@ -14,6 +14,7 @@ public class CarFitness : MonoBehaviour
 
     public UnityAction OnWallHit;
     public event OnGatePassedEventHandler OnGatePassed;
+    public event OnGatePassedEventHandler OnFinalGatePassed;
 
     [SerializeField] CarTelemetry carTelemetry;
     [SerializeField] CarNeuralCoreBase carNeuralCore;
@@ -115,8 +116,6 @@ public class CarFitness : MonoBehaviour
             {
                 if (! carNeuralCore.IsActive)
                 {
-                    OnGatePassed?.Invoke (gate.Index);
-
                     return;
                 }
 
@@ -128,6 +127,11 @@ public class CarFitness : MonoBehaviour
                 AvgVelocity += carTelemetry.VelocityAverage.magnitude;
                 AvgVelocity *= 0.5f;
                 OnGatePassed?.Invoke (gate.Index);
+
+                if (gate.IsFinalGate)
+                {
+                    OnFinalGatePassed?.Invoke (gate.Index);
+                }
             }
         } 
     }

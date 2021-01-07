@@ -7,5 +7,45 @@ using UnityEngine;
 /// </summary>
 public class Gate : MonoBehaviour
 {
-    public int Index = 0;
+    [SerializeField] int index;
+
+    int maxPossibleIndex;
+
+    public int Index
+    {
+        set
+        {
+            index = value;
+            setIsFinalGate ();
+        }
+
+        get
+        {
+            return index;
+        }
+    }
+    public int MaxPossibleIndex
+    {
+        set
+        {
+            maxPossibleIndex = value;
+            setIsFinalGate ();
+        }
+
+        get
+        {
+            return maxPossibleIndex;
+        }
+    }
+
+    public bool IsFinalGate
+    {
+        get;
+        private set;
+    }
+
+    public void setIsFinalGate ()
+    {
+        IsFinalGate = (Index == MaxPossibleIndex);
+    }
 }

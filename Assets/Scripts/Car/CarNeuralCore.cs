@@ -139,6 +139,11 @@ public class CarNeuralCore : CarNeuralCoreBase
         }
     }
 
+    protected override void onFinalGatePassed (int gateIndex)
+    {
+        disableCar ();
+    }
+
     void disableCar ()
     {
         if (ExplodeOnDisable && IsActive)

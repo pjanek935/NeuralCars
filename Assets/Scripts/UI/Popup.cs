@@ -28,8 +28,8 @@ public class Popup : MonoBehaviour
         IsVisible = true;
         canvas.blocksRaycasts = true;
         canvas.interactable = true;
-        canvas.DOFade (1f, GlobalConst.SHOW_AND_HIDE_TIME);
-        mainFrame.DOScale (1f, GlobalConst.SHOW_AND_HIDE_TIME);
+        canvas.DOFade (1f, GlobalConst.SHOW_AND_HIDE_TIME * Time.timeScale);
+        mainFrame.DOScale (1f, GlobalConst.SHOW_AND_HIDE_TIME * Time.timeScale);
     }
 
     public virtual void Hide ()
@@ -37,8 +37,8 @@ public class Popup : MonoBehaviour
         cancelAnimation ();
         IsVisible = false;
         canvas.blocksRaycasts = false;
-        canvas.DOFade (0f, GlobalConst.SHOW_AND_HIDE_TIME);
-        mainFrame.DOScale (0.3f, GlobalConst.SHOW_AND_HIDE_TIME).OnComplete (() => this.gameObject.SetActive (false));
+        canvas.DOFade (0f, GlobalConst.SHOW_AND_HIDE_TIME * Time.timeScale);
+        mainFrame.DOScale (0.3f, GlobalConst.SHOW_AND_HIDE_TIME * Time.timeScale).OnComplete (() => this.gameObject.SetActive (false));
     }
 
     void cancelAnimation ()

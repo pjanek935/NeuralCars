@@ -148,6 +148,5 @@ public class BackPropNeuralCore : CarNeuralCoreBase
                 IsActive = false;
             }
         }
-        
     }
 }

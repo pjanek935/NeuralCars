@@ -47,6 +47,7 @@ public class CarNeuralCoreBase : MonoBehaviour, IPointerClickHandler
     {
         carFitness.OnWallHit += onWallHit;
         carFitness.OnGatePassed += onGatePassed;
+        carFitness.OnFinalGatePassed += onFinalGatePassed;
     }
 
     public void SetWeights (double [] weights)
@@ -118,4 +119,6 @@ public class CarNeuralCoreBase : MonoBehaviour, IPointerClickHandler
     protected virtual void onWallHit () { }
 
     protected virtual void onGatePassed (int gateIndex) { }
+
+    protected virtual void onFinalGatePassed (int gateIndex) {}
 }
