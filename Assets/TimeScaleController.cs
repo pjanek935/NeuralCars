@@ -4,12 +4,40 @@ using UnityEngine;
 public static class TimeScaleController 
 {
     public const string TimeScaleKey = "ts";
+    public static float CurrentTimeScale => Time.timeScale;
+
+    public static float TargetTimeScale
+    {
+        get
+        {
+            if (! targetTimeScaleLoaded)
+            {
+                targetTimeScale = PlayerPrefs.GetFloat (TimeScaleKey, 1f);
+                targetTimeScaleLoaded = true;
+            }
+
+            return targetTimeScale;
+        }
+
+        set
+        {
+            targetTimeScale = value;
+            targetTimeScaleLoaded = true;
+        }
+    }
+
+    static float targetTimeScale = 1f;
+    static bool targetTimeScaleLoaded = false;
 
     public static void SetTimeScale (float val)
     {
+        TargetTimeScale = val;
         Time.timeScale = val;
-        PlayerPrefs.SetFloat (TimeScaleKey, val);
-        Debug.Log ("Time scale set: " + val);
+    }
+
+    public static void SaveTimeScale ()
+    {
+        PlayerPrefs.SetFloat (TimeScaleKey, TargetTimeScale);
     }
 
     public static void SetDefaultTimeScale ()
@@ -17,11 +45,10 @@ public static class TimeScaleController
         Time.timeScale = 1f;
     }
 
-    public static float SetSavedTimeScale ()
+    public static float SetTargetTimeScale ()
     {
-        float val = PlayerPrefs.GetFloat (TimeScaleKey, 1f);
-        Time.timeScale = val;
+        Time.timeScale = TargetTimeScale;
 
-        return val;
+        return TargetTimeScale;
     }
 }

@@ -94,7 +94,7 @@ public class GeneticsUIController : MonoBehaviour
         mutationProbabilityController.Format = "0.00";
 
         timeScaleController.OnValueChanged += onTimeScaleValueChanged;
-        timeScaleController.SetValue (PlayerPrefs.GetFloat (TimeScaleController.TimeScaleKey, 1f));
+        timeScaleController.SetValue (TimeScaleController.TargetTimeScale);
 
         RefreshViews ();
     }

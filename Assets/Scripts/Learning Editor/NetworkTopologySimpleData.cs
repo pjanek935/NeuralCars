@@ -17,6 +17,9 @@ public class NetworkTopologySimpleData
     public int SensorsCount;
     public int HiddenLayerNeuronsCount;
 
+    public float AngleBetweenSensors;
+    public float SensorsLength;
+
     public bool IsDifferent (NetworkTopologySimpleData other)
     {
         if (other == null)
@@ -76,6 +79,9 @@ public class NetworkTopologySimpleData
 
         result.HandbrakeOutput = HandbrakeOutput;
         result.TorqueOutput = TorqueOutput;
+
+        result.AngleBetweenSensors = AngleBetweenSensors;
+        result.SensorsLength = SensorsLength;
 
         return result;
     }

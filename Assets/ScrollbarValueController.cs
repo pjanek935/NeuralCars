@@ -35,13 +35,15 @@ public class ScrollbarValueController : MonoBehaviour
 
     public void SetValue (float val)
     {
+        CurrentValue = val;
         float normalizedValue = (val - minVal) / (maxVal - minVal);
         scrollbar.value = normalizedValue;
+        valueLabel.text = CurrentValue.ToString ();
     }
 
-    void onScrollbarValueChanged (float val)
+    void onScrollbarValueChanged (float normalizedValue)
     {
-        CurrentValue = val * (maxVal - minVal) + minVal;
+        CurrentValue = normalizedValue * (maxVal - minVal) + minVal;
         valueLabel.text = CurrentValue.ToString ();
         OnValueChanged?.Invoke (CurrentValue);
     }

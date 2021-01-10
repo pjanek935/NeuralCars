@@ -125,7 +125,7 @@ public class CanvasSwitcher : MonoBehaviour
 
     void onNeuralNetworkButtonClicked ()
     {
-        TimeScaleController.SetSavedTimeScale ();
+        TimeScaleController.SetTargetTimeScale ();
         imageFader.FadeIn (switchStageEditorToLearningWindow);
     }
 
@@ -175,7 +175,7 @@ public class CanvasSwitcher : MonoBehaviour
 
     void backToNeural ()
     {
-        TimeScaleController.SetSavedTimeScale ();
+        TimeScaleController.SetTargetTimeScale ();
         imageFader.FadeIn (switchFromNetworkTopologyToLearningWindow);
     }
 

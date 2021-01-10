@@ -96,12 +96,8 @@ public class GeneticsManager : MonoBehaviour
             for (int i = 0; i < cars.Count; i++)
             {
                 cars [i].SetWeights (carSimpleData [i].Weights);
-
-                if (CrossbreedSensors)
-                {
-                    cars [i].SetSensorsLength (carSimpleData [i].SensorsLength);
-                    cars [i].SetAngleBetweenSensors (carSimpleData [i].AngleBetweenSensors);
-                }
+                cars [i].SetSensorsLength (carSimpleData [i].SensorsLength);
+                cars [i].SetAngleBetweenSensors (carSimpleData [i].AngleBetweenSensors);
             }
         }
     }
@@ -236,6 +232,8 @@ public class GeneticsManager : MonoBehaviour
         currentTopology.VelocityInput = false;
         currentTopology.HandbrakeOutput = false;
         currentTopology.TorqueOutput = false;
+        currentTopology.SensorsLength = sensorsLength;
+        currentTopology.AngleBetweenSensors = angleBetweenSensors;
     }
 
     public void Init ()
@@ -289,6 +287,8 @@ public class GeneticsManager : MonoBehaviour
         }
 
         System.Random rand = new System.Random ();
+        angleBetweenSensors = currentTopology.AngleBetweenSensors;
+        sensorsLength = currentTopology.SensorsLength;
 
         for (int i = 0; i < carsCount; i ++)
         {
