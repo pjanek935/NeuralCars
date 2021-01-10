@@ -88,7 +88,7 @@ public class CameraController : MonoBehaviour
     {
         float scrollDelta = Input.mouseScrollDelta.y;
 
-        if (Mathf.Abs (scrollDelta) > 0.1f)
+        if (Mathf.Abs (scrollDelta) > 0.1f && ! IsPointerOverGUI ())
         {
             float deltaY = -scrollDelta * scrollSpeed;
             float deltaZ = -Mathf.Cos (90f-this.transform.localRotation.eulerAngles.x) * deltaY;

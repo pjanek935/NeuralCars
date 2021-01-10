@@ -44608,7 +44608,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   message: HOW FAST SIMULATION RUNS
-  anchorPosition: 3
+  anchorPosition: 1
 --- !u!1 &4645028245692306590
 GameObject:
   m_ObjectHideFlags: 0
